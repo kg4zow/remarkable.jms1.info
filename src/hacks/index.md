@@ -8,9 +8,9 @@ I already *know* that I'll be SSH'ing into mine and customizing things, and I've
 
 ## List of Hacks
 
-[awesome-reMarkable](https://github.com/reHackable/awesome-reMarkable) is a list of hacks. Almost all of the hacks I've seen are linked *from* this page.
+[awesome-reMarkable](https://github.com/reHackable/awesome-reMarkable) is a list of hacks compiled by others. Almost all of the hacks I've seen are linked *from* this page.
 
-> &#x2139;&#xFE0F; To be totally clear, I am NOT trying to start my own "index of hacks" here. When I'm finished, this site will contain information about the hacks I actually use on my own tablet, and *maybe* the ones that I look at but decide not to use.
+> &#x2139;&#xFE0F; To be totally clear, I am NOT trying to start my own "index of hacks" here. When I'm finished (or *if* I'm finished?) this site will contain information about the hacks I actually use on my own tablet, and *maybe* the ones that I look at but decide not to use.
 
 ## Hacks
 
@@ -24,7 +24,11 @@ As I write this (2023-06-25), I don't actually have the tablet yet, so I haven't
 
 * [Toltec](https://github.com/toltec-dev/toltec) seems to be a software repository for the reMarkable tablets. A lot of the "hacks" I've looked at so far seem to refer to it.
 
+    * [Toltec web site](https://toltec-dev.org/)
+
 * [RCU](http://www.davisr.me/projects/rcu/) reMarkable Connection Utility - looks like a GUI for managing the RM1/RM2 tablets.
+
+* [Calibre Remarkable Device Driver Plugin](https://github.com/naclander/Calibre-Remarkable-Device-Driver-Plugin) - a plugin for [Calibre](https://calibre-ebook.com/) which allows it to manage ebook files on the tablet, the same way it manages other ebook readers (i.e. kobo, kindle, nook, etc.)
 
 * [reMarkable Printer](https://github.com/Evidlo/remarkable_printer) - makes the table emulate a printer. When a computer "prints" to it, the output is saved as a new document (PDF?) on the tablet.
 

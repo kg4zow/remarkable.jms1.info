@@ -4,6 +4,6 @@
 
 ---
 
-- [Initial Reactions]()
+- [Information](info/index.md)
 
 - [Hacks](hacks/index.md)

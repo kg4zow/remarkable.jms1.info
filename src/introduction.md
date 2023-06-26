@@ -12,8 +12,9 @@ I'm doing this for two reasons:
 
 There isn't really much to see yet, I plan to add information over time after the tablet shows up and I start playing/working with it.
 
-
-
+> **In Progress**
+>
+> Some of the items in the Table of Contents menu may not actually link to pages yet, and some of the pages which *exist* may not be complete. I'm writing this in my spare time, and `$DAYJOB` doesn't give me a whole lot of that. Please be patient.
 
 ## Created with `mdbook`
 
@@ -33,21 +34,23 @@ I make use of [Keybase](https://keybase.io/) on a *very* regular basis.
 
 ## Feedback
 
-I would appreciate any feedback you may have to offer about this book.
+I would appreciate any feedback you may have to offer about this book. This *especially* includes if you spot any typos, if you see any information which is incorrect or incomplete, or if there's something you'd like to see me cover.
 
 * Email: `jms1@jms1.net`
 * [Keybase: `jms1`](https://keybase.io/jms1/)
 
 ## License
 
-![CC BY-SA 4.0](https://i.creativecommons.org/l/by-sa/4.0/88x31.png)
+![CC BY 4.0](https://i.creativecommons.org/l/by/4.0/88x31.png)
 
-This web site is licensed under a [Creative Commons Attribution-ShareAlike 4.0 International License](href="http://creativecommons.org/licenses/by-sa/4.0/").
+This web site is licensed under a [Creative Commons Attribution 4.0 International License](href="http://creativecommons.org/licenses/by/4.0/").
 
-Short version, you're free to use, copy, and re-share the information, so long as you tell people that I originally wrote it, and if you share it, you use the same license.
+Short version, you're free to use, copy, and re-share the information, including commercially, as long as you tell people that I originally wrote it, provide a link back to where you found it (i.e. this web site), and if you're sharing a modified version, make it clear which parts you modified.
 
-&#x21D2; *[legal mumbo jumbo](https://creativecommons.org/licenses/by/4.0/legalcode)*
+&#x21D2; [Better explanation](https://creativecommons.org/licenses/by/4.0/)
+
+&#x21D2; [Full legal mumbo jumbo](https://creativecommons.org/licenses/by/4.0/legalcode)
 
 ### Exception
 
-The `/theme/index-template.hbs` file in the git repo, whose contents make up part of every generated HTML page, was copied from `/src/theme/index.hbs` in [the mdbook source](https://github.com/rust-lang/mdBook/blob/master/src/theme/index.hbs) and then modified. As such, that file is technically covered by the Mozilla Public License 2.0, [as noted in their repo](https://github.com/rust-lang/mdBook/blob/master/LICENSE).
+The `/theme/index-template.hbs` file in the git repo, whose contents make up part of every generated HTML page, was copied from `/src/theme/index.hbs` in [the mdbook source](https://github.com/rust-lang/mdBook/blob/master/src/theme/index.hbs) and then modified. As such, that file is technically covered by the [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/), as noted [in their repo](https://github.com/rust-lang/mdBook/blob/master/LICENSE).
