@@ -1,20 +1,46 @@
 # Introduction
 
-As I write this (2023-06-25), I have *ordered* a [reMarkable 2](https://remarkable.com/) tablet, but have not received it yet. I plan on using this site as a way to record the information I learn about it, and the things I do to customize it.
+I am the owner of a new (as of 2023-06-27) [reMarkable 2](https://remarkable.com/) tablet.
 
-I'm doing this for two reasons:
+I'm using this site as a way to record the information I learn about it, and the things I do to customize it. I'm doing this for two reasons:
 
-* So that I will have a reference to look back on in the future, in case I need it.
-
-    I find that the act of writing documentation helps me to organize the details in my head.
+* So that I will have a reference to look back on in the future, in case I need it. (I find that the act of writing documentation helps me to organize the details in my head.)
 
 * So that others who may find this information useful will have access to it as well.
 
-There isn't really much to see yet, I plan to add information over time after the tablet shows up and I start playing/working with it.
+There probably won't be much to see at first, but I plan to add information over time after and I start playing/working with it.
 
-> **In Progress**
+> &#x2139;&#xFE0F; **In Progress**
 >
 > Some of the items in the Table of Contents menu may not actually link to pages yet, and some of the pages which *exist* may not be complete. I'm writing this in my spare time, and `$DAYJOB` doesn't give me a whole lot of that. Please be patient.
+
+### reMarkable Cloud
+
+**For now**, I'm planning to NOT connect my tablet to the "reMarkable Cloud" at all. I'm doing this for two reasons:
+
+* **Privacy**
+
+    If you know me, you know that privacy is *very* important to me. Not that I have any great secrets, I just don't like the feeling of somebody (or thousands of somebodies) watching everything I do over my shoulder, especially when they are monetizing everything they see without sharing any of that money with me.
+
+    reMarkable has pretty much designed the tablet's software to keep everything synchronized to their "cloud", which is actually part of Google's "cloud" in Europe. This *can* be a good thing, i.e. you have an automatic backup in case the tablet is physically damaged or needs to be replaced, you can synchronize content between a tablet and desktop/mobile apps, and so forth.
+
+    However.
+
+    Synchronizing the tablet to the cloud means that copies of all of your content - every notebook, every "quick sheet", every PDF or EPUB file you upload into the tablet - are being uploaded to their cloud. The files in the cloud can be read by reMarkable employees, Google employees, shady three-letter government agencies, any random anklebiter who manages to hack into their systems. These people can also *change* what's in the cloud, and your tablet will happily download those changes, changing or deleting content however *somebody else* wants.
+
+    It IS possible to structure the cloud service in such a way that the files in the cloud are encrypted, with the encryption keys only available to the devices and apps attached to the account. (This is how [Keybase](https://keybase.io/) is structured, each *device* has its own encryption keys.) reMarkable did not structure the cloud service this way, and as a result, any files created or side-loaded into a reMarkable tablet are available to hundreds of other people, thousands of government employees, and unknown hordes of "hackers".
+
+* **Functionality**
+
+    The news is full of stories about companies who design their products to connect to a "cloud" service of some kind, and then when the company later decides to stop providing the cloud service (or goes out of business entirely), those products suddenly stop working.
+
+    **When I buy a product, I expect that product to be able to do the same job, even if the original manufacturer goes out of business.**
+
+    In the case of the reMarkable tablet, one of the things you miss out on by not connecting to their "cloud" is handwriting recognition (where the tablet turns the letters and numbers you draw with the stylus, into actual text). This process *supposedly* happens on the tablet itself, and in my case, their claim that handwriting recognition happens on the tablet was one of the things that finally made me decide to spend the money.
+
+    It turns out that, even if the software *can* perform the handwriting recognition on the tablet itself, the software *won't* do it unless it's been synchronized to the cloud. I don't know why this is, unless it's reMarkable's way of forcing people into using their cloud. (I will admit, maybe there is a legitimate reason, maybe this is my own cynicism and mis-trust of corporations in general.)
+
+    This really feels like a "bait and switch" to me. Nothing on the web site explains *that*, or *why*, functionality that happens on the device itself needs to be dependent on being tied to their cloud service. They do offer a 100-day free return policy, so I may return it. If so, this will be one of the biggest reasons.
 
 ## Created with `mdbook`
 

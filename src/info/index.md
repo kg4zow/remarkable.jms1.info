@@ -1,6 +1,6 @@
 # Information
 
-
+From everything I'm seeing, it looks like reMarkable only enables certain functionality when the tablet is connected to their "cloud", which is physically stored in Google's cloud. To me, the thought of an outside company,
 
 ## Other sources of info
 
@@ -10,7 +10,11 @@
 
 - [awesome-reMarkable](https://github.com/reHackable/awesome-reMarkable) - list of "hacks" (which seems to be the term people use for making the tablet do anything other than run the built-in software). I found almost everything in the [hacks](../hacks/index.md) section from this page.
 
+- [Github](https://github.com/reMarkable/) - contains a collection of reMarkable AG's public source code, including their custom versions of the Linux kernel.
+
 ## Things to investigate
+
+- [RCU](http://www.davisr.me/projects/rcu/) reMarkable Connection Utility - looks like a GUI for managing the RM1/RM2 tablets.
 
 - [ReCalendar](https://recalendar.me/) - browser-base calendar generator ... generates a PDF containing "day planner" pages ... all work happens in the browser, nothing is uploaded anywhere
 

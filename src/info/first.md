@@ -40,6 +40,8 @@ The front cover folds all the way around to the back of the tablet, and forms a 
 
 I have an [iPad cover](https://www.amazon.com/gp/product/B0B1XM1F37/) which has rubber bumpers that fully surround the top, bottom, and sides of the iPad. I have NEVER had the iPad fall out of the cover. I'm not sure yet, but I may look for a different folio, one which *securely* holds the tablet.
 
+The folio doesn't have a feature where it puts the tablet to sleep when the cover is closed. Which makes sense - the e-ink display only consumes power while the display's contents are being changed, so there's no real harm in *not* putting the unit to sleep.
+
 ## Software
 
 ### Built-in software
@@ -147,7 +149,7 @@ root@10.11.99.1's password:
 reMarkable: ~/
 ```
 
-> I'm not sure what "zero sugar" is supposed to mean, but it's certainly important to *somebody*, they made the system print this message with rainbow colours and everything.
+> According to [their Github repo](https://github.com/reMarkable/linux), "zero sugar" is reMarkable's name for the Linux kernel for the rM2, and "gravitas" is the kernel for the rM1. (Also, finding this answer was the first I had seen any mention of reMarkable having *any* publicly available source code.)
 >
 > If you're curious, the message is comfing from the tablet's `/etc/motd` file.
 

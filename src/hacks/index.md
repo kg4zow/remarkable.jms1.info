@@ -22,15 +22,15 @@ I *think* I'm going to end up writing separate pages about each of the hacks I e
 
 As I write this (2023-06-25), I don't actually have the tablet yet, so I haven't had a chance to try any of these. I'm just writing down the ones that look like I'll probably be using them.
 
-* [Toltec](https://github.com/toltec-dev/toltec) seems to be a software repository for the reMarkable tablets. A lot of the "hacks" I've looked at so far seem to refer to it.
-
-    * [Toltec web site](https://toltec-dev.org/)
-
-* [RCU](http://www.davisr.me/projects/rcu/) reMarkable Connection Utility - looks like a GUI for managing the RM1/RM2 tablets.
+* [RCU](http://www.davisr.me/projects/rcu/) reMarkable Connection Utility - looks like a GUI for managing the RM1/RM2 tablets. It also seems to be a good option for managing tablets which are not connected to "the cloud".
 
 * [Calibre Remarkable Device Driver Plugin](https://github.com/naclander/Calibre-Remarkable-Device-Driver-Plugin) - a plugin for [Calibre](https://calibre-ebook.com/) which allows it to manage ebook files on the tablet, the same way it manages other ebook readers (i.e. kobo, kindle, nook, etc.)
 
-* [reMarkable Printer](https://github.com/Evidlo/remarkable_printer) - makes the table emulate a printer. When a computer "prints" to it, the output is saved as a new document (PDF?) on the tablet.
+* [Toltec](https://github.com/toltec-dev/toltec) seems to be a third party software repository for the reMarkable tablets, similar to [Homebrew](https://brew.sh/) for macOS. A lot of the "hacks" I've looked at so far seem to refer to it.
+
+    * [Toltec web site](https://toltec-dev.org/)
+
+* [reMarkable Printer](https://github.com/Evidlo/remarkable_printer) - makes the tablet emulate a printer. When a computer "prints" to it, the output is saved as a new document (PDF?) on the tablet. (The same thing can be done using the "Print to PDF" functionality built into macOS, then uploading the PDF to the tablet.)
 
 * [reStream](https://github.com/rien/reStream) - Stream your reMarkable screen over SSH. Can be used with a screen-capture utility to record movies of what's on the tablet's screen.
 
