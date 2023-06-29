@@ -7,9 +7,10 @@
 
 - [Information](info/index.md)
     - [First Impressions](info/first.md)
+    - [SSH Access](info/ssh.md)
+    - [Templates](info/templates.md)
     - [RCU]()
     - [Calibre]()
     - [Toltec]()
-    - [Templates]()
 
 - [Hacks](hacks/index.md)
