@@ -4,17 +4,17 @@ The reMarkable tablets offer a selection of "templates" that you can base your n
 
 Every page consists of multiple "layers", whose contents are shown above each other. The template is always the bottom layer, and when you write or type on a page, you're writing or typing into a layer *above* the template.
 
-The biggest problem I've run into with templates is that the built-in software doesn't offer a way to create, add, remove, or otherwise manage templates.
+The biggest problem I've run into with templates is that the built-in software doesn't offer a way to create, add, remove, or otherwise manage templates. However, it's fairly simple to upload your own templates into the tablet, and if you can edit a JSON file (which is human-readable text, it just has a very specific format) you can add your template to the list used by the reMarkable software, and then use that template with your own notebooks.
 
-However, it's fairly simple to upload your own templates into the tablet, and if you can *carefully* edit a text file, you can add your template to the list used by the reMarkable software, and then use that template with your own notebooks.
-
-Templates can also be used as "cover pages" for your notebooks.
+This page will explain what I've learned about creating and installing templates. At the very end of the page are links to some of the templates I've created for myself.
 
 ## Useful Pages
 
-* [How to Make Template Files for Your reMarkable](https://www.simplykyra.com/how-to-make-template-files-for-your-remarkable/) - fairly simple explanation of how to load templates into the tablet.
+* &#x2705; [How to Make Template Files for Your reMarkable](https://www.simplykyra.com/how-to-make-template-files-for-your-remarkable/) - Explains a lot of deatails about templates, including how to load them into the tablet and make the reMarkable software use them.
 
-* [reMarkable Wiki - Customizing the Templates](https://remarkablewiki.com/tips/templates) - another good explanation, along with a collection of other links
+    The page you're reading is probably a "stripped down" version of this page. Even if my page covers everything you need, it's definitely worth taking the time and reading through this page as well.
+
+* [reMarkable Wiki - Customizing the Templates](https://remarkablewiki.com/tips/templates) - another good explanation, along with a collection of links to other pages.
 
 ## Creating a Template File
 
@@ -22,7 +22,9 @@ A template file is an image file with the following properties:
 
 - Format: PNG
 
-    Apparently you can also use a PDF file, but I haven't tried it. In addition, the template files that come with the tablet have SVG versions, however I haven't seen SVG mentioned as a usable template file type anywhere, so I don't know if they would work or not. (If I get a chance and remember, I'll try it and update this page with my findings.)
+    I've seen a few web pages mention using a PDF file as a template. I tried this, and ... *it's not a template*. What you're actually doing is *viewing the PDF*, and adding notes on a layer above it.
+
+    In addition, the template files that come with the tablet have SVG versions, however I haven't seen SVG mentioned as a usable template file type anywhere, so I don't know if they would work or not. (If I get a chance and remember, I'll try it and update this page with my findings.)
 
 - Size: 1404x1872 pixels, 226 dpi
 
@@ -33,6 +35,8 @@ A template file is an image file with the following properties:
 The zone on the left where the menu bar appears and disappears is 120 pixels wide. If the users of your template may want/need to work while the menu bar is on screen, you may want to be sure not to have anything important in this area.
 
 You can create the file using any graphics program which can save a PNG file. For example, I use [Graphic Converter](https://www.lemkesoft.de/en/products/graphicconverter/) for most of the graphics work I do.
+
+&#x21D2; See the page about the [`make-templates`](../scripts/make-templates.md) script for an example of how I created some of my own custom templates.
 
 ## Uploading Template Files
 
@@ -139,15 +143,19 @@ If you watch the tablet, you will see the screen reset and it will look like it'
 
 ## Sources of Templates
 
-### Online
-
-I've seen several places online offering ready-made templates for download, and people are even *selling* them on etsy. The one(s) listed here are the ones that actually seem useful to me.
+I've seen several places online offering ready-made templates for download, and people are even *selling* them. The one(s) listed here are the ones that actually seem useful to me.
 
 - [Templarian](https://templarian.github.io/remarkable/)
     - GENERATES grids (square) or isometric (triangular)
     - adjustable sizes, offsets, and colours
     - runs in the browser
 
-### My Templates
+## My Templates
 
-See [`/keybase/public/jms1/reMarkable2/templates/`](https://jms1.pub/reMarkable2/templates/) for some of the templates I've created.
+I have created a few templates ... more specifically, I have created scripts which create templates.
+
+&#x21D2; [The `make-templates` script](../scripts/make-templates.md)
+
+Notebooks can use different templates for different pages. I have a few templates that I use for "cover pages" for my notebooks.
+
+&#x21D2; [The `make-cover-template` script](../scripts/make-cover-template.md)

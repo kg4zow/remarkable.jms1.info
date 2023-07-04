@@ -1,0 +1,398 @@
+#!/usr/bin/env perl -w
+#
+# rm2-list
+# John Simpson <jms1@jms1.net> 2023-06-30
+#
+# The reMarkable tablet presents a "filesystem" in the UI, but the files in
+# the tablet have names based on UUIDs, all stored in a single directory.
+# This script scans these UUID files and prints a list showing the directory
+# structure and filenames as presented in the UI.
+#
+# I wrote this to make sure I understand how the "filesystem" on the tablet
+# works, before writing other scripts which will DO things with the "files"
+# in the tablet.
+#
+###############################################################################
+#
+# The MIT License (MIT)
+#
+# Copyright (C) 2023 John Simpson
+#
+# Permission is hereby granted, free of charge, to any person obtaining a
+# copy of this software and associated documentation files (the “Software”),
+# to deal in the Software without restriction, including without limitation
+# the rights to use, copy, modify, merge, publish, distribute, sublicense,
+# and/or sell copies of the Software, and to permit persons to whom the
+# Software is furnished to do so, subject to the following conditions:
+#
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+#
+# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
+# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
+# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
+# DEALINGS IN THE SOFTWARE.
+#
+###############################################################################
+
+require 5.005 ;
+use strict ;
+
+use File::Temp qw( tempdir ) ;
+use Getopt::Std ;
+use JSON ;
+
+########################################
+# globals
+
+my $tablet_ip       = '10.11.99.1' ;
+my $workdir         = '' ;
+my $using_ssh       = 0 ;
+
+my %metadata        = () ;      # UUID => contents of UUID.metadata file
+my %content         = () ;      # UUID => contents of UUID.content file
+my %calc            = () ;      # UUID => calculated info (list of children)
+
+my %opt             = () ;      # getopts
+my $show_all        = 0 ;       # -a    Show deleted items
+my $show_uuid       = 0 ;       # -u    Show UUIDs
+my $show_cmds       = 0 ;       # -x    Show commands being executed
+
+###############################################################################
+#
+# usage
+
+sub usage(;$)
+{
+    my $msg = ( shift || '' ) ;
+
+    print <<EOF ;
+$0 [options] [DIR]
+
+Show the contents of a reMarkable tablet (or a full backup of one), as shown
+by the tablet's  "My Files" interface.
+
+If DIR is specified, it should contain either a copy of, or the live 'sshfs'
+mounted, "/home/root/.local/share/remarkable/xochitl/" directory from a
+reMarkable tablet.
+
+If DIR is not specified, the script will attempt to SSH into the tablet. This
+will depend on SSH being enabled on the tablet, and setting up an SSH key for
+authentication (or being ready to type the SSH password while the script is
+running.)
+
+Options
+
+-I ___  Specify the tablet's IPv4 address. Default: 10.11.99.1.
+
+-a      Show all files, including deleted files.
+
+-u      Show UUIDs
+
+-x      Show the SSH command used to read files from the server.
+
+EOF
+
+    if ( $msg ne '' )
+    {
+        print $msg ;
+        exit 1 ;
+    }
+
+    exit 0 ;
+}
+
+###############################################################################
+#
+# Read all UUID.metadata and UUID.content files into memory
+
+sub read_metadata()
+{
+    for my $f ( glob( "$workdir/*.metadata" ) )
+    {
+        ########################################
+        # Extract the UUID from the filename
+
+        my $uuid = $f ;
+        $uuid =~ s|^.*/|| ;
+        $uuid =~ s|\.metadata$|| ;
+        $uuid = lc( $uuid ) ;
+
+        ############################################################
+        # Read the UUID.metadata file
+
+        open( M , '<' , $f )
+            or die "ERROR: open('$f'): $!\n" ;
+
+        my $jtext = '' ;
+        while ( my $line = <M> )
+        {
+            $jtext .= $line ;
+        }
+        close M ;
+
+        ########################################
+        # Parse contents as JSON
+
+        my $j = decode_json( $jtext )
+            or die "ERROR: cannot parse contents of '$workdir/$f' as JSON\n$jtext\n" ;
+
+        ########################################
+        # Store what we found
+
+        $metadata{$uuid} = $j ;
+
+        ############################################################
+        # Read the corresponding UUID.content file
+
+        my $file = "$workdir/$uuid.content" ;
+
+        ########################################
+        # Read the file into memory
+
+        open( C , '<' , $file )
+            or die "ERROR: open('$file'): $!\n" ;
+
+        $jtext = '' ;
+        while ( my $line = <C> )
+        {
+            $jtext .= $line ;
+        }
+        close C ;
+
+        ########################################
+        # Parse contents as JSON
+
+        $j = decode_json( $jtext )
+            or die "ERROR: cannot parse contents of '$file' as JSON\n$jtext\n" ;
+
+        ########################################
+        # Store what we found
+
+        $content{$uuid} = $j ;
+    }
+}
+
+###############################################################################
+#
+# Return the full name, with "path", of a UUID
+
+sub fullname($) ;
+sub fullname($)
+{
+    my $uuid    = shift ;
+    my $parent  = '' ;
+    my $name    = '' ;
+
+    ########################################
+    # If the item has no metadata, it's an orphan (has no visibleName)
+
+    unless ( exists $metadata{$uuid} )
+    {
+        return '(ORPHAN)' ;
+    }
+
+    ########################################
+    # Build parent's name
+
+    if ( $metadata{$uuid}->{'parent'} eq '' )
+    {
+        $parent = '' ;
+    }
+    elsif ( $metadata{$uuid}->{'parent'} eq 'trash' )
+    {
+        $parent = 'Trash' ;
+    }
+    else
+    {
+        $parent = fullname( $metadata{$uuid}->{'parent'} ) ;
+    }
+
+    ########################################
+    # Build return value
+
+    $name = $metadata{$uuid}->{'visibleName'} ;
+
+    return "$parent/$name" ;
+}
+
+###############################################################################
+#
+# Sort function - by fullname
+
+sub by_fullname($$)
+{
+    my $a = shift ;
+    my $b = shift ;
+
+    my $an = fullname( $a ) . $a ;
+    my $bn = fullname( $b ) . $b ;
+
+    return ( ( lc $an ) cmp ( lc $bn ) ) ;
+}
+
+###############################################################################
+#
+# Show one entry
+
+sub show_uuid($)
+{
+    my $uuid    = shift ;
+    my $prefix  = shift ;
+
+    my $name    = ( $metadata{$uuid}->{'visibleName'} || '(visibleName?)' ) ;
+    my $type    = ( $metadata{$uuid}->{'type'}        || '(type?)' ) ;
+    my $deleted = ( $metadata{$uuid}->{'deleted'}     || 0 ) ;
+    my $pinned  = ( $metadata{$uuid}->{'pinned'}      || 0 ) ;
+
+    if ( $show_all || ( ! $deleted ) )
+    {
+        my $fname = fullname( $uuid ) ;
+
+        ########################################
+        # Figure out what to show after the name
+
+        if ( $uuid eq 'trash' )
+        {
+            $name = '(Trash)' ;
+            $type = '/' ;
+        }
+        elsif ( $type eq 'DocumentType' )
+        {
+            $type = '' ;
+        }
+        elsif ( $type eq 'CollectionType' )
+        {
+            $type = '/' ;
+        }
+        else
+        {
+            $type = " (type='$type')" ;
+        }
+
+        ########################################
+        # Figure out how many pages are in a notebook
+
+        my $pg      = 0 ;
+        my $pd      = 0 ;
+        my $pages   = '' ;
+
+        if ( exists $content{$uuid}->{'cPages'}->{'pages'} )
+        {
+            for my $p ( @{$content{$uuid}->{'cPages'}->{'pages'}} )
+            {
+                if ( exists $p->{'deleted'} )
+                {
+                    $pd ++ ;
+                }
+                else
+                {
+                    $pg ++ ;
+                }
+            }
+
+            if ( $pd > 0 )
+            {
+                $pages = "$pg+$pd" ;
+            }
+            elsif ( $pg > 0 )
+            {
+                $pages = $pg ;
+            }
+        }
+
+        ########################################
+        # Print the output
+
+        $show_uuid && printf '%-37s ' , $uuid ;
+
+        printf "%-7s %-5s %-3s %7s %s\n" ,
+            ( $deleted ? 'DELETED' : '' ) ,
+            ( $fname =~ m|^Trash/| ? 'TRASH' : '' ) ,
+            ( $pinned  ? ' *'  : '' ) ,
+            $pages ,
+            $fname ;
+    }
+}
+
+###############################################################################
+###############################################################################
+###############################################################################
+#
+# Process command line
+
+getopts( 'hauxI:' , \%opt ) ;
+$opt{'h'} && usage() ;
+$show_all   = ( $opt{'a'} ? 1 : 0 ) ;
+$show_uuid  = ( $opt{'u'} ? 1 : 0 ) ;
+$show_cmds  = ( $opt{'x'} ? 1 : 0 ) ;
+$tablet_ip  = ( $opt{'I'} || $tablet_ip ) ;
+
+$workdir    = ( shift || '' ) ;
+
+###############################################################################
+#
+# If $workdir is empty, we need to SSH into the tablet and copy the files.
+
+if ( $workdir eq '' )
+{
+    $using_ssh = 1 ;
+
+    ########################################
+    # Create a temp directory and work from there
+
+    my $temp_dir = tempdir( CLEANUP => 1 ) ;
+    chdir( $temp_dir )
+        or die "ERROR: chdir('$temp_dir'): $!\n" ;
+    $workdir = $temp_dir ;
+
+    ########################################
+    # Download all *.metadata and *.content files into temp directory
+
+    my $tablet_cmd = 'cd /home/root/.local/share/remarkable/xochitl'
+        . ' ; tar cf - *.metadata *.content' ;
+
+    my $cmd = "ssh -ax"
+        . " -o 'HostKeyAlgorithms +ssh-rsa'"
+        . " -o 'PubkeyAcceptedKeyTypes +ssh-rsa'"
+        . " root\@$tablet_ip"
+        . " '$tablet_cmd'"
+        . " | tar xf -" ;
+
+    $show_cmds && print "+ $cmd\n" ;
+    system $cmd ;
+}
+
+###############################################################################
+#
+# Scan that directory
+
+read_metadata() ;
+
+###############################################################################
+#
+# Build a "tree" representing the directory structure
+
+for my $uuid ( sort keys %metadata )
+{
+    my $parent = $metadata{$uuid}->{'parent'} ;
+    push( @{$calc{$parent}->{'children'}} , $uuid ) ;
+}
+
+###############################################################################
+#
+# Show the output
+
+$show_uuid && printf '%-37s ' , 'UUID' ;
+
+print <<EOF ;
+Deleted Trash Pin   Pages Name
+EOF
+
+for my $uuid ( sort by_fullname keys %metadata )
+{
+    show_uuid( $uuid ) ;
+}

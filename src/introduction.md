@@ -14,9 +14,9 @@ There probably won't be much to see at first, but I plan to add information over
 >
 > Some of the items in the Table of Contents menu may not actually link to pages yet, and some of the pages which *exist* may not be complete. I'm writing this in my spare time, and `$DAYJOB` doesn't give me a whole lot of that. Please be patient.
 
-### reMarkable Cloud
+## reMarkable Cloud
 
-**For now**, I'm planning to NOT connect my tablet to the "reMarkable Cloud" at all. I'm doing this for two reasons:
+**For now**, I'm planning to NOT connect my tablet to the "reMarkable Cloud" at all. I'm doing this for a few reasons:
 
 * **Privacy**
 
@@ -30,17 +30,23 @@ There probably won't be much to see at first, but I plan to add information over
 
     It IS possible to structure the cloud service in such a way that the files in the cloud are encrypted, with the encryption keys only available to the devices and apps attached to the account. (This is how [Keybase](https://keybase.io/) is structured, each *device* has its own encryption keys.) reMarkable did not structure the cloud service this way, and as a result, any files created or side-loaded into a reMarkable tablet are available to hundreds of other people, thousands of government employees, and unknown hordes of "hackers".
 
+* **Compliance/Legal**
+
+    My current `$DAYJOB` is with a company in the healthcare industry. My particular job (software development, system and network administration, and other related "technical" stuff) doesn't involve *regular* exposure to any protected information, however some of my cow-orkers deal with HIPAA issues all day long, so they wouldn't *legally* be able to use the cloud service.
+
+    I have since found that reMarkable *IS WILLING* to execute HIPAA Business Associate Agreements with their users. A BAA is a legally binding document where reMarkable agrees to be liable in case of a data breach in/through their cloud. The fact that they are *willing* to make this agreement is an indicator that they believe in the security of their cloud.
+
+    The other thing that would me *me personally* more comfortable would be a statement that nobody, not even reMarkable employees, are able to look at the contents of the notes that people store in the cloud.
+
 * **Functionality**
 
     The news is full of stories about companies who design their products to connect to a "cloud" service of some kind, and then when the company later decides to stop providing the cloud service (or goes out of business entirely), those products suddenly stop working.
 
     **When I buy a product, I expect that product to be able to do the same job, even if the original manufacturer goes out of business.**
 
-    In the case of the reMarkable tablet, one of the things you miss out on by not connecting to their "cloud" is handwriting recognition (where the tablet turns the letters and numbers you draw with the stylus, into actual text). This process *supposedly* happens on the tablet itself, and in my case, their claim that handwriting recognition happens on the tablet was one of the things that finally made me decide to spend the money.
+    In the case of the reMarkable tablet, one of the things you miss out on by not connecting to their "cloud" is handwriting recognition (where the tablet turns the letters and numbers you draw with the stylus, into actual text). I remember reading somewhere that this happened on the tablet itself, which was one of the reasons I decided to buy one. (I later found that this actually happens online, with a third party company *other than* reMarkable.)
 
-    It turns out that, even if the software *can* perform the handwriting recognition on the tablet itself, the software *won't* do it unless it's been synchronized to the cloud. I don't know why this is, unless it's reMarkable's way of forcing people into using their cloud. (I will admit, maybe there is a legitimate reason, maybe this is my own cynicism and mis-trust of corporations in general.)
-
-    This really feels like a "bait and switch" to me. Nothing on the web site explains *that*, or *why*, functionality that happens on the device itself needs to be dependent on being tied to their cloud service. They do offer a 100-day free return policy, so I may return it. If so, this will be one of the biggest reasons.
+    Apparently, there is also no way to just directly enter text, i.e. there's no way to create a page, tap a button to pull up a keyboard, and start entering text on a page. I'm not sure if this functionality is unlocked when you attach one of their keyboard folios, when you link the tablet to a cloud account, or both, but so far I haven't seen any way to do it.
 
 ## Created with `mdbook`
 

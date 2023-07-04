@@ -12,7 +12,7 @@ The tablet's SSH server is [`dropbear`](https://github.com/mkj/dropbear), which 
 
 The `ssh` client that comes with macOS and Linux is OpenSSH.
 
-The RSA algorithm has been around for many years now, and there are newer algorithms out there. The *newest* versions of OpenSSH don't support RSA host keys by default, but it can be configured to allow it.
+The RSA algorithm has been around for many years now, and there are newer algorithms out there. The idea of using RSA host keys is slowly moving towards deprecation, so the *newest* versions of OpenSSH don't support them by default, although they *can* be configured to allow it.
 
 In order to be sure that your OpenSSH will be able to connect to the tablet, add the following to your workstation's `$HOME/.ssh/config` file.
 
@@ -66,9 +66,9 @@ Once your workstation has an IP, you can find the root password in the tablet's 
 
     To do so, this device acts as an USB ethernet device, and you can connect
     using the SSH protocol using the username 'root' and the password
-    **'xxxxxxxx'**.
+    'xxxxxxxx'.
 
-    The IP addresses availabel to connect to are listed below:
+    The IP addresses available to connect to are listed below:
 
     10.11.99.1
     ```
