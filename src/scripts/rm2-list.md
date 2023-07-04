@@ -22,7 +22,7 @@ This script is licensed under the MIT License.
 
 &#x21D2; [Download](rm2-list)
 
-```bash
+```perl
 #!/usr/bin/env perl -w
 #
 # rm2-list
@@ -421,5 +421,4 @@ for my $uuid ( sort by_fullname keys %metadata )
 {
     show_uuid( $uuid ) ;
 }
-
 ```
