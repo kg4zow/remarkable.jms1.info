@@ -15,8 +15,9 @@
     - [Toltec]()
 
 - [Templates](templates/index.md)
-    - [make-templates](templates/make-templates.md)
-    - [make-cover-template](templates/make-cover-template.md)
+    - [Basic Templates](templates/make-templates.md)
+    - [Simple Cover Page](templates/make-cover-template.md)
+    - [Calendars - Month](templates/make-calendar-p.md)
 
 - [Scripts](scripts/index.md)
     - [rm2-backup](scripts/rm2-backup.md)

@@ -153,8 +153,33 @@ I first noticed this when I was looking through the various `UUID.xxx` files fro
 
 I also saw this issue mentioned when I was browsing through the [awesome-reMarkable](https://github.com/reHackable/awesome-reMarkable) list, and looked at [reMarkable CLI tooling](https://github.com/cherti/remarkable-cli-tooling), which includes a Python script called `reclean.py` that deletes all files for UUIDs whose `.metadata` files say they have been deleted.
 
+## Templates
 
+The `/usr/share/remarkable/templates/` directory contains all of the built-in template files, as well as the `templates.json` file which tells the reMarkable software about them, are here.
 
+**Notes**
 
+* Every OS upgrade will reset the contents of this directory. What programs like [RCU](http://www.davisr.me/projects/rcu/) do is, upload the files to a directory under `/home/root/` (which is NOT reset by OS upgrades), and create *symlinks* in the `/usr/share/remarkable/templates/` directory which point to the actual files.
 
+## Static Screens
 
+The `/usr/share/remarkable/` directory contains the graphics files shown on the screen when the tablet is sleeping, rebooting, starting up, and so forth. Most of the filenames make it obvious what each file is used for.
+
+* `batteryempty.png`
+* `factory.png`
+* `overheating.png`
+* `poweroff.png`
+* `rebooting.png`
+* `releasenotes.png`
+* `releaseupdates.png`
+* `restart-crashed.png` -> `rebooting.png`
+* `starting.png`
+* `suspended.png`
+
+You can change the screens shown by the tablet by replacing these files. They need to be `.png` files, 1404x1872, 226dpi, with 8-bit greyscale colour space.
+
+**Notes**
+
+* The directory contains more than just these graphics files. Be very careful not to accidentally delete, rename, or otherwise modify anything.
+
+* These files will be replaced with reMarkable's original files whenever the tablet's OS is upgraded. As with templates, you may want to store your custom files under `/home/root/` somewhere, and create *symlinks* in the `/usr/share/remarkable/` directory which point to your custom files.

@@ -32,17 +32,23 @@ A template file is an image file with the following properties:
 
 - Transparency: I've read reports online saying that there can be issues with templates with a transparency layer (or "alpha channel"). In the templates I've made, I use white as the background and remove the alpha channel.
 
-The zone on the left where the menu bar appears and disappears is 120 pixels wide. If the users of your template may want/need to work while the menu bar is on screen, you may want to be sure not to have anything important in this area.
+The zone on the left (or right, if the tablet is in left-handed mode) where the menu bar appears and disappears, is 120 pixels wide. If the users of your template may want/need to work while the menu bar is on screen, you may want to be sure not to have anything important in this area. In most of my templates I draw a shaded rectangle there, so users don't accidentally draw there without meaning to.
 
-You can create the file using any graphics program which can save a PNG file. For example, I use [Graphic Converter](https://www.lemkesoft.de/en/products/graphicconverter/) for most of the graphics work I do.
+You can create the file using any graphics program which can save a PNG file. For example, I use ..
 
-&#x21D2; See the page about the [`make-templates`](../scripts/make-templates.md) script for an example of how I created some of my own custom templates.
+* [Graphic Converter](https://www.lemkesoft.de/en/products/graphicconverter/) for "hands on" graphics work
+* [ImageMagick](https://imagemagick.org/) for simple scripts.
+* Perl with the [GD module](https://metacpan.org/pod/GD) (which is a wrapper around the [GD library](https://libgd.github.io/)) for more complex scripts.
+
+There *are* other programs and libraries out there, these are just the ones that I use personally.
 
 ## Uploading Template Files
 
 Once you've created a template file, it needs to be uploaded and stored on the tablet, in the `/usr/share/remarkable/templates/` directory. The templates which are built into the reMarkable software are stored here, be careful not to change or delete them by accident.
 
 Note that you can create sub-directories here if you like. If you do this, remember to include the directory name in the `filename` value when you add the template to the JSON file.
+
+One thing to be aware of ... the `/usr/share/remarkable/templates/` directory will be wiped and replaced when the tablet's built-in software is updated. What I've seen other programs (such as [RCU](http://www.davisr.me/projects/rcu/)) do is, create a directory under `/home/root/` for your custom template files, and create *symlinks* in `/usr/share/remarkable/templates/` which point to the files in this new directory. This way when the software is updated, the files will still be there, and only the symlinks will need to be re-created.
 
 ## Updating the `template.json` file
 
@@ -101,13 +107,17 @@ Within each object are the following items:
 
     The icons are actually characters being shown from a "web font" file. The file is `/usr/share/remarkable/webui/fonts/icomoon.woff`.
 
-    * [reMarkable Wiki](https://remarkablewiki.com/tips/templates) has a list of the iconCode values used in system 2.3.0.16
+    * [reMarkable Wiki](https://remarkablewiki.com/tips/templates) has a list of the iconCode values used in system 2.3.0.16. It looks like the same file is being used in later versions, at least up to 3.0.5.56 (which is what was on my tablet when I received it).
 
-* `landscape` = whether template shows up in landscape mode
+* `landscape` = whether template is meant for landscape mode (i.e. tablet rotated 90&deg;)
+
     * defaults to `false`
-    * not sure if setting this `true` makes it *not* show up in portrait mode
+    * not sure what setting this to `true` actually *does* yet
 
-* `categories` = which tabs in the "template chooser" UI should "contain" this template. The same template can appear in multiple tabs. The "All" tab doesn't need to be listed because it already contains every template listed in the file.
+* `categories` = which tabs in the "template chooser" UI should "contain" this template. The same template can appear in multiple tabs.
+
+    * The "All" tab doesn't need to be listed because it already contains every template listed in the file.
+    * Not sure what happens if you add a name which isn't one of the built-in tabs.
 
 ### Restarting the reMarkable Software
 
@@ -117,10 +127,20 @@ After modifying `templates.json` you need to restart `xochitl`.
 systemctl restart xochitl
 ```
 
-If you watch the tablet, you will see the screen reset and it will look like it's rebooting.
+If you watch the tablet, you will see the screen reset and it will look like it's rebooting, although the process doesn't take as long as a full reboot.
 
 
 ## Easier options to upload templates
+
+I'm using these ...
+
+- [RCU](http://www.davisr.me/projects/rcu/) = reMarkable Connection Utility
+    - $12, includes 365 days of updates and email support from author
+    - Claims to be "free software" but ...
+        - the price is not zero (i.e. it's not "free beer")
+        - the source code is only available to paying customers (i.e. it's just *barely* "free speech", although technically it *is* within the limits of most open-source licenses, thanks RedH... er, IBM)
+
+At some point I want to look at these ...
 
 - [`templatectl`](https://github.com/PeterGrace/templatectl)
     - command line utility, written in rust
@@ -130,16 +150,6 @@ If you watch the tablet, you will see the screen reset and it will look like it'
     - free
     - [Github](https://github.com/richeymichael/remarkable-assistant)
 
-- [RCU](http://www.davisr.me/projects/rcu/) = reMarkable Connection Utility
-    - $12, includes 365 days of updates and email support from author
-    - claims to be "free software" but the price is not zero, and the source code is not available without paying for it (sounds like RedHat's definition of "free" software)
-    - [web page](http://www.davisr.me/projects/rcu/)
-
-- eInkPads Template Installer
-    - $21.45, on sale for $18.99
-    - free updates for life
-    - mac/windows versions
-    - [web](https://www.einkpads.com/collections/frontpage/products/remarkable-template-installer-apple-computers)
 
 ## Sources of Templates
 
@@ -154,8 +164,4 @@ I've seen several places online offering ready-made templates for download, and 
 
 I have created a few templates ... more specifically, I have created scripts which create templates.
 
-&#x21D2; [The `make-templates` script](../scripts/make-templates.md)
-
-Notebooks can use different templates for different pages. I have a few templates that I use for "cover pages" for my notebooks.
-
-&#x21D2; [The `make-cover-template` script](../scripts/make-cover-template.md)
+See the "Templates" section on the left.
