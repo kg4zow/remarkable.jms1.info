@@ -25,12 +25,8 @@ function insert_script {
     WORK="$( mktemp )"
 
     sed -n '1,/^```[bp]/p' "$PAGE" > "$WORK"
-    cp "$WORK" temp1
-
     cat "$SCRIPT" >> "$WORK"
-
     sed -n '/^```$/,$p' "$PAGE" >> "$WORK"
-    sed -n '/^```$/,$p' "$PAGE" > temp2
 
     mv "$WORK" "$PAGE"
 }

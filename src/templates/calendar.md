@@ -2,19 +2,14 @@
 
 This is just a simple monthly calendar. If you're willing to write in your own title (i.e. "July 2023") and numbers in each date's block, it can be used for *any* month you like.
 
-* Portrait - [Right Handed](P-CalendarMo-rh.png) ... [Left Handed](P-CalendarMo-lh.png)
+| Orientation | Right Handed | Left Handed |
+|------------:|:------------:|:-----------:|
+| Portrait    | [`P-CalendarMo-rh.png`](P-CalendarMo-rh.png)<br/> ![P-CalendarMo-rh-sm.png](P-CalendarMo-rh-sm.png) | [`P-CalendarMo-lh.png`](P-CalendarMo-lh.png)<br/>![P-CalendarMo-lh-sm.png](P-CalendarMo-lh-sm.png) |
+| Landscape   | [`L-CalendarMo-rh.png`](L-CalendarMo-rh.png)<br/>![L-CalendarMo-rh-sm.png](L-CalendarMo-rh-sm.png) | [`L-CalendarMo-lh.png`](L-CalendarMo-lh.png)<br/>![L-CalendarMo-lh-sm.png](L-CalendarMo-lh-sm.png) |
 
-    ![P-CalendarMo-rh-sm.png](P-CalendarMo-rh-sm.png) ![P-CalendarMo-lh-sm.png](P-CalendarMo-lh-sm.png)
+This was the first template script where I made both right- and left-handed versions, then a few days later, added Landscape versions. It was also the first template I made using Perl, with the GD graphics library. Now that I've done this one, I suspect that if I make any more templates, I'll be using Perl and GD for those as well.
 
-* Landscape - [Right Handed](L-CalendarMo-rh.png) ... [Left Handed](L-CalendarMo-lh.png)
-
-    ![L-CalendarMo-rh-sm.png](L-CalendarMo-rh-sm.png) ![L-CalendarMo-lh-sm.png](L-CalendarMo-lh-sm.png)
-
-This was the first template script where I made both right- and left-handed versions, then a few days later, added Landscape versions. It was also the first template I made using Perl, with the GD graphics library.
-
-I'm thinking about expanding the script, to have it fill in a month name in the title area and put numbers in the blocks, however it occurs to me that if I do that, it wouldn't really work as a "template" anymore because it would only be useful for that one month.
-
-Anyway.
+I'm thinking about expanding the script, to have it fill in a month name in the title area and put numbers in the blocks, however it occurs to me that if I do that, it might not be useful as a "template" anymore because it would only be useful for that one month. I'll have to see if GD can write PDF files...
 
 ## License
 
@@ -41,7 +36,7 @@ Download &#x21D2; [`rm2-template-calendar`](rm2-template-calendar)
 # John Simpson <jms1@jms1.net> 2023-07-04
 #
 # 2023-07-09 jms1 - added support for landscape mode, added command line
-#   options to choose which of the four images it should generate
+#   options to choose which of the four images it should generate.
 #
 ###############################################################################
 #

@@ -4,7 +4,7 @@
 # John Simpson <jms1@jms1.net> 2023-07-04
 #
 # 2023-07-09 jms1 - added support for landscape mode, added command line
-#   options to choose which of the four images it should generate
+#   options to choose which of the four images it should generate.
 #
 ###############################################################################
 #
