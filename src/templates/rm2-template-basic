@@ -1,9 +1,11 @@
 #!/bin/bash
 #
-# make-templates
+# rm2-template-basic
 # John Simpson <jms1@jms1.net> 2023-07-02
 #
 # Programmatically create PNG files for use as reMarkable 2 templates.
+#
+# 2023-07-09 jms1 - renamed script
 
 set -e
 

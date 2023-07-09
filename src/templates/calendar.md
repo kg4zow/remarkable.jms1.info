@@ -2,13 +2,15 @@
 
 This is just a simple monthly calendar. If you're willing to write in your own title (i.e. "July 2023") and numbers in each date's block, it can be used for *any* month you like.
 
-![CalendarMo.png](CalendarMo-s.png) ![CalendarMo-L.png](CalendarMo-L-s.png)
+* Portrait - [Right Handed](P-CalendarMo-rh.png) ... [Left Handed](P-CalendarMo-lh.png)
 
-&#x21D2; [Calendar - Right Handed](CalendarMo.png)
+    ![P-CalendarMo-rh-sm.png](P-CalendarMo-rh-sm.png) ![P-CalendarMo-lh-sm.png](P-CalendarMo-lh-sm.png)
 
-&#x21D2; [Calendar - Left Handed](CalendarMo-L.png)
+* Landscape - [Right Handed](L-CalendarMo-rh.png) ... [Left Handed](L-CalendarMo-lh.png)
 
-This was the first template where I made both right- and left-handed versions. It was also the first template I made using Perl, with the GD graphics library.
+    ![L-CalendarMo-rh-sm.png](L-CalendarMo-rh-sm.png) ![L-CalendarMo-lh-sm.png](L-CalendarMo-lh-sm.png)
+
+This was the first template script where I made both right- and left-handed versions, then a few days later, added Landscape versions. It was also the first template I made using Perl, with the GD graphics library.
 
 I'm thinking about expanding the script, to have it fill in a month name in the title area and put numbers in the blocks, however it occurs to me that if I do that, it wouldn't really work as a "template" anymore because it would only be useful for that one month.
 
@@ -28,13 +30,18 @@ This script is licensed under the MIT License.
 >
 > THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE SOFTWARE.
 
-## The Script
+## The `rm2-template-calendar` Script
+
+Download &#x21D2; [`rm2-template-calendar`](rm2-template-calendar)
 
 ```perl
 #!/usr/bin/env perl -w
 #
-# make-calendar-p
+# rm2-template-calendar
 # John Simpson <jms1@jms1.net> 2023-07-04
+#
+# 2023-07-09 jms1 - added support for landscape mode, added command line
+#   options to choose which of the four images it should generate
 #
 ###############################################################################
 #
@@ -67,11 +74,18 @@ use strict ;
 
 use GD ;                        # cpan install GD
 use GD::Text::Align ;           # cpan install GD::Text
+use Getopt::Std ;               # (normally installed with Perl itself)
 
-my $page_w      = 1404 ;        # page width
-my $page_h      = 1872 ;        # page height
-my $menu_w      = 120 ;         # width of menu and close button areas
-my $title_h     = 120 ;         # height of title area
+########################################
+# reMarkable 2 screen attributes
+
+my $rm2_page_w      = 1404 ;    # page width
+my $rm2_page_h      = 1872 ;    # page height
+my $rm2_menu_w      = 120 ;     # width of menu and close button areas
+my $rm2_title_h     = 120 ;     # height of title area
+
+########################################
+# Calendar attributes
 
 my $padding     = 20 ;          # blank space around calendar
 my $dow_h       = 30 ;          # height of "day of week" labels
@@ -80,6 +94,43 @@ my $font_file   = "$ENV{'HOME'}/Library/Fonts/LiberationSans-Regular.ttf" ;
 my $font_size   = 18 ;
 
 my @dow = qw( Sunday Monday Tuesday Wednesday Thursday Friday Saturday ) ;
+
+########################################
+# Other globals
+
+my %opt         = () ;          # getopts()
+
+###############################################################################
+#
+# Usage
+
+sub usage(;$)
+{
+    my $msg = ( shift || '' ) ;
+
+    print <<EOF ;
+$0 [options]
+
+Create a reMarkable 2 template for a simple monthly calendar.
+
+-l or -r    Left- or Right-handed. Default is Right-handed.
+
+-L or -P    Landscape or Portrait. Default is Portrait.
+
+-o ___      Specify the name of the file to write. Default is 'CalendarMo.png'.
+
+-h          Show this help message.
+
+EOF
+
+    if ( $msg ne '' )
+    {
+        print $msg ;
+        exit 1 ;
+    }
+
+    exit 0 ;
+}
 
 ###############################################################################
 #
@@ -123,40 +174,53 @@ sub center_text($$$$$)
 #
 # Create one calendar image
 
-sub calendar_basic($$)
+sub calendar_basic($$$)
 {
     my $left_handed = shift ;
+    my $landscape   = shift ;
     my $out_file    = shift ;
+
+    ########################################
+    # Adjust page size for portrait/landscape mode
+
+    my $page_w  = $landscape ? $rm2_page_h : $rm2_page_w ;
+    my $page_h  = $landscape ? $rm2_page_w : $rm2_page_h ;
+    my $menu_w  = $rm2_menu_w ;
+    my $title_h = $rm2_title_h ;
 
     ########################################
     # Adjust positions for left/right handedness
 
-    my $dal = $menu_w ;             # drawing area, left x
-    my $dar = $page_w - 1 ;         # drawing area, right x
+    my $dat = $title_h + $padding ; # drawing area, top y (same for lh/rh)
+    my $dab = $page_h - $padding ;  # drawing area, bottom y (same for lh/rh)
+
+    my $dal = $menu_w + $padding ;  # drawing area, left x
+    my $dar = $page_w - $padding ;  # drawing area, right x
+
     my $mal = 0 ;                   # menu area, left x
     my $mar = $menu_w - 1 ;         # menu area, right x
-    my $msx = $mar ;                # menu separator, x
+    my $msx = $menu_w ;             # menu separator, x
     my $cal = $page_w - $menu_w ;   # close button area, left x
     my $car = $page_w - 1 ;         # close button area, right x
-    my $csx = $cal ;                # close button separator, x
+    my $csx = $cal - 1 ;            # close button separator, x
 
     if ( $left_handed )
     {
         ########################################
         # menu is on right, content area is on left
 
-        $dal = 0 ;                      # drawing area, left x
-        $dar = $page_w - $menu_w - 1 ;  # drawing area, right x
-        $mal = $page_w - $menu_w ;      # menu area, left x
-        $mar = $page_w - 1 ;            # menu area, right x
-        $msx = $mal ;                   # menu separator, x
-        $cal = 0 ;                      # close button area, left x
-        $car = $menu_w - 1 ;            # close button area, right x
-        $csx = $car ;                   # close button separator, x
+        $dal = $padding ;                           # drawing area, left x
+        $dar = $page_w - $menu_w - $padding - 1 ;   # drawing area, right x
+
+        $mal = $page_w - $menu_w ;                  # menu area, left x
+        $mar = $page_w - 1 ;                        # menu area, right x
+        $msx = $mal - 1 ;                           # menu separator, x
+        $cal = 0 ;                                  # close button area, left x
+        $car = $menu_w - 1 ;                        # close button area, right x
+        $csx = $menu_w ;                            # close button separator, x
     }
 
-    ###############################################################################
-    #
+    ############################################################
     # Create canvas
 
     my $img = new GD::Image( $page_w , $page_h ) ;
@@ -169,31 +233,40 @@ sub calendar_basic($$)
     my $grey90  = $img->colorAllocate( 230 , 230 , 230 ) ;
     my $black   = $img->colorAllocate(   0 ,   0 ,   0 ) ;
 
-    ###############################################################################
-    #
+    ############################################################
     # Menu/title zones
 
     $img->setThickness( 1 ) ;
 
-    $img->filledRectangle( $mal , 0 , $mar , $page_h-1 , $grey75 ) ;
-    $img->filledRectangle( $cal , 0 , $car , $title_h-1 , $grey75 ) ;
+    ########################################
+    # Grey area under close button, top right/left
+    # and line across top of page, bottom of title area
 
-    $img->line( $mar , 0 , $mar , $page_h-1 , $black ) ;
-    $img->line( $dal , $title_h-1 , $dar , $title_h-1 , $black ) ;
+    $img->filledRectangle( $cal , 0 , $car , $title_h-1 , $grey75 ) ;
+    $img->line( 0 , $title_h-1 , $page_w-1 , $title_h-1 , $black ) ;
     $img->line( $csx , 0 , $csx , $title_h-1 , $black ) ;
 
-    ###############################################################################
-    #
+    ########################################
+    # Grey area under menu, on left/right, drawn *after* the line across
+    # the top of page so it covers whichever end is appropriate
+
+    $img->filledRectangle( $mal , 0 , $mar , $page_h-1 , $grey75 ) ;
+    $img->line( $msx , 0 , $msx , $page_h-1 , $black ) ;
+
+    ############################################################
     # Draw boxes for the days
 
     ########################################
     # Calculate box size
 
-    my $box_w = int( ( $page_w - $menu_w  - 2 * $padding          ) / 7 ) ;
-    my $box_h = int( ( $page_h - $title_h - 2 * $padding - $dow_h ) / 6 ) ;
+    my $box_w   = int( ( $dar - $dal ) / 7 ) ;
+    my $box_h   = int( ( $dab - $dat - $dow_h ) / 6 ) ;
+
+    my $ib_w    = $landscape ? int( $box_w * 0.35 ) : int( $box_w * 0.40 ) ;
+    my $ib_h    = $landscape ? int( $box_h * 0.40 ) : int( $box_h * 0.25 ) ;
 
     ########################################
-    # Draw boxes for each date
+    # Draw the boxes
 
     $img->setThickness( 1 ) ;
 
@@ -201,20 +274,29 @@ sub calendar_basic($$)
     {
         for my $c ( 0 .. 6 )
         {
-            my $ax = $dal + $padding + ( $c * $box_w ) ;
-            my $ay = $title_h + $padding + ( $r * $box_h ) + $dow_h ;
+            ########################################
+            # Coordinates of outer box
+
+            my $ax = $dal + ( $c * $box_w ) ;
+            my $ay = $dat + $dow_h + ( $r * $box_h ) ;
             my $bx = $ax + $box_w ;
             my $by = $ay + $box_h ;
-            my $dx = $ax + int( ( $bx - $ax ) * 0.4  ) ;    # 40% of box width
-            my $dy = $ay + int( ( $by - $ay ) * 0.25 ) ;    # 25% of box height
+
+            ########################################
+            # Inner box lower right corner
+
+            my $dx = $ax + $ib_w ;
+            my $dy = $ay + $ib_h ;
+
+            ########################################
+            # Draw the two boxes
 
             $img->rectangle( $ax , $ay , $bx , $by , $black ) ;
             $img->rectangle( $ax , $ay , $dx , $dy , $black ) ;
         }
     }
 
-    ###############################################################################
-    #
+    ############################################################
     # Add day-of-week labels
 
     for my $c ( 0 .. 6 )
@@ -222,8 +304,8 @@ sub calendar_basic($$)
         ########################################
         # Box around day of week
 
-        my $ax = $dal + $padding + ( $c * $box_w ) ;
-        my $ay = $title_h + $padding ;
+        my $ax = $dal + ( $c * $box_w ) ;
+        my $ay = $dat ;
         my $bx = $ax + $box_w ;
         my $by = $ay + $dow_h ;
 
@@ -233,10 +315,19 @@ sub calendar_basic($$)
         ########################################
         # Draw DOW text
 
-        my $tx = $dal + $padding + ( $c * $box_w ) + ( $box_w / 2 ) ;
-        my $ty = $title_h + $padding + ( $dow_h / 2 ) ;
+        my $tx = $ax + int( $box_w / 2 ) ;
+        my $ty = $ay + int( $dow_h / 2 ) ;
 
         center_text( $img , $tx , $ty , $dow[$c] , $black ) ;
+    }
+
+    ############################################################
+    # If the image is landscape mode, rotate it
+
+    if ( $landscape )
+    {
+        my $new_img = $img->copyRotate270() ;
+        $img = $new_img ;
     }
 
     ########################################
@@ -253,6 +344,44 @@ sub calendar_basic($$)
 ###############################################################################
 ###############################################################################
 
-calendar_basic( 0 , 'CalendarMo.png' ) ;
-calendar_basic( 1 , 'CalendarMo-L.png' ) ;
+getopts( 'hlrLPo:' , \%opt ) ;
+$opt{'h'} && usage() ;
+
+########################################
+# Left or right handed?
+
+my $lh = 0 ;
+if ( $opt{'l'} )
+{
+    if ( $opt{'r'} )
+    {
+        usage( "ERROR: cannot use -l and -r together\n" ) ;
+    }
+
+    $lh = 1 ;
+}
+
+########################################
+# Portrait or landscape?
+
+my $landscape = 0 ;
+if ( $opt{'L'} )
+{
+    if ( $opt{'P'} )
+    {
+        usage( "ERROR: cannot use -L and -P together\n" ) ;
+    }
+
+    $landscape = 1 ;
+}
+
+########################################
+# Output filename
+
+my $outfile = ( $opt{'o'} || 'CalendarMo.png' ) ;
+
+############################################################
+# Do the deed
+
+calendar_basic( $lh , $landscape , $outfile ) ;
 ```

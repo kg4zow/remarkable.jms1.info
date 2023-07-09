@@ -1,6 +1,6 @@
-# The `make-templates` Script
+# Basic Templates
 
-This shell script uses [ImageMagick](https://imagemagick.org/)'s `magick` command to create a few `.png` templates.
+The `make-templates` script is a shell script which uses [ImageMagick](https://imagemagick.org/)'s `magick` command to create a few `.png` templates.
 
 * [`dots-50.png`](dots-50.png)
 
@@ -24,17 +24,19 @@ This script is too simple to *worry* about licensing, so...
 >
 > This work is published from the United States of America.
 
-## Script
+## The `rm2-template-basic` Script
 
-&#x21D2; [Download](make-templates)
+Download &#x21D2; [`rm2-template-basic`](rm2-template-basic)
 
 ```bash
 #!/bin/bash
 #
-# make-pages
+# rm2-template-basic
 # John Simpson <jms1@jms1.net> 2023-07-02
 #
-# Programmatically create PNG files for use as reMarkable 2 templates
+# Programmatically create PNG files for use as reMarkable 2 templates.
+#
+# 2023-07-09 jms1 - renamed script
 
 set -e
 
@@ -46,7 +48,7 @@ set -e
 # - Draw a 3x3 rectangle at the top left corner.
 # - Save that to a "memory buffer" called 'dot'.
 # - Delete the canvas.
-# - Create a 1404x1872 canvas, filled with tiles of the 'dot' memory buffer.
+# - Create a 1404x1872 canvas, filled with the 'dot' memory buffer, tiled.
 # - Save the result as 'dots-50.png'
 
 magick \
@@ -69,6 +71,7 @@ magick \
 # - Save the result as 'basic-page.png'.
 
 magick dots-50.png \
+    \
     -fill white \
     -draw 'rectangle 0 0 1403 119' \
     \
@@ -96,6 +99,7 @@ magick dots-50.png \
 # - Save the result as 'daily-work.png'.
 
 magick basic-page.png \
+    \
     -fill '#E0E0E0' \
     -draw 'rectangle 121 , 121 , 1403 , 169' \
     \

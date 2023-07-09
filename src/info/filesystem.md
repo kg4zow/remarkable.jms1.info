@@ -165,18 +165,27 @@ The `/usr/share/remarkable/templates/` directory contains all of the built-in te
 
 The `/usr/share/remarkable/` directory contains the graphics files shown on the screen when the tablet is sleeping, rebooting, starting up, and so forth. Most of the filenames make it obvious what each file is used for.
 
-* `batteryempty.png`
-* `factory.png`
-* `overheating.png`
-* `poweroff.png`
-* `rebooting.png`
-* `releasenotes.png`
-* `releaseupdates.png`
-* `restart-crashed.png` -> `rebooting.png`
-* `starting.png`
-* `suspended.png`
+* `batteryempty.png` - From the name, I'm guessing the tablet shows this screen when the battery is too low to keep working. Because e-ink screens don't consume power unless the display is *changing*, it can show this image as the last thing before doing a total shutdown, and the image will stay on the screen forever (or until the user presumably charges the battery enough for the tablet to boot again).
 
-You can change the screens shown by the tablet by replacing these files. They need to be `.png` files, 1404x1872, 226dpi, with 8-bit greyscale colour space.
+* `factory.png` - This is the image that was on the screen when I first took the tablet out of the box, before I powered it on.
+
+* `overheating.png` - There is a temperature sensor inside the tablet, I guess it shows this when the tablet gets too hot?
+
+* `poweroff.png` - This is shown when you power the tablet all the way off.
+
+* `rebooting.png` - This is shown while the tablet is rebooting.
+
+* `releasenotes.png` - ?
+
+* `releaseupdates.png` - ?
+
+* `restart-crashed.png` - I guess the tablet *can* show different images for reboots because the user requested it and reboots because of a software crash? This is a symlink to `rebooting.png`, which means the same image is used in both cases.
+
+* `starting.png` - This is shown while the tablet is starting up.
+
+* `suspended.png` - This is shown while the tablet is sleeping. This is the one most people seem to want to customize.
+
+You can replace these files to change the screens shown by the tablet. Your custom files need to be `.png` files, 1404x1872, with 8-bit greyscale colour space.
 
 **Notes**
 

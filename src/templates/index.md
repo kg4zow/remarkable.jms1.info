@@ -151,17 +151,19 @@ At some point I want to look at these ...
     - [Github](https://github.com/richeymichael/remarkable-assistant)
 
 
-## Sources of Templates
+## Other Sources of Templates
 
 I've seen several places online offering ready-made templates for download, and people are even *selling* them. The one(s) listed here are the ones that actually seem useful to me.
 
 - [Templarian](https://templarian.github.io/remarkable/)
-    - GENERATES grids (square) or isometric (triangular)
-    - adjustable sizes, offsets, and colours
-    - runs in the browser
+    - GENERATES grids (square) or isometric (triangular), using dots, lines, or anything in between (i.e. "+" marks)
+    - Adjustable sizes, offsets, and colours
+    - Javascript, runs in your browser
 
 ## My Templates
 
-I have created a few templates ... more specifically, I have created scripts which create templates.
+I have created a few templates ... more specifically, I have created *scripts* which create templates.
 
-See the "Templates" section on the left.
+See the pages under the "Templates" section on the left.
+
+If you're interested, I also wrote a shell script called [`generate`](generate) which I run on my workstation after adding or updating the scripts, to copy the scripts into this directory and generate the `.png` files.

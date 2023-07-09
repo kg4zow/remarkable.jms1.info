@@ -1,9 +1,43 @@
+# Simple Cover Page
+
+
+The `rm2-template-cover` shell script uses [ImageMagick](https://imagemagick.org/)'s `magick` command to create a simple `.png` template which can be used as a "cover page" for notebooks in a reMarkable tablet. It looks like this ...
+
+* [`cover-simple.png`](cover-simple.png)
+
+    ![cover-simple-sm.png](cover-simple-sm.png)
+
+*Hey, I said it was simple ...* &#x1F601;
+
+## License
+
+This script, and the `.png` files it creates, are too simple to *worry* about licensing, so...
+
+> ![Public Domain](http://i.creativecommons.org/p/zero/1.0/88x31.png)
+>
+> To the extent possible under law, John Simpson has waived all copyright and related or neighboring rights to this script and/or the image files it produces.
+>
+> These works are published from the United States of America.
+
+## The `rm2-template-cover` Script
+
+You can modify the size and position of the box on the page by changing the values of the following variables:
+
+* `BOX_W` is the width of the box.
+* `BOX_H` is the height of the box.
+* `BOX_Y` is the vertical position of the top of the box. 0 is the top of the image.
+
+Download &#x21D2; [`rm2-template-cover`](rm2-template-cover)
+
+```bash
 #!/bin/bash
 #
-# make-cover-template
+# rm2-template-cover
 # John Simpson <jms1@jms1.net> 2023-07-04
 #
 # Create a simple "cover page" template
+#
+# 2023-07-09 jms1 - renamed script
 
 ########################################
 # Page dimensions
@@ -61,9 +95,8 @@ DY2=$(( CY2 - 1 ))
 ########################################
 # Do it
 
-rm -f cover.png
+rm -f cover-simple.png
 
-set -x
 magick \
     -type GrayScale -depth 8 -size "${PAGE_W}x${PAGE_H}" "xc:${PAGE_BG}" \
     -fill black \
@@ -74,4 +107,5 @@ magick \
     -draw "rectangle $CX1 $CY1 $CX2 $CY2" \
     -fill white \
     -draw "rectangle $DX1 $DY1 $DX2 $DY2" \
-    cover.png
+    cover-simple.png
+```
