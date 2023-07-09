@@ -9,7 +9,7 @@ This is just a simple monthly calendar. If you're willing to write in your own t
 
 This was the first template script where I made both right- and left-handed versions, then a few days later, added Landscape versions. It was also the first template I made using Perl, with the GD graphics library. Now that I've done this one, I suspect that if I make any more templates, I'll be using Perl and GD for those as well.
 
-I'm thinking about expanding the script, to have it fill in a month name in the title area and put numbers in the blocks, however it occurs to me that if I do that, it might not be useful as a "template" anymore because it would only be useful for that one month. I'll have to see if GD can write PDF files...
+The script also has an option where, if you give it a year and month, it will fill in a title and the day numbers. I'm not sure how useful the resulting image is as a *template*, since it could only be used for that one month, but if that's useful to you, feel free to add "`-m 2023-07`" to the command line.
 
 ## License
 
@@ -66,10 +66,13 @@ Download &#x21D2; [`rm2-template-calendar`](rm2-template-calendar)
 
 require 5.005 ;
 use strict ;
+use warnings ;
 
-use GD ;                        # cpan install GD
-use GD::Text::Align ;           # cpan install GD::Text
-use Getopt::Std ;               # (normally installed with Perl itself)
+use GD ;                                # cpan install GD
+use GD::Text::Align ;                   # cpan install GD::Text
+use Getopt::Std ;                       # (normally installed with Perl itself)
+use POSIX 'strftime' ;                  # cpan install POSIX
+use Time::Local qw( timegm_posix ) ;    # (normally installed with Perl itself)
 
 ########################################
 # reMarkable 2 screen attributes
@@ -89,6 +92,11 @@ my $font_file   = "$ENV{'HOME'}/Library/Fonts/LiberationSans-Regular.ttf" ;
 my $font_size   = 18 ;
 
 my @dow = qw( Sunday Monday Tuesday Wednesday Thursday Friday Saturday ) ;
+
+my %dd          = () ;          # "row,col" => day of month
+my $title       = '' ;          # Pre-filled calendar title
+my $title_size  = 60 ;          # Font size for title
+my $dom_size    = 24 ;          # Font size for day of month
 
 ########################################
 # Other globals
@@ -112,6 +120,9 @@ Create a reMarkable 2 template for a simple monthly calendar.
 
 -L or -P    Landscape or Portrait. Default is Portrait.
 
+-m ___      Month to pre-number. Must be "YYYY-MM" format (i.e. "2023-07")
+            Default is no month, i.e. no pre-filled dates.
+
 -o ___      Specify the name of the file to write. Default is 'CalendarMo.png'.
 
 -h          Show this help message.
@@ -131,11 +142,12 @@ EOF
 #
 # Center a string around a point
 
-sub center_text($$$$$)
+sub center_text($$$$$$)
 {
     my $img     = shift ;
     my $tx      = shift ;
     my $ty      = shift ;
+    my $size    = shift ;
     my $text    = shift ;
     my $colour  = shift ;
 
@@ -146,7 +158,7 @@ sub center_text($$$$$)
         'valign' => 'center' ,
         'halign' => 'center' ,
     ) ;
-    $a->set_font( $font_file , $font_size ) ;
+    $a->set_font( $font_file , $size ) ;
     $a->set_text( $text ) ;
 
     my @b = $a->bounding_box( $tx , $ty , 0 ) ;
@@ -162,7 +174,7 @@ sub center_text($$$$$)
     # Add the text to the image
     # - (x,y) should be lower left corner
 
-    $img->stringFT( $colour , $font_file , $font_size , 0 , $b[0] , $b[1] , $text ) ;
+    $img->stringFT( $colour , $font_file , $size , 0 , $b[0] , $b[1] , $text ) ;
 }
 
 ###############################################################################
@@ -248,6 +260,17 @@ sub calendar_basic($$$)
     $img->filledRectangle( $mal , 0 , $mar , $page_h-1 , $grey75 ) ;
     $img->line( $msx , 0 , $msx , $page_h-1 , $black ) ;
 
+    ########################################
+    # If we need to add a title, do it
+
+    if ( $title ne '' )
+    {
+        my $tx = int( $page_w  / 2 ) ;
+        my $ty = int( $title_h / 2 ) ;
+
+        center_text( $img , $tx , $ty , $title_size , $title , $black ) ;
+    }
+
     ############################################################
     # Draw boxes for the days
 
@@ -287,7 +310,25 @@ sub calendar_basic($$$)
             # Draw the two boxes
 
             $img->rectangle( $ax , $ay , $bx , $by , $black ) ;
-            $img->rectangle( $ax , $ay , $dx , $dy , $black ) ;
+
+            ########################################
+            # MAYBE draw inner box
+
+            if ( ( $title eq '' ) || exists( $dd{"$r,$c"} ) )
+            {
+                $img->rectangle( $ax , $ay , $dx , $dy , $black ) ;
+
+                ########################################
+                # If we have a date for this box, add it
+
+                if ( exists( $dd{"$r,$c"} ) )
+                {
+                    my $tx = $ax + int( $ib_w / 2 ) ;
+                    my $ty = $ay + int( $ib_h / 2 ) ;
+
+                    center_text( $img , $tx , $ty , $dom_size , $dd{"$r,$c"} , $black ) ;
+                }
+            }
         }
     }
 
@@ -313,7 +354,7 @@ sub calendar_basic($$$)
         my $tx = $ax + int( $box_w / 2 ) ;
         my $ty = $ay + int( $dow_h / 2 ) ;
 
-        center_text( $img , $tx , $ty , $dow[$c] , $black ) ;
+        center_text( $img , $tx , $ty , $font_size , $dow[$c] , $black ) ;
     }
 
     ############################################################
@@ -336,10 +377,34 @@ sub calendar_basic($$$)
 }
 
 ###############################################################################
+#
+# How many days in a given month?
+
+sub days_in_month($$)
+{
+    my $yyyy = shift ;
+    my $mm   = shift ;
+
+    ########################################
+    # Most months have fixed counts
+
+    my $rv = (31,0,31,30,31,30,31,31,30,31,30,31)[$mm-1] ;
+    ( $rv > 0 ) && return $rv ;
+
+    ########################################
+    # February rules are weird
+
+    if ( $yyyy %   4 ) { return 28 ; }
+    if ( $yyyy % 100 ) { return 29 ; }
+    if ( $yyyy % 400 ) { return 28 ; }
+    return 29 ;
+}
+
+###############################################################################
 ###############################################################################
 ###############################################################################
 
-getopts( 'hlrLPo:' , \%opt ) ;
+getopts( 'hlrLPo:m:' , \%opt ) ;
 $opt{'h'} && usage() ;
 
 ########################################
@@ -374,6 +439,52 @@ if ( $opt{'L'} )
 # Output filename
 
 my $outfile = ( $opt{'o'} || 'CalendarMo.png' ) ;
+
+############################################################
+# If a month was specified, figure where the extra bits (which make it
+# a NOT-blank calendar) will be.
+
+if ( ( $opt{'m'} || '' ) =~ m|^(\d\d\d\d)\-(\d\d?)$| )
+{
+    my ( $yyyy , $mm ) = ( $1 , $2 ) ;
+    $mm =~ s|^0|| ;
+
+    if ( ( $mm < 1 ) || ( $mm > 12 ) )
+    {
+        die "ERROR: invalid YYYY-MM value '$opt{'m'}'\n" ;
+    }
+
+    ########################################
+    # Figure out the time_t values
+
+    my $t = timegm_posix( 0 , 0 , 12 , 1 , $mm - 1 , $yyyy - 1900 ) ;
+    my @d = gmtime( $t ) ;
+
+    ########################################
+    # Remember the human-formatted name of the month/year
+
+    $title = strftime( '%B %Y' , @d ) ;
+
+    ########################################
+    # Figure out which row,col each day of the month goes in
+
+    my $x = days_in_month( $yyyy , $mm ) ;
+
+    my $row = 0 ;
+    my $col = $d[6] ;
+
+    for my $n ( 1 .. $x )
+    {
+        $dd{"$row,$col"} = $n ;
+        $col ++ ;
+
+        if ( $col > 6 )
+        {
+            $col = 0 ;
+            $row ++ ;
+        }
+    }
+}
 
 ############################################################
 # Do the deed
