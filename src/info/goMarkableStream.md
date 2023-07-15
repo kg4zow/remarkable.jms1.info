@@ -2,6 +2,8 @@
 
 [goMarkableStream](https://github.com/owulveryck/goMarkableStream) is a program which "streams" the contents of your tablet's screen to a web browser on your workstation. This can be useful if you need to record something from the tablet, or if you need to share the tablet's screen as part of an online meeting.
 
+&#x21D2; [Quick demo](https://jms1.pub/goMarkableStream-demo.mov) - screen capture of Safari streaming my tablet's screen
+
 ### Image Format
 
 Different versions of the reMarkable firmware store the screen using different formats. It *sounds like* so far there are only two formats, which I'm calling the old and new formats. I don't know which version introduced the newer image format, however my own tablet, with firmware 3.0.5.56, uses the old format.
