@@ -153,13 +153,38 @@ I first noticed this when I was looking through the various `UUID.xxx` files fro
 
 I also saw this issue mentioned when I was browsing through the [awesome-reMarkable](https://github.com/reHackable/awesome-reMarkable) list, and looked at [reMarkable CLI tooling](https://github.com/cherti/remarkable-cli-tooling), which includes a Python script called `reclean.py` that deletes all files for UUIDs whose `.metadata` files say they have been deleted.
 
+I was pleasantly surprised to find that [RCU](http://www.davisr.me/projects/rcu/) recognizes these files, and if the tablet isn't linked to a "cloud account", will offer to permanently delete them for you.
+
 ## Templates
 
-The `/usr/share/remarkable/templates/` directory contains all of the built-in template files, as well as the `templates.json` file which tells the reMarkable software about them, are here.
+The `/usr/share/remarkable/templates/` directory contains all of the built-in template files.
 
-**Notes**
+Templates are "background layers" which can be used with notes, to provide a "guide" for your handwriting. The tablet comes with templates which look like lined paper, quad-ruled graph paper, and "dot paper", as well as things like musical staves and pre-made day-planner pages.
 
-* Every OS upgrade will reset the contents of this directory. What programs like [RCU](http://www.davisr.me/projects/rcu/) do is, upload the files to a directory under `/home/root/` (which is NOT reset by OS upgrades), and create *symlinks* in the `/usr/share/remarkable/templates/` directory which point to the actual files.
+The directory also contains a `templates.json` file, which tells the reMarkable software what templates are available, what their names are (the name shown in the reMarkable software is *not* the same as the filename in this directory), what orientation they should use (portrait or landscape), and what icon to use in the software.
+
+The reMarkable software doesn't provide a way to add more templates, but if you SSH into the tablet you can add your own templates, and if you edit the `templates.json` file you can make the reMarkable software use your templates along with the built-in templates.
+
+#### Notes
+
+* &#x26A0;&#xFE0F; **Every OS upgrade will reset the contents of this directory.**
+
+    [RCU](http://www.davisr.me/projects/rcu/) works by ...
+
+    * uploading the files to `/home/root/.local/share/remarkable/templates/` (which is NOT reset by OS upgrades)
+    * creating *symlinks* in the `/usr/share/remarkable/templates/` directory, pointing to the actual files.
+
+    It also stores an individual JSON file for each template in `/home/root/.local/share/remarkable/templates/`, containing that template's attributes, while at the same time adding that information to the global `template.json` file.
+
+    After an OS upgrade, RCU can "re-add" your custom templates by re-creating those symlinks and adding the items from each template's JSON file back to the global `template.json` file.
+
+* According to [a Reddit comment](https://www.reddit.com/r/RemarkableTablet/comments/14yikb6/comment/jrtlr8g) by the author of RCU ...
+
+    > There is another way, which isn't officially supported and which very little information exists about. If you make a `templates.json` file in `~/.local/share/remarkable/templates/custom` and put your files there, they ought to persist through software updates.
+
+    I haven't tried this myself, however I did notice that on my tablet, RCU *created* this directory but hasn't stored anything in it. *My guess* is that the author is exploring this as an easier way to store custom templates (i.e. without having to create symlinks or edit the built-in `templates.json` file).
+
+    This now makes me want to run `strings` against the `xochitl` executable (aka "the reMarkable software") to see what other directories the software uses. Hrmmmmm...
 
 ## Static Screens
 
@@ -187,7 +212,7 @@ The `/usr/share/remarkable/` directory contains the graphics files shown on the 
 
 You can replace these files to change the screens shown by the tablet. Your custom files need to be `.png` files, 1404x1872, with 8-bit greyscale colour space.
 
-**Notes**
+#### Notes
 
 * The directory contains more than just these graphics files. Be very careful not to accidentally delete, rename, or otherwise modify anything.
 

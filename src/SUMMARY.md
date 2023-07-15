@@ -10,7 +10,8 @@
     - [SSH Access](info/ssh.md)
     - [Backing Up the Tablet](info/backups.md)
     - [Filesystem](info/filesystem.md)
-    - [RCU]()
+    - [RCU](info/rcu.md)
+    - [goMarkableStream](info/goMarkableStream.md)
     - [Calibre]()
     - [Toltec]()
 
