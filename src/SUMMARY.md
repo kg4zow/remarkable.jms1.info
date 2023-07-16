@@ -10,6 +10,8 @@
     - [SSH Access](info/ssh.md)
     - [Backing Up the Tablet](info/backups.md)
     - [Filesystem](info/filesystem.md)
+    - [Controlling the Network](info/network.md)
+    - [Updating the Firmware](info/updates.md)
     - [RCU](info/rcu.md)
     - [goMarkableStream](info/goMarkableStream.md)
     - [Calibre]()

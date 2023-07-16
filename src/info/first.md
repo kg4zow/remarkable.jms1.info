@@ -10,37 +10,49 @@ The tablet, folio, and stylus arrived in a box that was a bit smaller than I had
 
 One thing I noticed is that the sticker on the tablet's box with its serial number, doesn't have the MAC address. This is important to me because I create DHCP reservations in my home network, so that devices like this will always have the same IP while I'm at home. This lets me also add DNS records on my internal network (such as "`rm2.internal.`") pointing to those IPs, to make it easier to access them over the network when I need to.
 
+> I was able to get the MAC address by SSH'ing into the unit over the USB cable and running this command.
+>
+> ```
+> ip link show
+> ```
+
 ### reMarkable 2 Tablet
 
-The tablet itself is pretty nice. My absolute first impression when I took it out of the box was how *thin* it is.
+The tablet itself is *nice*. My absolute first impression when I took it out of the box was how *thin* it is.
 
 The display is not backlit, and the contrast doesn't seem to be adjustable, which makes some of the built-in templates (particularly the "Dots S" template) hard to see when the room isn't very well-lit. The display's usable area has a "margin" of about 1cm on the top, left, and right sides, and about 2.5cm on the bottom.
 
 The screen has a textured surface which, when combined with the plastic tip on the stylus, feels almost exactly like using a pencil to write on paper. (This is probably obvious, it's one of the biggest selling points on their web site.) There are four little rubber "dots" on the back of the tablet, which prevent the tablet from sliding around on a tabletop, or which fit into indentations on the folio if you have one.
 
-There is a power button on the top edge, and a USB-C connector on the bottom edge, both at the far left side of the tablet. There is also a connector with five "dots" on the left edge. Internally, these "dots" have the same electrical connections as a USB port. I've seen similar "dots" connectors on other devices, and I'm assuming that the folios with keyboards have five little pins in the correct spots to line up with these "dots" when the folio is attached.
+There is a power button on the top edge, and a USB-C connector on the bottom edge, both at the far left side of the tablet. There is also a 5-pin POGO connector (little "dots") on the left edge. Internally, these "dots" have the same electrical connections as a USB port. I've seen POGO-pin connectors on other devices, including on the back of my iPad, I'm assuming that the folios with keyboards have five little pins in the correct spots to line up with these "dots" when the folio is attached.
 
-These five "dots" have the electrical connections to act as a USB port, which is used not only to connect to a keyboard folio, but also used in case you need to [recover from a "bricked" tablet](https://github.com/ddvk/remarkable2-recovery). I wouldn't be surprised if somebody were to make a 3D-printed thingy which clamps on to the tablet, positions five pins over the dots, and ... I dunno, maybe has a female USB connector that a keyboard or other device can plug into?
+From the reading I did online before the tablet arrived, I know that these five "dots" have the electrical connections to act as a USB port, which is used not only to connect to a keyboard folio, but also used in case you need to [recover from a "bricked" tablet](https://github.com/ddvk/remarkable2-recovery). I wouldn't be surprised if somebody were to make a 3D-printed thingy which clamps on to the tablet, positions five pins over the dots, and ... I dunno, maybe has a female USB-A or USB-c connector that a keyboard or other device can plug into?
 
 ### Stylus - "Marker Plus"
 
 The stylus is the size and shape of a normal writing pen. It has a coating on the outside, similar to the tablet screen, which keeps it from slipping in my hand. There are no buttons on the side. There is a small indendation down the length of the stylus, which is where it contacts the tablet when connected. There's also a small indentation near the back end on the other side, with a "reMarkable" logo engraved in it.
 
-The "back end" (away from the tip) seems to be some kind of insert. There's a small gap around the circumference, and the "cap" which makes up the back end of the stylus has a tiny amoount of "give" to it (i.e. if you press down on it, it moves just a little bit).
+The "back end" (away from the tip) seems to be some kind of insert. There's a small gap around the circumference where you can see some kind of metal shining through, and the "cap" which makes up the back end of the stylus has a tiny amoount of "give" to it (i.e. if you press down on it, it moves just a little bit). I'm not sure if the cap is *supposed* to move a little or not.
 
-It attaches magnetically to the right side of the tablet. There seem to be several different magnets involved, in both the stylus and the tablet. The stylus's "hold" on the tablet seems to be stronger or weaker based on its position and orientation. I found the strongest "hold" when the stylus is pointing down, with the top of the stylus about 7mm from the top of the tablet. When you get the stylus near the right spot, it will magnetically "jump" into place on its own.
+The stylus attaches magnetically to the right side of the tablet. There seem to be several different magnets involved, both in the stylus and on the tablet. The stylus's "hold" on the tablet is stronger or weaker based on its position and orientation. I found the strongest "hold" when the stylus is pointing "down", with the top of the stylus about 7mm from the top of the tablet. When you get the stylus *near* the right spot, it will magnetically "jump" into this position on its own.
 
 ### Folio - "Book Folio", Grey
 
 I got the basic grey fabric folio, because (1) I don't really intend to use a keyboard with it, and (2) from the pictures on the web site, it looked like the outside surface was a coarse-grain fabric which I would be able to grip better than a smooth leather surface. I don't know about the comparison, but I was right about the texture - it is something I'll be able to hold a grip on.
 
-The folio has a metal "bar" inside the spine, which attaches to the tablet magnetically. I discovered by "almost accident" that the magnets are the *only* thing holding the tablet into the folio.
+The folio has a metal "bar" inside the spine, which attaches to the tablet magnetically. The magnets are the *only* thing holding the tablet into the folio, and the magnets aren't *that* strong - the tablet almost fell out of the folio twice in the first few days of using it.
 
-The front cover folds all the way around to the back of the tablet, and forms a little round section on the left side which makes it a bit more stable when holding the tablet with your left hand.
+The front cover folds all the way around to the back of the tablet, and forms a little round section on the left side. This makes it a bit more stable when holding the tablet with your left hand, however the tablet *can* easily fall out of the folio when you're doing this.
 
-I have an [iPad cover](https://www.amazon.com/gp/product/B0B1XM1F37/) which has rubber bumpers that fully surround the top, bottom, and sides of the iPad. I have NEVER had the iPad fall out of the cover. I'm not sure yet, but I may look for a different folio, one which *securely* holds the tablet.
+#### Third Party Folio
 
-The folio doesn't have a feature where it puts the tablet to sleep when the cover is closed. Which makes sense - the e-ink display only consumes power while the display's contents are being changed, so there's no real harm in *not* putting the unit to sleep.
+I have an [iPad cover](https://www.amazon.com/gp/product/B0B1XM1F37/) which has rubber bumpers that fully surround the top, bottom, and sides of the iPad. I have NEVER had the iPad fall out of the cover.
+
+I ended up buying [a third-party folio](https://www.amazon.com/dp/B0BWTRPTFZ) for my reMarkable tablet. (Mine is dark blue, that's not currently listed as an option so maybe they ran out?) It has hard plastic "clips" along the left and right sides, including around the top and bottom corners on the right. I've been using it for a few weeks now, and haven't had any cases where the tablet tried to "fall out of" the folio.
+
+The case is made of a rubberized plastic, with a texture on the outside which is *similar to* the fabric on the grey reMarkable folio. It's also "grippy" enough that it hasn't slipped in my hand while I was carrying it.
+
+Neither folio has a feature where it puts the tablet to sleep when the cover is closed. Which makes sense - the e-ink display only consumes power while the display's contents are being changed, so there's no real harm in *not* putting the unit to sleep.
 
 ## Software
 
@@ -66,6 +78,8 @@ While a notebook page is being edited, you can tap the the "Notebook Options" ic
 
 - Which orientation (portrait or landscape) should be used when working with the notebook.
 
+    - (later) It didn't occur to me at the time, but I'm not sure if the orientation is per-page or per-notebook. I'll have to try that and see what happens.
+
 While a page is being edited ...
 
 - There will be a &#x25C9; icon at the top left. Tapping this will show or hide the menu bar down the left side of the screen. (The dot within the circle will also move.)
@@ -74,19 +88,23 @@ While a page is being edited ...
 
 ### Built-in web interface
 
-While the unit is connected to a computer via USB, you can use a browser on *that computer* to visit [`http://10.11.99.1/`](http://10.11.99.1/). (Be careful that your browser doesn't automatically convert this to "`https://`".)
+While the unit is connected to a computer via USB, you can use a browser *on that computer* to visit [`http://10.11.99.1/`](http://10.11.99.1/). (Be careful that your browser doesn't automatically convert this to "`https://`".)
 
 This will provide a very simple interface which can be used to navigate the folder structure, and download and upload files.
 
-Downloaded notebook files will be converted to PDF.
+PDF and EPUB files can be uploaded. This is done by navigating to the folder you want to upload into, and then dragging-and-dropping the file from a Finder window into the browser window. The process can take a few seconds to several minutes, depending on the size of the file. The UI doesn't show any kind of "working" indicator while the upload is happening.
 
-PDF and EPUB files can be uploaded. This is done by navigating to the folder you want to upload into, and then dragging-and-dropping the file from a Finder window into the browser window. The UI is not great, it doesn't really show much while the upload is happening.
+Downloaded notebook files will be converted to PDF. If the original document was an uploaded PDF and you've added your own annotations "on top" of it, the PDF you download will have your annotations "burned into" the file, with no (easy) way to remove them if you need the *original* PDF back.
 
 ### Reading uploaded PDF/EPUB files
 
-You can tap on them like any other file. The drawing tools are active, so you can add your own annotations as you see fit.
+You can tap on them like any other file. The drawing tools are active, so you can add your own annotations "on top of" the file as you see fit. Your annotations are saved as a separate "layer" on top of the file, so *within the tablet* you can open the PDF/EPUB and edit them if needed.
+
+You can also use a PDF as a "template" of sorts, by making a new copy of the PDF file for each notebook where you want to use it. It's not the same as using an actual template, but it does work.
 
 ## Disk layout
+
+Random notes from the first time I SSH'd into the tablet.
 
 ```
 reMarkable: ~/ df -h
