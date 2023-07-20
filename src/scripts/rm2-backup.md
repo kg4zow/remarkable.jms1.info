@@ -123,6 +123,8 @@ This script is licensed under the MIT License.
 # If you're using macOS and are stuck with its ancient version of rsync, you
 # can install a newer/working version from Homebrew. https://brew.sh/
 #
+# 2023-07-17 jms1 - Add 'latest' symlink in the backup directory.
+#
 ###############################################################################
 #
 # The MIT License (MIT)
@@ -260,4 +262,7 @@ rsync -avzHl $LINKPREV  \
     --exclude   /sys    \
     "$TABLET"         \
     "${BACKUPS%/}/$NOW/"
+
+rm -f "${BACKUPS%/}/latest"
+ln -s "$NOW" "${BACKUPS%/}/latest"
 ```
