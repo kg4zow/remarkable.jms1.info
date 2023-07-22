@@ -2,8 +2,9 @@
 
 [Introduction](introduction.md)
 
----
+[Definitions](definitions.md)
 
+---
 
 - [Information](info/index.md)
     - [First Impressions](info/first.md)
