@@ -1,0 +1,8 @@
+# Per-repo settings to control what 'git2rss' does in this repo
+
+title       = remarkable.jms1.info
+link        = https://remarkable.jms1.info/
+description = My learnings about the reMarkable 2 tablet
+image_url   = ""
+show_email  = user
+commit_url  = ""
