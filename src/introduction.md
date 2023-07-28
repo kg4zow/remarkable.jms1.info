@@ -14,6 +14,18 @@ There probably won't be much to see at first, but I plan to add information over
 >
 > Some of the items in the Table of Contents menu may not actually link to pages yet, and some of the pages which *exist* may not be complete. I'm writing this in my spare time, and `$DAYJOB` doesn't give me a whole lot of that. Please be patient.
 
+## Links
+
+These are links that I seem to be copying and pasting a lot whenever I talk to other people about the tablet. I'm putting them here so I know where to quickly find them when I need them.
+
+* [Case](https://www.amazon.com/dp/B0BWTN88W4) - I keep my tablet in this "CoBak" case. I ordered the reMarkable [Book Folio](https://remarkable.com/store/remarkable-2/folios) (in Gray) *with* the tablet, but the third-party cover fully encloses the tablet *and* the stylus.
+
+* [Titanium nibs](https://www.amazon.com/dp/B0BF9WJ8VX) - I have one of these "nibs" in my stylus (reMarkable "Marker Plus"). I've seen people online say that metal nibs can damage the screen, I haven't noticed any scratching on mine but I also don't press down very hard when I write.
+
+* [RCU](http://www.davisr.me/projects/rcu/) - third-party program to manage reMarkable tablets, especially tablets which don't connect to the reMarkable cloud service.
+
+* [RSS feed](https://remarkable.jms1.info/commits.xml) - if you're using an RSS reader, this feed contains each commit in the git repo where I track the site's source files. (The git repo is stored in Keybase, although it could be moved to Github if people are interested.)
+
 ## reMarkable Cloud
 
 **For now**, I'm planning to NOT connect my tablet to the "reMarkable Cloud" at all. I'm doing this for a few reasons:
@@ -45,8 +57,6 @@ There probably won't be much to see at first, but I plan to add information over
     **When I buy a product, I expect that product to be able to do the same job, even if the original manufacturer goes out of business.**
 
     In the case of the reMarkable tablet, one of the things you miss out on by not connecting to their "cloud" is handwriting recognition (where the tablet turns the letters and numbers you draw with the stylus, into actual text). I remember reading somewhere that this happened on the tablet itself, which was one of the reasons I decided to buy one. (I later found that this actually happens online, with a third party company *other than* reMarkable.)
-
-    Apparently, there is also no way to just directly enter text, i.e. there's no way to create a page, tap a button to pull up a keyboard, and start entering text on a page. I'm not sure if this functionality is unlocked when you attach one of their keyboard folios, when you link the tablet to a cloud account, or both, but so far I haven't seen any way to do it.
 
 ## Created with `mdbook`
 
