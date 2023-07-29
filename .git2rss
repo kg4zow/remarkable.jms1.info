@@ -6,3 +6,4 @@ description = My learnings about the reMarkable 2 tablet
 image_url   = ""
 show_email  = user
 commit_url  = ""
+limit       = 0
