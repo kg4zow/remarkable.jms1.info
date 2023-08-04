@@ -16,6 +16,12 @@ The word "deleted" can mean a few different things.
 
 * **Deleted files** are files which have been "permanently deleted" from the Trash folder, but a record of the files' *being* deleted has not been sync'ed up to the cloud yet.
 
+    These appear in the filesystem as one of the following:
+
+    * For earlier firmware versions, the `UUID.metadata` file will exist, and contain the key `"deleted" : true`.
+
+    * Later firmware versions will delete all of the normal `UUID.*` files, and instead create a `UUID.tombstone` file, whose contents are the timestamp when the trash was deleted.
+
     On a tablet which synchronizes with "the cloud", "permanently deleted" files are not *actually* deleted from the tablet's filesystem until after the tablet tells "the cloud" that they no longer "exist". I'm assuming this is so that the cloud doesn't sync the files back down to the tablet later on.
 
     The reMarkable software keeps these files around until the next time it syncs against the cloud, and *then* deletes them... which is not very helpful if the tablet *never* synchronizes against the cloud.
@@ -25,7 +31,7 @@ The word "deleted" can mean a few different things.
     This can happen if the tablet shuts down in the middle of an operation, if somebody is manually tinkering with the filesystem and deletes a `.metadata` file they shouldn't have, or if there's a bug in the reMarkable software.
 
 
-**For tablets which DO synchronize with the cloud**, you should use the reMarkable software as it was designed, and let the tablet "sync the deletions" with the cloud. This should cover everything *other than* Orphans.
+**For tablets which DO synchronize with the cloud**, you should use the reMarkable software as it was designed, and let the tablet "sync the deletions" with the cloud. This should cover everything *other than* orphans.
 
 **For tables which DO NOT synchronize with the cloud**, you may want to use this script once in a while, to clean up the "permanently deleted" files *and* to clean up any Orphans which may appear.
 
@@ -42,6 +48,7 @@ The word "deleted" can mean a few different things.
     ```
     $ rm2-clean
     UUID                                  Trash  Deleted  Orphan  Name
+    d67b9d2c-82bf-4448-bc6f-2f8e9384dc6e  TRASH                   /Delete Me
     8141cc15-7881-40eb-9456-781dd6b0730a         DELETED          /Derp
     8d06afae-3d2b-486d-8758-1b3c1a745cdb         DELETED          /XYZ folder/
                                                           ORPHAN  this-is-an-orphan-file
@@ -49,11 +56,12 @@ The word "deleted" can mean a few different things.
 
     If the script doesn't print anything, it means there are no DELETED or ORPHAN files.
 
-* The "`-a`" option will list all files on the tablet.
+* The "`-a`" option will list all files on the tablet, including files which are not in any kind of "deleted" state.
 
     ```
-    $ rm2-cleanup -a
+    $ rm2-clean -a
     UUID                                  Trash  Deleted  Orphan  Name
+    d67b9d2c-82bf-4448-bc6f-2f8e9384dc6e  TRASH                   /Delete Me
     8141cc15-7881-40eb-9456-781dd6b0730a         DELETED          /Derp
     f67c74d2-7d23-4587-95bd-7a6e8ebaed2c                          /Ebooks/
     a628e45e-e627-42ad-8f0c-049f697ec12b                          /Ebooks/Stranger in a Strange Land
@@ -71,21 +79,34 @@ The word "deleted" can mean a few different things.
                                                           ORPHAN  this-is-an-orphan-file
     ```
 
-* The "`-r`" (
+### TODO
 
+* recognize/report `UUID.tombstone` files
+    * UUID in filename *was* the UUID of a documented that was emptied from the trash
+    * contents is a timestamp (in `Sun Jul 30 20:16:21 2023` format)
+    * replaces `"deleted"` attribute in `UUID.metadata` files
+    * also document on filesystem page
 
-- options to list only files in one "deleted-ish" state (i.e. orphans only, for tablets which *do* sync)
+* document other options
+    * `-o` and `-O`
+    * `-d` and `-D`
+    * `-u ___`
+    * `-x`
+    * `-h`
+
+- options to list *only* files in one "deleted-ish" state (i.e. orphans only, for tablets which *do* sync)
     - in Trash folder
-    - deleted
+    - deleted (same as "tombstone" files?)
     - orphans (both UUID-related and random filenames)
 
-- is there a quick way to tell whether or not a given tablet sync's?
+- Is there a quick way to tell whether or not a given tablet sync's?
+    - yes, RCU does it
+    - may be unsafe to delete "deleted" or "tombstone" files if so
 
 - run with specific options to delete files in different status'es
-    - `rm` deleted files
-    - `rm` orphans
-    - `rm` specific UUID - removes all files relating to that UUID, even if it's not in a "deleted-ish" state
-    - `rm` specific filename - removes just the one file, if directory then removes that directory and its contents
+    - `-O` and `-D` already exist, need to be documented
+    - specific UUID - removes all files relating to that UUID, even if it's not in a "deleted-ish" state
+    - specific filename (for orphans) - removes just the one file, if directory then removes that directory and its contents
 
 ## License
 
@@ -106,710 +127,5 @@ This script is licensed under the MIT License.
 &#x21D2; [Download](rm2-clean)
 
 ```perl
-#!/usr/bin/env perl -w
-#
-# rm2-clean
-# John Simpson <jms1@jms1.net> 2023-06-30
-#
-# Last updated 2023-07-04
-#
-# This script can perform a few different kinds of "cleanup" operations on a
-# reMarkable tablet.
-#
-# - Delete files which have been "emptied from the trash", but which have not
-#   actually been deleted from the tablet. This happens because ...
-#   - When files are deleted (by emptying the trash), the tablet needs to
-#     tell the cloud that the file was deleted, otherwise the sync process
-#     will think the file was deleted by accident and download the copy
-#     from the cloud instead. Once the cloud knows that the file was deleted,
-#     the software on the tablet will delete the files "for real".
-#   - If the tablet never syncs with the cloud, these files will never be
-#     deleted "for real", and eventually the tablet will run out of storage.
-#
-# - Delete any "orphaned" files or directories. These are files whose names
-#   don't "match" an existing "UUID.metadata" file. This can happen if the
-#   tablet shuts down or reboots in the middle of another operation.
-#
-###############################################################################
-#
-# The MIT License (MIT)
-#
-# Copyright (C) 2023 John Simpson
-#
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the “Software”),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and/or sell copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-#
-###############################################################################
-
-require 5.005 ;
-use strict ;
-
-use File::Temp qw( tempdir ) ;
-use Getopt::Std ;
-use JSON ;
-
-use Data::Dumper ;
-
-my $xochitl_dir     = '/home/root/.local/share/remarkable/xochitl';
-
-########################################
-# globals
-
-my $tablet_ip       = '10.11.99.1' ;
-my $workdir         = '' ;
-my $using_ssh       = 0 ;
-
-my %metadata        = () ;      # UUID => contents of UUID.metadata file
-my %content         = () ;      # UUID => contents of UUID.content file
-my %calc            = () ;      # UUID => calculated info for each UUID
-my %uuid_files      = () ;      # UUID => array of file/dir names
-my %other_files     = () ;      # filename => 1 other random filenames
-my %del             = () ;      # filename => 1 to be deleted
-
-my %opt             = () ;      # getopts
-my $do_orphans      = 0 ;       # -o/O  (1=show 2=remove) orphans
-my $do_delete       = 0 ;       # -d/D  (1=show 2=remove) deleted items
-my $do_all          = 0 ;       # -a    remove all avail
-my $the_uuid        = '' ;      # -u:   which UUID we're focusing on
-my $show_cmds       = 0 ;       # -x    show external commands being run
-
-my $do_debug        = 0 ;       # change to 1 for debug messages
-
-###############################################################################
-#
-# usage
-
-sub usage(;$)
-{
-    my $msg = ( shift || '' ) ;
-
-    print <<EOF ;
-$0 [options] [DIR]
-
-Clean up files on a reMarkable 2 tablet.
-
-If DIR is specified, it should contain either a copy of, or the live 'sshfs'
-mounted, "/home/root/.local/share/remarkable/xochitl/" directory from a
-reMarkable tablet.
-
-If DIR is not specified, the script will attempt to SSH into the tablet. This
-will depend on SSH being enabled on the tablet, and setting up an SSH key for
-authentication (or being ready to type the SSH password while the script is
-running.)
-
-If no SHOW/REMOVE options are specified, show a list of all UUIDs and any
-properties which might make them eligible to be deleted.
-
-BE CAREFUL. Any deletions other than removing "orphaned" UUIDs can cause
-problems with the cloud synchronization process.
-
-Options
-
--o      SHOW "orphaned" UUIDs and files.
--O      REMOVE "orhaned" UUIDs and files.
-
--r      SHOW UUIDs which have been "emptied from the trash" but not fully
-        deleted from the tablet.
--R      REMOVE files for UUIDs which have been "emptied from the trash" but
-        not fully deleted from the tablet.
-
-Other Options
-
--a      When showing a list, show ALL items rather than just the ones which
-        could be deletable.
-
--u ___  Options which delete files will target ONLY this specific UUID.
-
--x      Show the SSH command used to read files from the server.
-
--h      Show this help message.
-
-Options which remove files require either the '-a' or '-u' option.
-
-EOF
-
-    if ( $msg ne '' )
-    {
-        print $msg ;
-        exit 1 ;
-    }
-
-    exit 0 ;
-}
-
-###############################################################################
-#
-# Debugging function
-
-sub debug(@)
-{
-    $do_debug && print @_ ;
-}
-
-###############################################################################
-#
-# Read all UUID.metadata files into memory
-
-sub read_metadata()
-{
-    for my $f ( glob( "$workdir/*" ) )
-    {
-        ########################################
-        # Remove $workdir from name
-
-        $f =~ s|^$workdir/|| ;
-
-        ########################################
-        # Extract the UUID from the filename
-
-        my $uuid = $f ;
-        $uuid =~ s|^.*/|| ;
-        $uuid =~ s|\..*$|| ;
-        $uuid = lc( $uuid ) ;
-
-        ########################################
-        # Remember all filenames associated with this UUID
-
-        if ( -f $f || -d $f )
-        {
-            push( @{$uuid_files{$uuid}} , $f ) ;
-        }
-
-        ############################################################
-        # If this is a '.metadata' file, read more details
-
-        if ( $f =~ m|\.metadata$| )
-        {
-            ############################################################
-            # Read the UUID.metadata file
-
-            my $mf = "$workdir/$f" ;
-            $calc{$uuid}->{'metadata_file'} = $mf ;
-
-            open( M , '<' , $mf )
-                or die "ERROR: open('$mf'): $!\n" ;
-
-            my $jtext = '' ;
-            while ( my $line = <M> )
-            {
-                $jtext .= $line ;
-            }
-            close M ;
-
-            ########################################
-            # Parse contents as JSON
-
-            my $j = decode_json( $jtext )
-                or die "ERROR: cannot parse contents of '$mf' as JSON\n$jtext\n" ;
-
-            ########################################
-            # Store what we found
-
-            $metadata{$uuid} = $j ;
-
-            ############################################################
-            # Also read the corresponding UUID.content file
-
-            my $cf = "$workdir/$uuid.content" ;
-
-            $calc{$uuid}->{'content_file'} = $cf ;
-
-            ########################################
-            # Read the file into memory
-
-            open( C , '<' , $cf )
-                or die "ERROR: open('$cf'): $!\n" ;
-
-            $jtext = '' ;
-            while ( my $line = <C> )
-            {
-                $jtext .= $line ;
-            }
-            close C ;
-
-            ########################################
-            # Parse contents as JSON
-
-            $j = decode_json( $jtext )
-                or die "ERROR: cannot parse contents of '$cf' as JSON\n$jtext\n" ;
-
-            ########################################
-            # Store what we found
-
-            $content{$uuid} = $j ;
-
-            ############################################################
-            # Count/store "deleted" pages
-
-            my $pages   = 0 ;
-            my $dp      = 0 ;
-
-            for my $p ( @{$j->{'cPages'}->{'pages'}} )
-            {
-                if ( exists $p->{'deleted'} )
-                {
-                    $dp ++ ;
-                }
-                else
-                {
-                    $pages ++ ;
-                }
-            }
-
-            $calc{$uuid}->{'pages'} = $pages ;
-            $calc{$uuid}->{'dp'}    = $dp ;
-        }
-    }
-}
-
-###############################################################################
-#
-# Return the full name, with "path", of a UUID
-
-sub fullname($) ;
-sub fullname($)
-{
-    my $uuid    = shift ;
-    my $parent  = '' ;
-    my $name    = '' ;
-
-    ########################################
-    # If the item has no metadata, it's an orphan (has no visibleName)
-
-    unless ( exists $metadata{$uuid} )
-    {
-        return '(ORPHAN)' ;
-    }
-
-    ########################################
-    # Build parent's name
-
-    if ( $metadata{$uuid}->{'parent'} eq '' )
-    {
-        $parent = '' ;
-    }
-    elsif ( $metadata{$uuid}->{'parent'} eq 'trash' )
-    {
-        $parent = 'Trash' ;
-    }
-    else
-    {
-        $parent = fullname( $metadata{$uuid}->{'parent'} ) ;
-    }
-
-    ########################################
-    # Build return value
-
-    $name = $metadata{$uuid}->{'visibleName'} ;
-
-    return "$parent/$name" ;
-}
-
-###############################################################################
-#
-# Sort function - by fullname
-
-sub by_fullname($$)
-{
-    my $a = shift ;
-    my $b = shift ;
-
-    my $an = fullname( $a ) ;
-    my $bn = fullname( $b ) ;
-
-    return ( $an cmp $bn ) ;
-}
-
-###############################################################################
-#
-# Deleting files is done in two phases.
-# - Main program will call remove_uuid() to build a list of the file/directory
-#   names needing to be deleted.
-# - It will then call delete_files(), which will either remove them locally or
-#   via SSH, depending on whether or not SSH is being used to talk to a tablet.
-#
-# The delete_files() function builds a list of filenames to be deleted. When
-# the list becomes too big, or when it reaches the end of the list, it calls
-# delete_batch() to actually run the command to delete the files which are on
-# the list so far.
-
-sub delete_batch($)
-{
-    my $list = shift ;
-
-    ########################################
-    # Build the correct command line depending on whethere we are
-    # using SSH or not.
-
-    my $run = $using_ssh
-        ? "ssh root\@$tablet_ip \"cd $xochitl_dir && rm -r$list\""
-        :                        "cd $workdir     && rm -r$list"  ;
-
-    ########################################
-    # Run the command
-
-    $show_cmds && print "+ $run\n" ;
-
-    my $rv = system( $run ) ;
-    if ( $rv )
-    {
-        print "RV=$rv early exit\n" ;
-        exit ( $rv >> 8 ) ;
-    }
-}
-
-sub delete_files()
-{
-    print "\n===== Deleting files =====\n" ;
-
-    my $list    = '' ;
-    my $count   = 0 ;
-
-    ########################################
-    # Processing names in reverse order so that files within directories
-    # will be deleted before the directories themselves.
-
-    for my $f ( reverse sort keys %del )
-    {
-        ########################################
-        # Add this to the list of things to be deleted
-
-        $list .= " '$f'" ;
-        $count ++ ;
-
-        ########################################
-        # Command lines can only be a certain length, and we don't know how
-        # long it's going to be when it's done. If the list of filenames is
-        # 32K or longer, run the command and empty the list.
-
-        if ( length( $list ) >= 32768 )
-        {
-            delete_batch( $list ) ;
-            $list = '' ;
-        }
-    }
-
-    ########################################
-    # If any filenames remain to be deleted, run the command.
-
-    if ( $list ne '' )
-    {
-        delete_batch( $list ) ;
-        $list = '' ;
-    }
-
-    print "files deleted: $count\n" ;
-}
-
-###############################################################################
-#
-# Add the files/dirs for a UUID to the deletion list
-
-sub remove_uuid($)
-{
-    my $uuid = shift ;
-
-    if ( exists $uuid_files{$uuid} )
-    {
-        for my $f ( sort @{$uuid_files{$uuid}} )
-        {
-            $del{$f} = 1 ;
-        }
-    }
-
-    if ( exists $other_files{$uuid} )
-    {
-        $del{$uuid} = 1 ;
-    }
-}
-
-###############################################################################
-###############################################################################
-###############################################################################
-#
-# Process command line
-
-getopts( 'hOoDdau:xI:' , \%opt ) ;
-$opt{'h'} && usage() ;
-
-$do_orphans = ( $opt{'O'} ? 2 : ( $opt{'o'} ? 1 : 0 ) ) ;
-$do_delete  = ( $opt{'D'} ? 2 : ( $opt{'d'} ? 1 : 0 ) ) ;
-$do_all     = ( $opt{'a'} ? 1 : 0 ) ;
-$the_uuid   = lc ( $opt{'u'} || '' ) ;
-$show_cmds  = ( $opt{'x'} ? 1 : 0 ) ;
-$tablet_ip  = ( $opt{'I'} || $tablet_ip ) ;
-
-$workdir    = ( shift || '' ) ;
-
-########################################
-# If the command line didn't mention specific file types,
-# we are just showing a list.
-
-my $do_list = ( $do_orphans || $do_delete ) ? 0 : 1 ;
-
-###############################################################################
-#
-# If $workdir is empty, we need to create a temp directory, then SSH into
-# the tablet and copy the *.metadata and *.content files there.
-
-if ( $workdir eq '' )
-{
-    $using_ssh = 1 ;
-
-    ########################################
-    # Create a temp directory and work from there
-
-    my $temp_dir = tempdir( CLEANUP => 1 ) ;
-    chdir( $temp_dir )
-        or die "ERROR: chdir('$temp_dir'): $!\n" ;
-    $workdir = $temp_dir ;
-
-    ########################################
-    # Download all *.metadata and *.content files into temp directory
-
-    my $tablet_cmd = "cd $xochitl_dir ; tar cf - *.metadata *.content" ;
-
-    my $cmd = "ssh -ax"
-        . " -o 'HostKeyAlgorithms +ssh-rsa'"
-        . " -o 'PubkeyAcceptedKeyTypes +ssh-rsa'"
-        . " root\@$tablet_ip"
-        . " '$tablet_cmd'"
-        . " | tar xf -" ;
-
-    $show_cmds && print "+ $cmd\n" ;
-    system $cmd ;
-
-    ########################################
-    # Look at all file/directory names which *exist* on the tablet
-    # - we need the names but not the contents
-
-    $tablet_cmd = "cd $xochitl_dir ; find ." ;
-
-    $cmd = "ssh -ax"
-        . " -o 'HostKeyAlgorithms +ssh-rsa'"
-        . " -o 'PubkeyAcceptedKeyTypes +ssh-rsa'"
-        . " root\@$tablet_ip"
-        . " '$tablet_cmd'" ;
-
-    $show_cmds && print "+ $cmd\n" ;
-
-    open( F , "$cmd |" )
-        or die "ERROR: $cmd: $!\n" ;
-
-    while ( my $line = <F> )
-    {
-        chomp $line ;
-        next unless ( $line =~ s|^\./|| ) ;
-
-        ########################################
-        # If the name starts with a UUID, and a "UUID.metadata" file exists,
-        # remember that
-
-        my $uuid = '' ;
-        if ( $line =~ m|^([0-9a-f]{8}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{4}\-[0-9a-f]{12})|i )
-        {
-            my $u = $1 ;
-            if ( -f "$u.metadata" )
-            {
-                $uuid = lc( $1 ) ;
-            }
-        }
-
-        ########################################
-        # If a UUID was found, associate this file with it
-
-        if ( $uuid ne '' )
-        {
-            push( @{$uuid_files{$uuid}} , $line ) ;
-        }
-
-        ########################################
-        # Otherwise, this is a loose "orphan" file
-
-        else
-        {
-            $other_files{$line} = 1 ;
-        }
-    }
-
-    close F ;
-}
-
-###############################################################################
-#
-# Scan that directory
-
-read_metadata() ;
-
-########################################
-# Build a "tree" representing the directory structure
-
-for my $uuid ( sort keys %metadata )
-{
-    my $parent = $metadata{$uuid}->{'parent'} ;
-    push( @{$calc{$parent}->{'children'}} , $uuid ) ;
-}
-
-###############################################################################
-#
-# Whatever we're doing, the output will be a list.
-
-########################################
-# Figure out the list of UUIDs we'll be looking at
-
-my @sorted_uuids = () ;
-
-if ( $the_uuid )
-{
-    @sorted_uuids = ( $the_uuid ) ;
-}
-else
-{
-    @sorted_uuids = sort by_fullname keys %uuid_files ;
-}
-
-push( @sorted_uuids , sort keys %other_files ) ;
-
-############################################################
-# Process the list
-
-my $shown       = 0 ;
-my $deleting    = 0 ;
-
-for my $uuid ( @sorted_uuids )
-{
-    ########################################
-    # Figure out the status of this UUID
-
-    my $name    = '' ;
-    my $orphan  = 0 ;
-    my $deleted = 0 ;
-    my $trash   = 0 ;
-
-    if ( exists $metadata{$uuid} )
-    {
-        my $m   = $metadata{$uuid} ;
-
-        $name   = fullname( $uuid ) ;
-        if ( $metadata{$uuid}->{'type'} eq 'CollectionType' )
-        {
-            $name .= '/' ;
-        }
-
-        if ( $name =~ m|^Trash/| )
-        {
-            $trash = 1 ;
-        }
-
-        $deleted    = ( $m->{'deleted'} || 0 ) ;
-    }
-    else
-    {
-        $orphan = 1 ;
-        $name   = $uuid ;
-    }
-
-    ########################################
-    # Make sure this is a file we care about
-    # - If any of the "delete" options were specified, only show UUIDs which
-    #   match the criteria for deletion.
-    # - If none of the "delete" options were specified, $do_list will be set
-    #   instead, and we'll show everything but then
-
-    my $show = 0 ;
-
-    if ( $do_orphans )
-    {
-        if ( $orphan )
-        {
-            $show = 1 ;
-        }
-    }
-
-    if ( $do_delete )
-    {
-        if ( $deleted )
-        {
-            $show = 1 ;
-        }
-    }
-
-    if ( $do_list )
-    {
-        if ( $do_all || $orphan || $deleted )
-        {
-            $show = 1 ;
-        }
-    }
-
-    next unless ( $show ) ;
-
-    ############################################################
-    # Show the entry
-
-    ########################################
-    # Maybe show the header line first
-
-    unless ( $shown )
-    {
-        printf "%-37s %-6s %-8s %-7s %s\n" ,
-            'UUID' , 'Trash' , 'Deleted' , 'Orphan' , 'Name' ;
-    }
-    $shown ++ ;
-
-    ########################################
-    # Print what we figured out
-
-    printf "%-37s %-6s %-8s %-7s %s\n" ,
-        ( $orphan ? '' : $uuid ) ,
-        ( $trash   ? 'TRASH'   : '' ) ,
-        ( $deleted ? 'DELETED' : '' ) ,
-        ( $orphan  ? 'ORPHAN'  : '' ) ,
-        $name ;
-
-    ############################################################
-    # If we're CHANGING anything, do it.
-
-    ########################################
-    # If we're removing "orphaned" UUIDs/files, add this one to the list
-
-    if ( ( $do_orphans > 1 ) && $orphan )
-    {
-        remove_uuid( $uuid ) ;
-        $deleting ++ ;
-    }
-
-    ########################################
-    # If we're removing deleted UUIDs, add this one to the list
-
-    elsif ( ( $do_delete > 1 ) && $deleted )
-    {
-        remove_uuid( $uuid ) ;
-        $deleting ++ ;
-    }
-}
-
-###############################################################################
-#
-# Do the deed
-
-if ( $deleting > 0 )
-{
-    delete_files() ;
-}
+{{#include rm2-clean}}
 ```

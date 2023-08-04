@@ -4,6 +4,32 @@ This is a shell script which makes backups of the tablet's entire filesystem, un
 
 Each backup will be written to a directory *within* the `BACKUPS=` directory, whose name will be the UTC timestamp when the backup started.
 
+### Updates
+
+**2023-08-03**: For people with multiple reMarkable tablets, the script now has the *ability* to get the tablet's serial number and store the time-based backup files in a sub-directory of the `BACKUPS=` directory.
+
+To enable this, create a file called `.serial` in the `BACKUPS=` directory. For example ...
+
+```
+$ cd ~/rm2-backups/
+$ touch .serial
+```
+
+If the script sees this file, it will create directories for each tablet you use it with, and store each tablet's backups there.
+
+```
+$ cd ~/rm2-backups/
+$ ls -la
+total 0
+drwxr-xr-x@  5 jms1  staff   160 Aug  4 01:33 .
+drwxr-x---+ 70 jms1  staff  2240 Aug  4 01:35 ..
+-rw-r--r--@  1 jms1  staff     0 Aug  4 01:33 .serial
+drwxr-xr-x@  5 jms1  staff   160 Aug  4 01:33 RM110-147-nnnnn
+drwxr-xr-x@ 58 jms1  staff  1856 Aug  4 07:54 RM110-313-nnnnn
+```
+
+## Background
+
 ### Hard Links and inodes
 
 The script creates "hard-linked" backups.
@@ -95,174 +121,5 @@ This script is licensed under the MIT License.
 &#x21D2; [Download](rm2-backup)
 
 ```bash
-#!/bin/bash
-#
-# rm2-backup
-# John Simpson <jms1@jms1.net> 2023-06-29
-#
-# Back up the reMarkable 2 tablet, using rsync with the '--link-dest' option
-# so each backup only "contains" the files which changed from the previous
-# backup.
-#
-# Requirements:
-#
-# - SSH access to the tablet. Ideally you should have key-based authentication
-#   set up, otherwise you'll have to type the tablet's password when running
-#   the script.
-#
-# - The location where you're storing the backups should be on a UNIX-type
-#   filesystem which supports "hard links" (i.e. multiple filenames pointing
-#   to the same inode). This is true of most Linux filesytems, as well as the
-#   macOS "HFS", "HFS+", and "APFS" filesystems.
-#
-# - rsync version 3.1.1 or higher. In earlier versions (such as the version
-#   that Apple includes with macOS), the '--link-dest' option didn't use hard
-#   links, and every backup conained a full copy of the tablet's filesystem,
-#   which took longer and used a LOT more disk space.
-#
-# If you're using macOS and are stuck with its ancient version of rsync, you
-# can install a newer/working version from Homebrew. https://brew.sh/
-#
-# 2023-07-17 jms1 - Add 'latest' symlink in the backup directory.
-#
-###############################################################################
-#
-# The MIT License (MIT)
-#
-# Copyright (C) 2023 John Simpson
-#
-# Permission is hereby granted, free of charge, to any person obtaining a
-# copy of this software and associated documentation files (the “Software”),
-# to deal in the Software without restriction, including without limitation
-# the rights to use, copy, modify, merge, publish, distribute, sublicense,
-# and/or sell copies of the Software, and to permit persons to whom the
-# Software is furnished to do so, subject to the following conditions:
-#
-# The above copyright notice and this permission notice shall be included in
-# all copies or substantial portions of the Software.
-#
-# THE SOFTWARE IS PROVIDED “AS IS”, WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL
-# THE AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING
-# FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER
-# DEALINGS IN THE SOFTWARE.
-#
-###############################################################################
-
-########################################
-# How to access the tablet.
-# - The last character should be "/".
-
-TABLET="root@10.11.99.1:/"
-
-########################################
-# Where you plan to store the backup images.
-
-BACKUPS="$HOME/rm2-backups/"
-
-###############################################################################
-#
-# usage
-
-function usage {
-    MSG="${*:-}"
-
-    cat <<EOF
-$0 [options]
-
-Create a time-based backup of a reMarkable or reMarkable 2 tablet.
-
-Time-based backups are written to directories named after the time when the
-backup started. The script will identify the most recent backup, and any files
-which have not changed since that backup will be stored as "hard links" to the
-same file in the previous backup, rather than copying and storing another copy
-of the same file.
-
--t ___  Specify the root of the tablet's filesystem. This needs to be in a
-        format that 'rsync' understands.
-        Default: root@10.11.99.1:/
-
--b ___  Specify the directory in which the time-based backups will be written.
-        Default: $HOME/rm2-backup/
-
--h      Show this help message.
-
-EOF
-
-    if [[ -n "$MSG" ]]
-    then
-        echo "$MSG"
-        exit 1
-    fi
-
-    exit 0
-}
-
-###############################################################################
-###############################################################################
-###############################################################################
-#
-# Handle the command line
-
-while getopts ':hb:t:' OPT
-do
-    case $OPT in
-        h)  usage
-            ;;
-        b)  BACKUPS="${OPTARG}"
-            ;;
-        t)  TABLET="${OPTARG}"
-            ;;
-        *)  usage "ERROR: unknown option '-${OPTARG}'"
-            ;;
-    esac
-done
-
-shift $(( OPTIND - 1 ))
-
-########################################
-# Make sure the location where we're storing the backups, exists.
-
-if [[ ! -d "$BACKUPS" ]]
-then
-    echo "ERROR: '$BACKUPS' does not exist or is not a directory, cannot continue"
-    exit 1
-fi
-
-########################################
-# Get current timestamp, used for the backup directory name.
-
-NOW="$( date -u '+%Y-%m-%dT%H%M%SZ' )"
-
-########################################
-# Find the most recent previous backup.
-# - This assumes that the timestamps all start with "2", and that the 'ls'
-#   command sorts the names correctly. THIS WILL BREAK in the year 3000.
-
-PREV="$( ls -d1 "$BACKUPS"/2* | tail -1 )"
-if [[ -n "$PREV" ]]
-then
-    LINKPREV="--link-dest=$PREV"
-else
-    LINKPREV=""
-fi
-
-###############################################################################
-#
-# Back up the files
-
-set -x
-
-rsync -avzHl $LINKPREV  \
-    --exclude   /dev    \
-    --exclude   /proc   \
-    --exclude   /run    \
-    --exclude   /sys    \
-    "$TABLET"         \
-    "${BACKUPS%/}/$NOW/"
-
-rm -f "${BACKUPS%/}/latest"
-ln -s "$NOW" "${BACKUPS%/}/latest"
+{{#include rm2-backup}}
 ```
