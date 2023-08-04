@@ -15,7 +15,7 @@
     - [Updating the Firmware](info/updates.md)
     - [RCU](info/rcu.md)
     - [goMarkableStream](info/goMarkableStream.md)
-    - [Calibre]()
+    - [Calibre](info/calibre.md)
     - [Toltec]()
 
 - [Templates](templates/index.md)
