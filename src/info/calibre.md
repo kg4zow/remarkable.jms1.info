@@ -101,7 +101,7 @@ The important and/or useful settings are:
     * Standard font: which font "family" to use by default (serif/sans/mono)
     * Default font size: 20px
     * Monospace font size: 16px
-    * At the bottom, under "Page margins", set left/right margins. I normally use `54pt` for whichever edge the menu appears on (i.e. Left, if the tablet is set for "right handed"), and `18pt` for the others.
+    * At the bottom, under "Page margins", set the page margins. I normally use `72pt` for whichever edge the menu appears on (i.e. left edge, if the tablet is set for "right handed"), and `18pt` for the others.
 
     ![convert-3.png](../images/convert-3.png)
 
@@ -127,4 +127,6 @@ Upload the PDF file to your tablet.
 
 ### Notes
 
-[Liberation Fonts](https://github.com/liberationfonts/liberation-fonts/releases) are open-source fonts whose characters are designed to have the exact same metrics (character sizes, spacing, etc.) as "Times New Roman", "Arial", and "Courier New", all of which are copyrighted and cannot legally be distributed in a PDF file. I use them in the PDFs I create, both for legal reasons *and* because I think they look good.
+* [Liberation Fonts](https://github.com/liberationfonts/liberation-fonts/releases) are open-source fonts whose characters are designed to have the exact same metrics (character sizes, spacing, etc.) as "Times New Roman", "Arial", and "Courier New", all of which are copyrighted and cannot legally be distributed in a PDF file. I use them in the PDFs I create, both for legal reasons *and* because I think they look good.
+
+* [Little Brother](https://craphound.com/littlebrother/about/) (the book I used as an example in the screenshots) is copyrighted. The author, [Cory Doctorow](https://craphound.com/bio/), is an even bigger believer in the idea of "open source" than I am, and offers free downloads of the ebook versions of most of his books.
