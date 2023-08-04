@@ -101,25 +101,27 @@ Looks like a list of the individual files contained within an EPUB file.
 ...
 ```
 
-I'm *guessing* this file is generated when an EPUB file is uploaded, and then used when the file is shown on screen.
+I'm *guessing* this file is generated when an EPUB file is uploaded and converted to PDF, and then just not deleted afterward?
 
 ### `UUID.pdf`
 
 For documents which were uploaded as PDF files, this appears to be the original `.pdf` file, renamed to the UUID.
 
-For documents which were uploaded as EPUB files, this appears to be a copy of the ebook, converted to PDF. (At least, every EPUB file I've downloaded seems to have a `.pdf` file next to it, and I never uploaded PDF versions of those books.)
-
-Maybe when you upload an EPUB, the reMarkable tablet converts it to a PDF behind the scenes?
+For documents which were uploaded as EPUB files, this is a copy of the ebook, converted to PDF. This PDF file is what the reMarkable software actually shows on the screen when you're "reading" an EPUB file.
 
 ### `UUID/` (Directory)
 
-This directory contains `UUID.rm` files for each page.
+This directory contains `UUID.rm` files for each page. These files contain the actual pen strokes you've written on each page.
 
-Note that the page's UUIDs are different from the notebook's UUID.
+Found a [reddit post](https://www.reddit.com/r/RemarkableTablet/comments/15dc1du/comment/ju220pe) with a link to a [blog post](https://plasma.ninja/blog/devices/remarkable/binary/format/2017/12/26/reMarkable-lines-file-format.html) which details the file format. Looks like earlier verisons stored the pen strokes for all pages in a single file, while file format v3 stores each page's pen strokes in a separate file.
+
+Note that the page's UUIDs are different from the notebook's UUID. The UUIDs for the individual pages are stored in the `UUID.content` file (see above).
 
 ### `UUID.thumbnails/` (Directory)
 
-This directory contains thumbnail images for each page. These are `.jpg` files, 280x374 pixels. The images appear to all be greyscale.
+This directory contains thumbnail images for each page. These files use the same per-page UUIDs as the "lines files" in the `UUID/` directory.
+
+The thumbnails are 280x374 pixel `.jpg` files.
 
 ## Deleted Files
 
