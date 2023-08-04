@@ -28,6 +28,8 @@
 #
 # 2023-07-17 jms1 - Add 'latest' symlink in the backup directory.
 #
+# 2023-08-04 jms1 - Add serial number to backup directory
+#
 ###############################################################################
 #
 # The MIT License (MIT)
@@ -56,14 +58,13 @@
 
 ########################################
 # How to access the tablet.
-# - The last character should be "/".
 
-TABLET="root@10.11.99.1:/"
+TABLET="10.11.99.1"
 
 ########################################
 # Where you plan to store the backup images.
 
-BACKUPS="$HOME/rm2-backups/"
+BACKUPS="$HOME/rm2-backups"
 
 ###############################################################################
 #
@@ -83,9 +84,8 @@ which have not changed since that backup will be stored as "hard links" to the
 same file in the previous backup, rather than copying and storing another copy
 of the same file.
 
--t ___  Specify the root of the tablet's filesystem. This needs to be in a
-        format that 'rsync' understands.
-        Default: root@10.11.99.1:/
+-t ___  Specify the tablet's IP address.
+        Default: 10.11.99.1
 
 -b ___  Specify the directory in which the time-based backups will be written.
         Default: $HOME/rm2-backup/
@@ -125,14 +125,30 @@ done
 
 shift $(( OPTIND - 1 ))
 
+###############################################################################
+#
+# Maybe get the connected tablet's serial number
+
+if [[ -f "$BACKUPS/.serial" ]]
+then
+    BDEV=$( set -x ; ssh "root@$TABLET" mount | awk '/\/home/{print substr($1,1,index($1,"p")-1)}' )
+    SERIAL=$( set -x ; ssh "root@$TABLET" "dd if=${BDEV}boot1 bs=1 skip=4 count=15 2>/dev/null" )
+else
+    SERIAL=""
+fi
+
 ########################################
 # Make sure the location where we're storing the backups, exists.
+
+BACKUPS="${BACKUPS%/}"
 
 if [[ ! -d "$BACKUPS" ]]
 then
     echo "ERROR: '$BACKUPS' does not exist or is not a directory, cannot continue"
     exit 1
 fi
+
+mkdir -p "$BACKUPS/$SERIAL"
 
 ########################################
 # Get current timestamp, used for the backup directory name.
@@ -144,7 +160,7 @@ NOW="$( date -u '+%Y-%m-%dT%H%M%SZ' )"
 # - This assumes that the timestamps all start with "2", and that the 'ls'
 #   command sorts the names correctly. THIS WILL BREAK in the year 3000.
 
-PREV="$( ls -d1 "$BACKUPS"/2* | tail -1 )"
+PREV="$( ls -d1 "$BACKUPS/$SERIAL"/2* | tail -1 )"
 if [[ -n "$PREV" ]]
 then
     LINKPREV="--link-dest=$PREV"
@@ -163,8 +179,8 @@ rsync -avzHl $LINKPREV  \
     --exclude   /proc   \
     --exclude   /run    \
     --exclude   /sys    \
-    "$TABLET"         \
-    "${BACKUPS%/}/$NOW/"
+    "root@$TABLET:/"    \
+    "$BACKUPS/$SERIAL/$NOW/"
 
-rm -f "${BACKUPS%/}/latest"
-ln -s "$NOW" "${BACKUPS%/}/latest"
+rm -f "$BACKUPS/$SERIAL/latest"
+ln -s "$NOW" "$BACKUPS/$SERIAL/latest"
