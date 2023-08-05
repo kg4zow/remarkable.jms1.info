@@ -27,7 +27,11 @@ push: rsync
 #   https://jms1.keybase.pub/kbsites/ for more specific examples.
 
 rsync: build
-	rsync -avz --delete book/ /keybase/team/jms1team.sites/remarkable.jms1.info/
+	rsync -avz --delete \
+		--exclude .DS_Store \
+		--exclude ._* \
+		book/ \
+		/keybase/team/jms1team.sites/remarkable.jms1.info/
 
 ########################################
 # IF you're going to publish the generated book to GitHub Pages, using the
