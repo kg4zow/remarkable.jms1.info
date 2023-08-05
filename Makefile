@@ -28,10 +28,10 @@ push: rsync
 
 rsync: build
 	rsync -avz --delete \
-		--exclude .DS_Store \
-		--exclude ._* \
 		book/ \
 		/keybase/team/jms1team.sites/remarkable.jms1.info/
+	find /keybase/team/jms1team.sites/remarkable.jms1.info \
+		-name .DS_Store -o -name '._*' -delete
 
 ########################################
 # IF you're going to publish the generated book to GitHub Pages, using the
