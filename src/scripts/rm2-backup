@@ -30,6 +30,8 @@
 #
 # 2023-08-04 jms1 - Add serial number to backup directory
 #
+# 2023-08-05 jms1 - *always* use serial number in backup directory name
+#
 ###############################################################################
 #
 # The MIT License (MIT)
@@ -127,15 +129,10 @@ shift $(( OPTIND - 1 ))
 
 ###############################################################################
 #
-# Maybe get the connected tablet's serial number
+# Get the connected tablet's serial number
 
-if [[ -f "$BACKUPS/.serial" ]]
-then
-    BDEV=$( set -x ; ssh "root@$TABLET" mount | awk '/\/home/{print substr($1,1,index($1,"p")-1)}' )
-    SERIAL=$( set -x ; ssh "root@$TABLET" "dd if=${BDEV}boot1 bs=1 skip=4 count=15 2>/dev/null" )
-else
-    SERIAL=""
-fi
+BDEV=$( set -x ; ssh "root@$TABLET" mount | awk '/\/home/{print substr($1,1,index($1,"p")-1)}' )
+SERIAL=$( set -x ; ssh "root@$TABLET" "dd if=${BDEV}boot1 bs=1 skip=4 count=15 2>/dev/null" )
 
 ########################################
 # Make sure the location where we're storing the backups, exists.

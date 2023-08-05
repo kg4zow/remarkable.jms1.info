@@ -6,27 +6,31 @@ Each backup will be written to a directory *within* the `BACKUPS=` directory, wh
 
 ### Updates
 
-**2023-08-03**: For people with multiple reMarkable tablets, the script now has the *ability* to get the tablet's serial number and store the time-based backup files in a sub-directory of the `BACKUPS=` directory.
-
-To enable this, create a file called `.serial` in the `BACKUPS=` directory. For example ...
-
-```
-$ cd ~/rm2-backups/
-$ touch .serial
-```
-
-If the script sees this file, it will create directories for each tablet you use it with, and store each tablet's backups there.
+**2023-08-05**: The script now includes the tablet's serial number in the directory when creating the backup images.
 
 ```
 $ cd ~/rm2-backups/
 $ ls -la
 total 0
 drwxr-xr-x@  5 jms1  staff   160 Aug  4 01:33 .
-drwxr-x---+ 70 jms1  staff  2240 Aug  4 01:35 ..
--rw-r--r--@  1 jms1  staff     0 Aug  4 01:33 .serial
-drwxr-xr-x@  5 jms1  staff   160 Aug  4 01:33 RM110-147-nnnnn
-drwxr-xr-x@ 58 jms1  staff  1856 Aug  4 07:54 RM110-313-nnnnn
+drwxr-x---+ 69 jms1  staff  2208 Aug  5 10:32 ..
+drwxr-xr-x@  7 jms1  staff   224 Aug  4 19:12 RM110-147-nnnnn
+drwxr-xr-x@ 61 jms1  staff  1952 Aug  5 11:07 RM110-313-nnnnn
 ```
+
+There *was* a version here for a few days which requried that you create a `.serial` file in order to enable this functionality. This is no longer needed, the script will *always* include the serial number now.
+
+If you were using an older version of the script which didn't include the serial number, you may want to manually adjust your current backup directory before running the updated script. Otherwise, the first backup using the new script will be a "full" backup, because there won't be a "previous" backup for it to hard-link against.
+
+The process will look something like this:
+
+```
+$ cd ~/rm2-backups/
+$ mkdir RM110-313-nnnnn
+$ mv 2* latest RM110-313-nnnnn/
+```
+
+After doing this, the script will "find" the previous backup directory correctly and use it for "hard links" to files which haven't changed since that backup.
 
 ## Background
 
@@ -42,11 +46,13 @@ Most Unix-type filesystems (including Mac's HFS+ and APFS, as well as ext2/3/4, 
 
 * **A data structure known as an "inode"** (normally written with a lowercase "I"), which contains ...
 
-    * A list of the disk blocks containing the file's data
+    * A list of the disk blocks containing the file's data.
     * The file's size, ownership, permissions, timestamps, and other "metadata".
     * **inodes do not contain filenames.**
 
 * The filesystem's directory structure contains a list of filenames, along with the *inode that each name points to*.
+
+    * Directories are stored the same way as regular files, i.e. inodes pointing to data blocks. Each data block contains a list of filenames and the inode numbers that name points to.
 
 **When two or more filenames point to the same inode, they are said to be "hard links" of each other.**
 
@@ -56,9 +62,7 @@ The important thing for *this* discussion is, because hard-linked files *are* th
 
 > &#x2139;&#xFE0F; **Symbolic Links**
 >
-> A symbolic link, or "symlink", is a file whose metadata says that it's a symlink, and whose contents are a path to the file it points to. The kernel's filesystem code recognizes the symlink flag and knows to "follow" the link when accessing files and directories.
->
-> A symlink is a separate file, with its own inode number and its own metadata. The "contents" of a symlink are the pathname that it points to, and the "size" of a symlink is the length of that pathname.
+> A symbolic link, or "symlink", is a file whose metadata says that it's a symlink, and whose contents are a path to the file it points to. The kernel's filesystem code recognizes the symlink flag and knows how to "follow" the link when accessing files and directories.
 
 ### How the script works
 
@@ -89,7 +93,7 @@ $ du -sh *
 
 Other than the first directory (which was the first backup I made of the tablet), the sizes shown here for each directory are just the files which changed since the previous backup.
 
-If you run separate `du` commands for each directory, each execution of `du` won't be aware of which files were counted by the previous execution, so it will count the files in that directory.
+If you run separate `du` commands for each directory, each execution of `du` won't be aware of which files were counted by the previous execution, so it will count the files in that directory, without taking other directories into account.
 
 ```
 $ cd ~/rm2-backup/
