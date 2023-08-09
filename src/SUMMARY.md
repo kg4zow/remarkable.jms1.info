@@ -22,6 +22,7 @@
     - [Basic Templates](templates/basic.md)
     - [Simple Cover Page](templates/cover-page.md)
     - [Calendars - Month](templates/calendar.md)
+    - [Bowling](templates/bowling.md)
 
 - [Scripts](scripts/index.md)
     - [rm2-backup](scripts/rm2-backup.md)
