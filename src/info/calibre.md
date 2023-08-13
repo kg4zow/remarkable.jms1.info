@@ -65,7 +65,25 @@ In order to avoid this, I've started manually converting EPUB files to PDF when 
 
 This means I'm able to control the fonts, font size, line spacing, and margins. Also, the EPUB-to-PDF conversion process in Calibre has never left me with diagrams missing, and I can verify the results of the conversion on the computer's screen before uploading the PDF to the tablet.
 
-## Manual Conversion
+## Converting EPUB files to PDF
+
+There are several programs out there which *can* convert EPUB files to PDF. The two I've used are [Pandoc](https://pandoc.org/) and [Calibre](https://calibre-ebook.com/). It's been several years so it's possible things have changed, but from what I remember, I didn't really like the results I got from Pandoc when I tried it. So ever since then I've stuck with Calibre.
+
+### Calibre - Command Line
+
+Calibre comes with a collection of command line tools, which Calibre uses to run the the "jobs" that it performs in the background. Once of these is called `ebook-convert`, which (as the name suggests) converts ebook files from one format to another.
+
+All of the options that you *can* set via the GUI, can also be set using command line options when running the command. [The Calibre documentation](https://manual.calibre-ebook.com/generated/en/ebook-convert.html) explains which command line options can be used. Note that some options are only available depending on the input and output file types.
+
+Rather than trying to memorize all of the options I need, I wrote a script which generates the right command line.
+
+&#x21D2; [The `rm2-make-pdf` script](../scripts/rm2-make-pdf.md)
+
+### Calibre - GUI
+
+If you're more comfortable using the GUI to do it by hand, here's my *attempt* at documenting the options.
+
+> I'm a "command line guy" by nature, I don't normally write documentation about using a GUI like this, so if you notice anything I missed or which isn't explained clearly, please let me know so I can update the page.
 
 Start by adding the EPUB (or other ebook) file to Calibre's library. In my case this is easy, because I use Calbre *as* the primary place to store all of my ebooks.
 
@@ -84,11 +102,11 @@ The important and/or useful settings are:
 * Look &amp; feel
 
     * Disable font size rescaling: NO
-    * Base font size: 20pt
+    * Base font size: 12pt (try this first, preview the resulting PDF, and adjust up/down as needed)
 
 * Page setup
 
-    * Output profile: **Tablet**
+    * Output profile: **Generic e-ink HD**
     * Input profile: **Default profile**
 
 * PDF output
@@ -121,12 +139,12 @@ Choose PDF as the format, and click "OK".
 
 ![convert-6.png](../images/convert-6.png)
 
-Save the file where you want it. In my case I normally choose my "Desktop" folder. Calibre creates a directory named after the author, containing a directory named after the book title, which contains the PDF file (and possibly a few other related files, like a copy of the cover art as a JPG file).
+Save the file where you want it. (I normally choose my "Desktop" folder so I know where to find it.) Calibre creates a directory named after the author, containing a directory named after the book title, which contains the PDF file (and possibly a few other related files, like a copy of the cover art as a JPG file).
 
 Upload the PDF file to your tablet.
 
 ### Notes
 
-* [Liberation Fonts](https://github.com/liberationfonts/liberation-fonts/releases) are open-source fonts whose characters are designed to have the exact same metrics (character sizes, spacing, etc.) as "Times New Roman", "Arial", and "Courier New", all of which are copyrighted and cannot legally be distributed in a PDF file. I use them in the PDFs I create, both for legal reasons *and* because I think they look good.
+* [Liberation Fonts](https://github.com/liberationfonts/liberation-fonts/releases) are open-source fonts whose characters are designed to have the exact same metrics (character sizes, spacing, etc.) as "Times New Roman", "Arial", and "Courier New", all of which are copyrighted and cannot legally be distributed in a PDF file. I use them in the PDFs I create, both for legal reasons *and* because I like how they look.
 
-* [Little Brother](https://craphound.com/littlebrother/about/) (the book I used as an example in the screenshots) is copyrighted. The author, [Cory Doctorow](https://craphound.com/bio/), is an even bigger believer in the idea of "open source" than I am, and offers free downloads of the ebook versions of most of his books.
+* [Little Brother](https://craphound.com/littlebrother/about/) (the book I used as an example in the screenshots) is copyrighted. The author, [Cory Doctorow](https://craphound.com/bio/), is an even bigger believer in "open source" than I am, and offers free downloads of the ebook versions of most of his books, including the entire "Little Brother" series.

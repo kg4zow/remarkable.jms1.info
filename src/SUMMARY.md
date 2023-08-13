@@ -28,5 +28,6 @@
     - [rm2-backup](scripts/rm2-backup.md)
     - [rm2-list](scripts/rm2-list.md)
     - [rm2-clean](scripts/rm2-clean.md)
+    - [rm2-make-pdf](scripts/rm2-make-pdf.md)
 
 - [Hacks](hacks/index.md)
