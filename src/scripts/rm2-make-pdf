@@ -15,6 +15,8 @@
 #   PDF file with.
 #   https://remarkable.com/
 #
+# 2023-08-15 jms1 - fixed handling of title/author values containing spaces
+#
 ###############################################################################
 #
 # The MIT License (MIT)
@@ -160,27 +162,26 @@ fi
 # Build a string containing options which may or may not need to be included
 # in the final 'ebook-convert' command line.
 
-# Array of option strings
+# Array of options
 OPTA=()
 
 if [[ -n "$TITLE" ]]
 then
-    OPTA+=( "--title \"$TITLE\"" )
+    OPTA+=( '--title' )
+    OPTA+=( "\"$TITLE\"" )
 fi
 
 if [[ -n "$AUTHOR" ]]
 then
-    OPTA+=( "--author \"$AUTHOR\"" )
+    OPTA+=( '--authors' )
+    OPTA+=( "\"$AUTHOR\"" )
 fi
 
 if $H1_NO_SPLIT
 then
-    OPTA+=( '--page-breaks-before /' )
-    OPTA+=( '--chapter /' )
+    OPTA+=( '--page-breaks-before' '/' )
+    OPTA+=( '--chapter' '/' )
 fi
-
-# Combine all OPTA items into a string separated by spaces
-OPTIONS="${OPTA[@]}"
 
 ###############################################################################
 #
@@ -201,7 +202,7 @@ fi
     --embed-all-fonts               \
     --subset-embedded-fonts         \
     --unsmarten-punctuation         \
-    $OPTIONS                        \
+    "${OPTA[@]}"                    \
     --custom-size                   1404x1872 \
     --unit                          devicepixel \
     --pdf-sans-family               'Liberation Sans' \
