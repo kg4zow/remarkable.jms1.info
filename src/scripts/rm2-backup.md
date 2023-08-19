@@ -4,9 +4,11 @@ This is a shell script which makes backups of the tablet's entire filesystem, un
 
 Each backup will be written to a directory *within* the `BACKUPS=` directory, whose name will be the UTC timestamp when the backup started.
 
-### Updates
+## Updates
 
-**2023-08-05**: The script now includes the tablet's serial number in the directory when creating the backup images.
+### 2023-08-05
+
+The script now includes the tablet's serial number in the directory when creating the backup images.
 
 ```
 $ cd ~/rm2-backups/
@@ -31,6 +33,15 @@ $ mv 2* latest RM110-313-nnnnn/
 ```
 
 After doing this, the script will "find" the previous backup directory correctly and use it for "hard links" to files which haven't changed since that backup.
+
+### 2023-08-19
+
+The script now has a *list* of default locations for where to store backups. Currently this list is:
+
+* `/Volumes/rm2-backups/`
+* `$HOME/rm2-backups/`
+
+I added this because I'm figuring out how to store my tablets' backups in an encrypted macOS disk image, which gets mounted as `/Volumes/rm2-backups/` *when* it's mounted. This allows me to store the backups on a shared network disk, so no matter which computer I run `rm2-backup` on, the backups are stored on the shared disk at home.
 
 ## Background
 

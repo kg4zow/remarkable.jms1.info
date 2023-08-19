@@ -16,7 +16,7 @@
 # - The location where you're storing the backups should be on a UNIX-type
 #   filesystem which supports "hard links" (i.e. multiple filenames pointing
 #   to the same inode). This is true of most Linux filesytems, as well as the
-#   macOS "HFS", "HFS+", and "APFS" filesystems.
+#   macOS "HFS+" and "APFS" filesystems.
 #
 # - rsync version 3.1.1 or higher. In earlier versions (such as the version
 #   that Apple includes with macOS), the '--link-dest' option didn't use hard
@@ -31,6 +31,8 @@
 # 2023-08-04 jms1 - Add serial number to backup directory
 #
 # 2023-08-05 jms1 - *always* use serial number in backup directory name
+#
+# 2023-08-18 jms1 - Adding a LIST of default backup directory locations.
 #
 ###############################################################################
 #
@@ -65,8 +67,28 @@ TABLET="10.11.99.1"
 
 ########################################
 # Where you plan to store the backup images.
+# - The script walks through this list. The first location which exists as a
+#   directory, will be used.
+# - If none of them exist, the script will fail.
+# - The '-b' option overrides this list.
 
-BACKUPS="$HOME/rm2-backups"
+BACKUP_LOCATIONS=(
+    "/Volumes/rm2-backups"
+    "$HOME/rm2-backups"
+)
+
+###############################################################################
+#
+# Coloured line functions
+
+function blueline {
+    if [[ -t 1 ]]
+    then
+        printf "\e[0;1;37;44m%s\e[0K\e[0m\n" "$*"
+    else
+        echo "===== $* ====="
+    fi
+}
 
 ###############################################################################
 #
@@ -90,7 +112,15 @@ of the same file.
         Default: 10.11.99.1
 
 -b ___  Specify the directory in which the time-based backups will be written.
-        Default: $HOME/rm2-backup/
+        Default: the first of the following which exists as a directory:
+EOF
+
+    for D in ${BACKUP_LOCATIONS[@]}
+    do
+        echo "        - $D"
+    done
+
+    cat <<EOF
 
 -h      Show this help message.
 
@@ -111,6 +141,8 @@ EOF
 #
 # Handle the command line
 
+BACKUPS=""
+
 while getopts ':hb:t:' OPT
 do
     case $OPT in
@@ -129,21 +161,47 @@ shift $(( OPTIND - 1 ))
 
 ###############################################################################
 #
+# Figure out where we're storing the backups
+
+if [[ -z "$BACKUPS" ]]
+then
+    for D in "${BACKUP_LOCATIONS[@]}"
+    do
+        if [[ -d "$D" ]]
+        then
+            BACKUPS="$D"
+            break
+        fi
+    done
+
+    if [[ -z "$BACKUPS" ]]
+    then
+        usage "ERROR: no backup location specified or found, cannot continue"
+    fi
+fi
+
+########################################
+# Make sure the backup location exists
+# - may not be true if it was specified using the '-b' option
+
+BACKUPS="${BACKUPS%/}"
+
+if [[ ! -d "$BACKUPS" ]]
+then
+    usage "ERROR: backup location '$BACKUPS' does not exist or is not a directory, cannot continue"
+fi
+
+blueline "Backing up to $BACKUPS"
+
+###############################################################################
+#
 # Get the connected tablet's serial number
 
 BDEV=$( set -x ; ssh "root@$TABLET" mount | awk '/\/home/{print substr($1,1,index($1,"p")-1)}' )
 SERIAL=$( set -x ; ssh "root@$TABLET" "dd if=${BDEV}boot1 bs=1 skip=4 count=15 2>/dev/null" )
 
 ########################################
-# Make sure the location where we're storing the backups, exists.
-
-BACKUPS="${BACKUPS%/}"
-
-if [[ ! -d "$BACKUPS" ]]
-then
-    echo "ERROR: '$BACKUPS' does not exist or is not a directory, cannot continue"
-    exit 1
-fi
+# Make sure the tablet's serial number directory exists
 
 mkdir -p "$BACKUPS/$SERIAL"
 
