@@ -45,25 +45,31 @@ Most ebook readers allow EPUB files to be re-formatted on the fly. This would be
 
 * Some annotations are made because of where they are *relative to the page*. For example, somebody might write in an empty space at the bottom of a page, because that part of the page happens to be empty.
 
-* Other annotations are made at a position *relative to the text* in the underlying file. For example, if you highlight a sentence, the highlight "belongs with" that particular sentence.
+* Other annotations are made at a position *relative to the text* in the underlying file. For example, if you highlight a sentence or draw a circle around a word, that annotation "belongs with" that part of the text
 
 Some annotations are relative to the page, and others are relative to the text. Think about what would happen if the text were re-formatted on the fly. For example, if the font was made larger, the lines of text would "shift down" on each page, and the text at the bottom of a page would be moved to the top of the next page. There's no way for the tablet to "know" which annotations to move with the text, or which piece of text each annotation should be "attached to".
 
-So.
+### Conversion on the tablet
 
-Instead of allowing EPUB files to be re-formatted on the fly, the reMarkable software "locks" the text on each page so it can't be moved. This way, all annotations can be "relative to the page", and also be "relative to the text" at the same time.
+This conversions done by the tablet ... have issues. I had two different books where some of the diagrams were *missing* when I read the file on my tablet. And in one of these files, the text was so large that tables of pre-formatted text ended up being "wrapped" on the page and almost unreadable. Being able to make the text smaller (a *little* bit smaller anyway) would have made that particular table a lot easier to read. (Both of the files where this happened are copyrighted, otherwise I would include them here so you can see for yourself what happened.)
 
-Because the tablet already needed to be able to show PDF's, they decided to **convert all EPUBs to PDF** when they're uploaded, and just show the PDF whenever the user wants to work with the file.
+At first I didn't think the tablet *had* a way to change the text formatting, because it's hidden in a sub-menu that otherwise never gets used. However, when I pointed this out [on Reddit](https://www.reddit.com/r/RemarkableTablet/comments/15vi742/comment/jwydeye/), somebody pointed out that they were *looking at the menu* where these settings could be changed, so I went back and searched again. I finally found them, hidden in a sub-menu.
 
-### Automatic conversion on the tablet
+![text-settings-menu.png](../images/text-settings-menu.png)
 
-This conversion process ... has issues. I had two different books where some of the diagrams were *missing* when I read the file on my tablet. And in one of these files, the text was so large that tables of pre-formatted text ended up being "wrapped" on the page and almost unreadable. Being able to make the text smaller (a *little* bit smaller anyway) would have made that particular table a lot easier to read. (Both of the files where this happened are copyrighted, otherwise I would include them here so you can see for yourself what happened.)
+On this panel, you can change the text size, font, turn justification on/off, set margins (small/medium/large), and set line spacing (tight/normal/wide). The list of fonts isn't huge, although I've read that you *can* upload additional fonts under `/usr/share/fonts/`, however I don't see where there would be room for more than one additional font on this panel. (At some point I'll have to try adding more fonts and see if the panel re-sizes to allow more font names on the screen.)
 
-The conversion process also doesn't offer you any way to control the font (or font *size*), margins, line spacing, or any of the other things that "real" ebook readers let you adjust on the fly. In fact, it doesn't really tell you *that* it's doing a conversion at all. This may be by design, but I feel like it should at least *tell* the user that the file is being converted, even if it's only in the documentation. (To be fair, this may *be* in the documentation somewhere, but if so, I haven't seen it.)
+![text-settings-panel.png](../images/text-settings-panel.png)
 
-In order to avoid this, I've started manually converting EPUB files to PDF when I want to upload them to my tablet.
+The first time you try to change anything, the tablet will warn you that if you continue, your existing annotations may end up not being in the same locations *relative to the text*.
 
-This means I'm able to control the fonts, font size, line spacing, and margins. Also, the EPUB-to-PDF conversion process in Calibre has never left me with diagrams missing, and I can verify the results of the conversion on the computer's screen before uploading the PDF to the tablet.
+![misalignment-may-occur.png](../images/misalignment-may-occur.png)
+
+While you're changing settings, you will not see a "live preview" of what the page will look like. After you save changes, the tablet will generate a new PDF, but it won't *use* the new PDF (i.e. you won't see the new settings on-screen) until you close the file, open a new file, close that, and re-open the first file.
+
+Because of the limited formatting options, I normally convert EPUB files to PDF on a computer, and then upload the PDFs to the tablet.
+
+This allows me to use any fonts that I have on my computer, as well as control the text size, line spacing, and margins a lot more precisely than what the tablet offers. Also, Calibre's EPUB-to-PDF conversion process has never left me with diagrams missing, and I can preview the results of the conversion on the computer's screen before uploading the PDF to the tablet.
 
 ## Converting EPUB files to PDF
 
@@ -73,9 +79,9 @@ There are several programs out there which *can* convert EPUB files to PDF. The 
 
 Calibre comes with a collection of command line tools, which Calibre uses to run the the "jobs" that it performs in the background. Once of these is called `ebook-convert`, which (as the name suggests) converts ebook files from one format to another.
 
-All of the options that you *can* set via the GUI, can also be set using command line options when running the command. [The Calibre documentation](https://manual.calibre-ebook.com/generated/en/ebook-convert.html) explains which command line options can be used. Note that some options are only available depending on the input and output file types.
+All of the options that you *can* set via the GUI, can also be set using command line options when running the command. [The Calibre documentation](https://manual.calibre-ebook.com/generated/en/ebook-convert.html) explains the command line options available. Note that some options are only available depending on the input and output file types.
 
-Rather than trying to memorize all of the options I need, I wrote a script which generates the right command line.
+Rather than trying to memorize all of the options I normally use, I wrote a script which generates the right command line.
 
 &#x21D2; [The `rm2-make-pdf` script](../scripts/rm2-make-pdf.md)
 
@@ -85,9 +91,9 @@ If you're more comfortable using the GUI to do it by hand, here's my *attempt* a
 
 > I'm a "command line guy" by nature, I don't normally write documentation about using a GUI like this, so if you notice anything I missed or which isn't explained clearly, please let me know so I can update the page.
 
-Start by adding the EPUB (or other ebook) file to Calibre's library. In my case this is easy, because I use Calbre *as* the primary place to store all of my ebooks.
+Start by adding the EPUB (or other ebook) file to Calibre's library. In my case this is easy, because I use Calbre *as* the primary place to store all of my ebooks, and I make it a point to have EPUB versions of every book where that is possible. (The only time it's not is when I've purchased a book which is *only* available as a PDF.)
 
-Right-click on the file you want to convert, "Convert books", "Convert individually".
+Right-click on the file you want to convert, "Convert books" &#x2192; "Convert individually".
 
 ![convert-1.png](../images/convert-1.png)
 
@@ -119,7 +125,7 @@ The important and/or useful settings are:
     * Standard font: which font "family" to use by default (serif/sans/mono)
     * Default font size: 20px
     * Monospace font size: 16px
-    * At the bottom, under "Page margins", set the page margins. I normally use `72pt` for whichever edge the menu appears on (i.e. left edge, if the tablet is set for "right handed"), and `18pt` for the others.
+    * At the bottom, under "Page margins", set the page margins. I normally use `72pt` (1 inch) for whichever edge the menu appears on (i.e. left edge, if the tablet is set for "right handed"), and `18pt` (&#xBC; inch) for the others.
 
     ![convert-3.png](../images/convert-3.png)
 
@@ -131,7 +137,7 @@ Calibre will start a background job to do the conversion. When it finishes, the 
 
 ![convert-4.png](../images/convert-4.png)
 
-Once the PDF has been created, right-click the file again, and choose "Save to disk" &#x2192 "Save single format to disk..."
+Once the PDF has been created, right-click the file again, and choose "Save to disk" &#x2192; "Save single format to disk..."
 
 ![convert-5.png](../images/convert-5.png)
 
