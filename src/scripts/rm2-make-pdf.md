@@ -1,4 +1,4 @@
-# rm2-make-pdf
+# The `rm2-make-pdf` Script
 
 This is a shell script which uses [Calibre](https://calibre-ebook.com/)'s `ebook-convert` utility to convert any file that Calibre knows how to read, into a PDF with the right settings to look good on a reMarkable tablet.
 

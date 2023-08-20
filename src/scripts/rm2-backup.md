@@ -1,4 +1,4 @@
-# The `rm2-backup` script
+# The `rm2-backup` Script
 
 This is a shell script which makes backups of the tablet's entire filesystem, under a directory on your workstation. You can control where the backups are written by changing the `BACKUP=` line near the top of the script.
 

@@ -1,4 +1,4 @@
-# The `rm2-clean` script
+# The `rm2-clean` Script
 
 The reMarkable software was designed to synchronize all documents with their cloud service. This includes telling the cloud when things are deleted, and not *actually* deleting documents until they have also been deleted from the cloud.
 
