@@ -41,7 +41,9 @@ The script now has a *list* of default locations for where to store backups. Cur
 * `/Volumes/rm2-backups/`
 * `$HOME/rm2-backups/`
 
-I added this because I'm figuring out how to store my tablets' backups in an encrypted macOS disk image, which gets mounted as `/Volumes/rm2-backups/` *when* it's mounted. This allows me to store the backups on a shared network disk, so no matter which computer I run `rm2-backup` on, the backups are stored on the shared disk at home.
+I added this because I'm trying to figure out how to store my tablets' backups on a network share at home.
+
+> I *did* finally get things working, but it involved setting up NFS, and unless you're also using a Synology DS-series NAS, most of the directions I could write about it wouldn't really do you much good.
 
 ## Background
 
