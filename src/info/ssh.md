@@ -126,3 +126,130 @@ While I was figuring this out, I was pleasantly surprised to find that the SSH s
     ```
 
 Once this is done, you will be able to SSH into the tablet using any of the secret keys which correspond to the public keys you stored in the `$HOME/.ssh/authorized_keys` file.
+
+## Customize the shell
+
+A "shell" is a program which shows the user a prompt, lets them type in a command, figures out what the user typed, and *does* whatever the user entered. This could involve running some code within the shell, but in most cases this involves starting a new process. Either way, when that process finishes, the shell goes back and shows the next prompt.
+
+I've been using computers since 1981, and Linux since 1992. I've spent a LOT of time using shells over the years, especially on Linux machines, and have come to expect the shells I use to do certain things. This includes the shell on the reMarkable tablets.
+
+I've been using (and updating) a "`.bashrc`" file on all of my machines, including macOS workstations, since ... some time around 2003 maybe? On every machine where I use a command line on a semi-regular basis, I make it a point to install my `.bashrc` file so the shell "feels right".
+
+This includes the reMarkable tablet.
+
+### Install my `.bashrc` file
+
+Like many other Linux systems, the reMarkable tablet's default shell is [GNU `bash`](https://www.gnu.org/software/bash/). The shell's location is `/bin/sh`, but it turns out `/bin/sh` is a symbolic link (a "pointer", if you will) to a copy of `bash`.
+
+This means I can copy the same `.bashrc` file I'm using on all of my other machines, and it will have all of the features I'm used to having.
+
+In each user's home directory *may* be a file named `.bashrc`. When `bash` starts, it reads this file and runs the commands it contains, before showing the first prompt.
+
+The reMarkable tablet already has a `.bashrc` file in place, and I don't want to lose it, so I'm going to rename it.
+
+```
+reMarkable: ~/ mv .bashrc .bashrc.dist
+```
+
+At this point there *is* no `.bashrc` file, so I'm going to copy the file from my laptop.
+
+```
+(jms1@laptop) 17 ~ $ scp .bashrc rm2:
+```
+
+Back on the tablet, we can `source` this file to run the commands it contains, within the current shell. This is the same thing the shell does when it first starts up (when the user logs in).
+
+```
+reMarkable: ~/ source .bashrc
+(root@reMarkable) 37 ~ #
+```
+
+Next we log out of the tablet and log back in, to make sure the new `.bashrc` file "does its thing" when we log in.
+
+```
+reMarkable: ~/ exit
+(jms1@laptop) 18 ~ $ ssh rm2
+Warning: Permanently added '10.11.99.1' (ED25519) to the list of known hosts.
+ｒｅＭａｒｋａｂｌｅ
+╺━┓┏━╸┏━┓┏━┓   ┏━┓╻ ╻┏━╸┏━┓┏━┓
+┏━┛┣╸ ┣┳┛┃ ┃   ┗━┓┃ ┃┃╺┓┣━┫┣┳┛
+┗━╸┗━╸╹┗╸┗━┛   ┗━┛┗━┛┗━┛╹ ╹╹┗╸
+(root@reMarkable) 1 ~ #
+```
+
+### Change the hostname
+
+At the moment I own two reMarkable tablets. My prompt contains the machine's hostname (so does the default reMarkable prompt), so if I give the two tablets different hostnames, the prompt will serve as a reminder of which tablet I'm working with at the moment.
+
+> You may or may not want to do this, or you may want to change the tablet's hostname to some other name. It's up to you.
+
+On each tablet, I did the following ...
+
+* Find the tablet's serial number. (This is what I'm using as the hostnames on the two tablets.)
+
+    The serial numbers are stored in a special partition on the internal [MMC](https://en.wikipedia.org/wiki/MultiMediaCard) storage. (Thanks to [RCU](http://www.davisr.me/projects/rcu/) for figuring out how to get the serial number.)
+
+    ```
+    (root@reMarkable) 1 ~ # BDEV=$( mount | awk '/\/home/{print substr($1,1,index($1,"p")-1)}' )
+    (root@reMarkable) 2 ~ # SERIAL=$( dd if=${BDEV}boot1 bs=1 skip=4 count=15 2>/dev/null )
+    (root@reMarkable) 3 ~ # echo $SERIAL
+    RM110-313-xxxxx
+    ```
+
+* Set the hostname.
+
+    This command tells the running Linux kernel to use the new hostname.
+
+    ```
+    (root@reMarkable) 4 ~ # hostname $SERIAL
+    (root@reMarkable) 5 ~ #
+    ```
+
+    This command stores the new hostname in the file that the system reads while booting up, to set the hostname.
+
+    ```
+    (root@reMarkable) 5 ~ # echo $SERIAL > /etc/hostname
+    (root@reMarkable) 6 ~ #
+    ```
+
+* Start a new shell.
+
+    As you can see, neither one of the commands above changed the prompt. This is because `bash` reads the hostname from the kernel once when it starts up, and keeps a copy in its own memory. This is faster than reading the hostname from the kernel every time it prints a prompt, and useful because systems' hostnames *rarely* change once the machine is running.
+
+    To make `bash` use the new hostname in the prompt, you need to start a new `bash` shell process. There are a few ways to do this.
+
+    * Log out and log back in. (This is what I actually did while changing the hostname and writing this page.)
+
+        ```
+        (root@reMarkable) 6 ~ $ exit
+        (jms1@laptop) 19 ~ $ ssh rm2
+        Warning: Permanently added '10.11.99.1' (ED25519) to the list of known hosts.
+        ｒｅＭａｒｋａｂｌｅ
+        ╺━┓┏━╸┏━┓┏━┓   ┏━┓╻ ╻┏━╸┏━┓┏━┓
+        ┏━┛┣╸ ┣┳┛┃ ┃   ┗━┓┃ ┃┃╺┓┣━┫┣┳┛
+        ┗━╸┗━╸╹┗╸┗━┛   ┗━┛┗━┛┗━┛╹ ╹╹┗╸
+        (root@RM110-313-xxxxx) 1 ~ $
+        ```
+
+    * Restart the current shell. (I've done this in the past on other systems, this example shows what the process *would* look like.)
+
+        ```
+        (root@reMarkable) 6 ~ $ exec $SHELL
+        (root@RM110-313-xxxxx) 1 ~ $
+        ```
+
+        As you can see, the "command number" started over from 1 because it's a brand new `bash` process.
+
+After doing this on both tablets, the other tablet looks like this when I log into it:
+
+```
+(jms1@laptop) 22 ~ $ ssh rm2
+Warning: Permanently added '10.11.99.1' (ED25519) to the list of known hosts.
+ｒｅＭａｒｋａｂｌｅ
+╺━┓┏━╸┏━┓┏━┓   ┏━┓╻ ╻┏━╸┏━┓┏━┓
+┏━┛┣╸ ┣┳┛┃ ┃   ┗━┓┃ ┃┃╺┓┣━┫┣┳┛
+┗━╸┗━╸╹┗╸┗━┛   ┗━┛┗━┛┗━┛╹ ╹╹┗╸
+(root@RM110-147-xxxxx) 1 ~ #
+```
+
+As you can see, the prompt contains the other tablet's serial number.
