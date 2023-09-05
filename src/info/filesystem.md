@@ -32,13 +32,13 @@ This is a JSON file containing an object with the following keys ...
 
 The following keys appear to be used when synchronizing files with the reMarkable Cloud. I don't use the cloud, so I don't know for sure.
 
-* `lastModified` - (String) contains a string of digits. Appears to be a UNIX timestamp, with three extra digits that I'm assuming are milliseconds. From the name I'm guessing this records the last time the item was modified.
+* `lastModified` - (String) contains a string of digits. Appears to be a UNIX timestamp, with three extra digits that I'm assuming are milliseconds. From the name I'm guessing this records the last time the notebook's content was modified.
 
-* `metadatamodified` - (Boolean)
+* `metadatamodified` - (String) same as `lastModified`, but it records the last time the notebook's metadata was modified.
 
-* `modified` - (Boolean)
+* `modified` - (Boolean) I'm guesing this is a flag which tells if the item has been modified since the last time the item was sync'ed.
 
-* `synced` - (Boolean)
+* `synced` - (Boolean) I'm guessing this is a flag which tells if the item has *ever* been sync'ed.
 
 * `version` - (Integer)
 
@@ -65,21 +65,21 @@ Every one of these files is exactly four bytes, containing a JSON empty object.
 }
 ```
 
-If I had to guess, I would say this has something to do with synchronizing with "the cloud", and mine are all empty because I've never sync'ed.
+If I had to guess, I would say this has something to do with synchronizing with "the cloud", and these files on *my* tablets are all empty because I've never sync'ed with the cloud.
 
 ### `UUID.pagedata`
 
 For notebooks, this appears to contain the name of the "template" used when creating new pages.
 
-For foldes, this file appears to contain a bunch of newlines. No idea why.
+For folders, *if* the file exists, it appears to contain a bunch of newlines. No idea why.
 
 ### `UUID.epub`
 
-For documents which were uploaded as EPUB files, this appears to be the original `.epub` file, renamed to the UUID.
+For documents which were uploaded as EPUB files, this appears to be the original `.epub` file, renamed to the UUID. The tablet keeps this around so that if the user changes the formatting, it can create a new PDF.
 
 ### `UUID.epubindex`
 
-Looks like a list of the individual files contained within an EPUB file.
+Looks like a list of the individual files contained within an EPUB file, stored in some kind of 16-bit encoding.
 
 ```
 00000000  00 00 00 1a 00 72 00 4d  00 20 00 65 00 70 00 75  |.....r.M. .e.p.u|
@@ -108,6 +108,27 @@ I'm *guessing* this file is generated when an EPUB file is uploaded and converte
 For documents which were uploaded as PDF files, this appears to be the original `.pdf` file, renamed to the UUID.
 
 For documents which were uploaded as EPUB files, this is a copy of the ebook, converted to PDF. This PDF file is what the reMarkable software actually shows on the screen when you're "reading" an EPUB file.
+
+### `UUID.tombstone`
+
+**In firmware version (3.5?) and later**, the reMarkable firmware creates one of these files whenever a document is "deleted from the trash", and deletes all of the other files which made up the document. If you "empty the trash", this happens for *every* document in the trash at the time.
+
+The file itself contains a timestamp showing when the file was deleted.
+
+```
+reMarkable: ~/ cd ~/.local/share/remarkable/xochitl/
+reMarkable: ~/.local/share/remarkable/xochitl/ ls -la *.tombstone
+-rw-r--r--    1 root     root            24 Jul 30 20:16 033f139e-d2c9-479f-944e-8c9ae86a3aea.tombstone
+-rw-r--r--    1 root     root            24 Jul 30 20:16 7a483e59-be38-4bec-b899-d2c874ec51ab.tombstone
+-rw-r--r--    1 root     root            24 Jul 30 20:16 895bdd6d-1b2e-4c3c-b3c4-48030c26591c.tombstone
+-rw-r--r--    1 root     root            24 Jul 30 20:16 d67b9d2c-82bf-4448-bc6f-2f8e9384dc6e.tombstone
+-rw-r--r--    1 root     root            24 Jul 30 20:16 d864c483-9115-4e0f-9168-d11e179b40f2.tombstone
+-rw-r--r--    1 root     root            24 Jul 30 20:16 f1a69b0c-aec3-400a-bb37-d258cd77de49.tombstone
+reMarkable: ~/.local/share/remarkable/xochitl/ cat f1a69b0c-aec3-400a-bb37-d258cd77de49.tombstone
+Sun Jul 30 20:16:23 2023
+```
+
+See "[Deleted Files](#deleted-files)" below for more details.
 
 ### `UUID/` (Directory)
 
@@ -139,19 +160,25 @@ While viewing the Trash folder ...
 
     * Delete - this will "permanently" delete the item.
 
-**Permanently deleting an item does not remove the files from the tablet's filesystem**, it just makes the reMarkable software *not show* the files. Files are not actually deleted from the tablet until the same files are deleted from "the cloud" as well.
+Depending on the firmware version, permanently deleting an item may or may not remove the files from the tablet's filesystem.
 
-If your tablet synchronizes with "the cloud" on a regular basis, this is fine, and it's actually a good idea - if the files *were* deleted from the tablet without the cloud knowing about it, the next synchronization would just "restore" the files to the tablet, which rather defeats the purpose of deleting the files in the first place.
+* Prior to (3.5?), this would add a `"deleted": true` key to the `UUID.metadata` file, which tells the desktop environment to never show the file. None of the files which make up the document were actually deleted until the next time the tablet sync's with the cloud.
+
+    This provides a way for the tablet to tell the cloud that the document should be deleted there. If this didn't happen and the cloud has a copy of the document, the next sync would download the document from the cloud to the tablet.
+
+* In firmware (3.5?) and later, the files *are* deleted, and a `UUID.tombstone` file is created. This also allows the tablet to tell the cloud to delete the document, but doesn't require keeping a full copy of the entire document on the tablet.
+
+If your tablet synchronizes with "the cloud" on a regular basis, this is fine, and it's actually a good idea - if the files *were* deleted from the tablet without the cloud knowing about it, the next synchronization would "restore" the files to the tablet, which rather defeats the purpose of deleting the files in the first place.
 
 ### Tablets which do not sync
 
 For tablets which never synchronize with "the cloud", this means that deleted items will *never* truly be removed from the tablet. At some point, the tablet's internal storage will fill up, and if you only ever use the reMarkable UI, *you're pretty much stuck*.
 
-Some might say that reMarkable deliberately designed the tablets to *force* people to connect them to "the cloud", and that anybody who doesn't link their tablet to the cloud deserves what they get. I don't know that I would go that far, I think it's more likely that they designed the system to provide a useful set of features, and didn't spend a whole lot of time thinking about users who can't, or don't want to, use a cloud service.
+Some might say that reMarkable deliberately designed the tablets to *force* people to connect them to "the cloud", and that anybody who doesn't link their tablet to the cloud deserves what they get. I don't know that I would go that far, I think it's more likely that they designed the system to provide a useful set of features, and didn't spend a whole lot of time thinking about users who can't, or don't want to, use a cloud service. (The fact that they *later* added the `UUID.tombstone` files would seem to indicate that this is the case.)
 
-Whatever the cause, the fact remains that for tablets like mine, which never talk to "the cloud", items which are "deleted" are not actually deleted, and eventually the internal storage will run out.
+Whatever the cause, the fact remains that for tablets like mine which never talk to "the cloud", items which are "deleted" are not actually deleted, and eventually the internal storage will run out.
 
-I first noticed this when I was looking through the various `UUID.xxx` files from a backup, and found that a few sets of UUID files contained "dummy notes" I had created when the tablet first arrived and I was looking at what each of the "pens" looked like. I *knew* I had deleted these notebooks, and then later "emptied the trash" so they weren't showing up there anymore, but ... there they still were, taking up space on the filesystem.
+I first noticed this when I was looking through the various `UUID.xxx` files from a backup, and found that a few sets of UUID files contained "dummy notes" I had created when the tablet first arrived and I was looking at what each of the "pens" looked like. I *knew* I had deleted these notebooks, and then later "emptied the trash" so they weren't showing up there anymore, but they were still were, taking up space on the filesystem.
 
 I also saw this issue mentioned when I was browsing through the [awesome-reMarkable](https://github.com/reHackable/awesome-reMarkable) list, and looked at [reMarkable CLI tooling](https://github.com/cherti/remarkable-cli-tooling), which includes a Python script called `reclean.py` that deletes all files for UUIDs whose `.metadata` files say they have been deleted.
 
@@ -161,9 +188,9 @@ I was pleasantly surprised to find that [RCU](http://www.davisr.me/projects/rcu/
 
 The `/usr/share/remarkable/templates/` directory contains all of the built-in template files.
 
-Templates are "background layers" which can be used with notes, to provide a "guide" for your handwriting. The tablet comes with templates which look like lined paper, quad-ruled graph paper, and "dot paper", as well as things like musical staves and pre-made day-planner pages.
+Templates are "background layers" which can be used with notebooks, to provide a "guide" for your handwriting, or to create an on-screen "form" that you can fill out. The tablet comes with templates which look like lined paper, quad-ruled graph paper, and "dot paper", as well as things like musical staves and pre-made day-planner pages.
 
-The directory also contains a `templates.json` file, which tells the reMarkable software what templates are available, what their names are (the name shown in the reMarkable software is *not* the same as the filename in this directory), what orientation they should use (portrait or landscape), and what icon to use in the software.
+The directory also contains a `templates.json` file, which tells the reMarkable software what templates are available, what their names are (the name shown in the reMarkable software is *not* the same as the filename in this directory), what orientation they should use (portrait or landscape), and what icon to show the user in the "template picker" screen.
 
 The reMarkable software doesn't provide a way to add more templates, but if you SSH into the tablet you can add your own templates, and if you edit the `templates.json` file you can make the reMarkable software use your templates along with the built-in templates.
 
@@ -171,10 +198,10 @@ The reMarkable software doesn't provide a way to add more templates, but if you 
 
 * &#x26A0;&#xFE0F; **Every OS upgrade will reset the contents of this directory.**
 
-    [RCU](http://www.davisr.me/projects/rcu/) works by ...
+    [RCU](http://www.davisr.me/projects/rcu/) works around this by ...
 
     * uploading the files to `/home/root/.local/share/remarkable/templates/` (which is NOT reset by OS upgrades)
-    * creating *symlinks* in the `/usr/share/remarkable/templates/` directory, pointing to the actual files.
+    * creating *symlinks* in the `/usr/share/remarkable/templates/` directory, pointing to the actual files in `/home/root/.local/share/remarkable/templates/`.
 
     It also stores an individual JSON file for each template in `/home/root/.local/share/remarkable/templates/`, containing that template's attributes, while at the same time adding that information to the global `template.json` file.
 
