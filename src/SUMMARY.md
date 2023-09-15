@@ -23,6 +23,7 @@
     - [Simple Cover Page](templates/cover-page.md)
     - [Calendars - Month](templates/calendar.md)
     - [Bowling](templates/bowling.md)
+    - [Focus Notes](templates/focus-notes.md)
 
 - [Scripts](scripts/index.md)
     - [rm2-backup](scripts/rm2-backup.md)

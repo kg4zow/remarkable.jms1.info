@@ -3,33 +3,10 @@
 # generate-images
 # jms1 2023-07-09
 #
-# - Copy scripts from ~/bin/ into this directory
-# - Insert the contents of the scripts into the markdown files
 # - Run the scripts to generate the template images
 # - Create small versions of each image, to show in the generated pages
 
 set -ex
-
-###############################################################################
-#
-# Insert the contents of a script into a markdown file
-# - The place where the script gets inserted needs to ...
-#   - start with "```" plus a language
-#   - end with "```" without a language
-#   - be the only "```" block in the file
-
-function insert_script {
-    SCRIPT="$1"
-    PAGE="$2"
-
-    WORK="$( mktemp )"
-
-    sed -n '1,/^```[bp]/p' "$PAGE" > "$WORK"
-    cat "$SCRIPT" >> "$WORK"
-    sed -n '/^```$/,$p' "$PAGE" >> "$WORK"
-
-    mv "$WORK" "$PAGE"
-}
 
 ###############################################################################
 #
@@ -68,11 +45,6 @@ rm -f *.png
 ########################################
 # Basic templates
 
-cp ~/bin/rm2-template-basic .
-chmod 0755 rm2-template-basic
-
-insert_script rm2-template-basic basic.md
-
 ./rm2-template-basic
 
 make_small dots-50.png
@@ -82,22 +54,12 @@ make_small daily-work.png
 ########################################
 # Cover page
 
-cp ~/bin/rm2-template-cover .
-chmod 0755 rm2-template-cover
-
-insert_script rm2-template-cover cover-page.md
-
 ./rm2-template-cover
 
 make_small cover-simple.png
 
 ########################################
 # Calendar images
-
-cp ~/bin/rm2-template-calendar .
-chmod 0755 rm2-template-calendar
-
-insert_script rm2-template-calendar calendar.md
 
 for H in r l
 do
@@ -116,3 +78,10 @@ do
         make_small "$FILE"
     done
 done
+
+########################################
+# Focus notes
+
+./rm2-template-focus-notes
+
+make_small focusnotes.png
