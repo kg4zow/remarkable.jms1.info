@@ -17,6 +17,8 @@
 #
 # 2023-08-15 jms1 - fixed handling of title/author values containing spaces
 #
+# 2023-09-10 jms1 - show usage message if no input filename
+#
 ###############################################################################
 #
 # The MIT License (MIT)
@@ -128,7 +130,7 @@ shift $((OPTIND-1))
 ########################################
 # Get the input filename
 
-INFILE="${1:?ERROR: no input file specified}"
+INFILE="${1:-}"
 if [[ -z "$INFILE" ]]
 then
     usage
@@ -168,13 +170,13 @@ OPTA=()
 if [[ -n "$TITLE" ]]
 then
     OPTA+=( '--title' )
-    OPTA+=( "\"$TITLE\"" )
+    OPTA+=( "$TITLE" )
 fi
 
 if [[ -n "$AUTHOR" ]]
 then
     OPTA+=( '--authors' )
-    OPTA+=( "\"$AUTHOR\"" )
+    OPTA+=( "$AUTHOR" )
 fi
 
 if $H1_NO_SPLIT
