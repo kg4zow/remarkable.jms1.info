@@ -33,3 +33,10 @@
     - [rm2-make-pdf](scripts/rm2-make-pdf.md)
 
 - [Hacks](hacks/index.md)
+
+# Future
+
+- [Move scripts to Github](info/github.md)
+- [`rm2-download` script](scripts/rm2-download.md)
+- [`rm2-upload` script](scripts/rm2-upload.md)
+- [`rm2-merge` script](scripts/rm2-merge.md)
