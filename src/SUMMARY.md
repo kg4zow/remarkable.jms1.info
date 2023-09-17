@@ -9,6 +9,7 @@
 - [Information](info/index.md)
     - [First Impressions](info/first.md)
     - [SSH Access](info/ssh.md)
+    - [Clock](info/clock.md)
     - [Backing Up the Tablet](info/backups.md)
     - [Filesystem](info/filesystem.md)
     - [Controlling the Network](info/network.md)
