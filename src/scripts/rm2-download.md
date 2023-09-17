@@ -1,6 +1,8 @@
 # rm2-download script
 
-**Idea**: command line script to download documents and templates from rM tablet. Write the same archive files as RCU.
+## Idea
+
+Command line script to download documents and templates from rM tablet. Write the same archive files as RCU.
 
 * download documents to `.rmn` files
 
@@ -12,6 +14,8 @@
 
 * `.rmn` and `.rmt` files can be uploaded using RCU
 
-**Status**: 85% done, still a few minor bugs
+## Status
+
+85% done, still a few minor bugs
 
 When I started writing this script I didn't realize that RCU *had* a command line interface. Now I'm invested in it, I want to get this (and the [`rm2-upload`](rm2-upload.md) script) done. The act of *writing* these scripts is helping me better understand how documents are stored on the tablet, which I think will come in handy when/if I start on [`rm2-merge`](rm2-merge.md), or other ideas that I haven't thought of yet.

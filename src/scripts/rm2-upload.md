@@ -1,6 +1,8 @@
 # rm2-upload script
 
-**Idea**: command line script to upload archived documents/templates to a tablet, works with `rm2-download` or with files downloaded using RCU
+## Idea
+
+Command line script to upload archived documents/templates to a tablet, works with `rm2-download` or with files downloaded using RCU
 
 * upload `.rmn` files
     * to original folder (by UUID) if it exists on the tablet
@@ -19,4 +21,6 @@
     * always upload `.rmt`, then `.rmf`, then `.rmn`
     * option to recursively upload all files in a directory tree
 
-**Status**: 20% done - `.rmf` seems to be working, others *partly* written and not even tried yet.
+## Status
+
+20% done - `.rmf` seems to be working, others *partly* written and not even tried yet.

@@ -40,3 +40,4 @@
 - [`rm2-download` script](scripts/rm2-download.md)
 - [`rm2-upload` script](scripts/rm2-upload.md)
 - [`rm2-merge` script](scripts/rm2-merge.md)
+- [Single 'rm2' Golang program](scripts/rm2.md)
