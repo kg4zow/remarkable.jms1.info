@@ -4,6 +4,31 @@ The reMarkable tablets are designed to allow users to *easily* access the intern
 
 The tablet allows incoming SSH connections from the computer, as the `root` user. When the tablet starts for the first time, it makes up a random password for this user. You will be able to find the password in the settings screen.
 
+## Creating an SSH key pair
+
+If you don't already have an SSH key pair, you may want to think about creating one. Having a key pair allows you to authenticate to the tablet *without* having to type a password every time.
+
+There are probably thousands of pages on the net which explain how to create a key pair, so I'm not going to go into a whole lot of detail about it. The quick version is ...
+
+```
+$ ssh-keygen -t rsa -b 2048
+Generating public/private rsa key pair.
+Enter file in which to save the key (/Users/jms1/.ssh/id_rsa):
+Enter passphrase (empty for no passphrase):
+Enter same passphrase again:
+Your identification has been saved in /Users/jms1/.ssh/id_rsa
+Your public key has been saved in /Users/jms1/.ssh/id_rsa.pub
+The key fingerprint is:
+SHA256:6HXEMxPkVDSoTHWfYXZJybczcMmzrzkkVaHYMxDt4ZA jms1@laptop.local
+...
+```
+
+BE SURE TO USE A STRONG PASSPHRASE. Not just a pass*word*, but a pass*phrase*. This is because if anybody manages to steal a copy of your secret key file, this passphrase will be the only thing keeping them from being able to use it.
+
+This will create two files. The `id_rsa` file will contain the SECRET key, encrypted using whatever passphrase you entered. This file should never be shared with anybody, or copied to any machine that you don't have physical control over.
+
+The `id_rsa.pub` file contains your PUBLIC key. This *can* be shared with others, and in this case will be copied to the tablet. Below when it talks about a public key file, this is the file it's talking about.
+
 ## Accessing the tablet via SSH
 
 ### Configure your SSH client
@@ -94,13 +119,19 @@ reMarkable: ~/
 
 > According to [their Github repo](https://github.com/reMarkable/linux), "zero sugar" is reMarkable's name for the Linux kernel for the rM2, and "gravitas" is the kernel for the rM1. (Also, finding this answer was the first I had seen any mention of reMarkable having *any* publicly available source code.)
 >
-> If you're curious, the message is comfing from the tablet's `/etc/motd` file.
+> If you're curious, the message is coming from the tablet's `/etc/motd` file.
 
 ### Create `.ssh/authorized_keys`
 
-If you have an SSH key that you use on a regular basis, you can install the public key in the tablet and then use the secret key to SSH into the tablet without having to enter a password.
+**If you don't have an SSH key, and didn't create one above, you can skip this section.**
 
-While I was figuring this out, I was pleasantly surprised to find that the SSH server supports `ed25519` SSH keys. (One of my normal SSH keys is an `ed25519` key.) I was also happy to find that `nano` (my preferred text editor) was also already installed. The `vi` and `vim` editors are also installed, if you're more comfortable using them.
+If you DO have an SSH key that you use on a regular basis, you can install the public key in the tablet and then use the secret key to SSH into the tablet without having to enter a password.
+
+> You can use the same SSH key pair to access other machines by installing the same public key on *those* machines, using the same process shown below.
+>
+> For what it's worth, I use my personal SSH key pair to access about thirty different machines, and I use a different SSH key pair for work which lets me access several hundred machines. (I also store my SSH secret keys on YubiKeys rather than on the computers' disks, but that's a topic for a different web page that I haven't written yet.)
+
+While I was figuring this out, I was pleasantly surprised to find that the tablet's SSH server supports `ed25519` SSH keys. (One of my normal SSH keys is an `ed25519` key.) I was also happy to find that `nano` (my preferred text editor) was also already installed. The `vi` and `vim` editors are also installed, if you're more comfortable using them.
 
 * Create the `$HOME/.ssh` directory
 
@@ -128,6 +159,8 @@ While I was figuring this out, I was pleasantly surprised to find that the SSH s
 Once this is done, you will be able to SSH into the tablet using any of the secret keys which correspond to the public keys you stored in the `$HOME/.ssh/authorized_keys` file.
 
 ## Customize the shell
+
+**This section is optional.** At least, it's optional for you, it's required for me.
 
 A "shell" is a program which shows the user a prompt, lets them type in a command, figures out what the user typed, and *does* whatever the user entered. This could involve running some code within the shell, but in most cases this involves starting a new process. Either way, when that process finishes, the shell goes back and shows the next prompt.
 
@@ -177,7 +210,9 @@ Warning: Permanently added '10.11.99.1' (ED25519) to the list of known hosts.
 (root@reMarkable) 1 ~ #
 ```
 
-### Change the hostname
+## Change the hostname
+
+**This section is optional.** Unless you have two or more tablets and want the command prompt to be different on each one, so you can tell which one is which (as opposed to physically looking at what colour cover is on the tablet at the other end of the wire, which I *was* doing before I changed my tablets' hostnames.)
 
 At the moment I own two reMarkable tablets. My prompt contains the machine's hostname (so does the default reMarkable prompt), so if I give the two tablets different hostnames, the prompt will serve as a reminder of which tablet I'm working with at the moment.
 
