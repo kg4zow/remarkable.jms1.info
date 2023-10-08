@@ -4,6 +4,12 @@
 
 [Definitions](definitions.md)
 
+- [FAQ](faq/index.md)
+    - [Cases](faq/cases.md)
+    - [Eraser](faq/eraser.md)
+    - [Nibs](faq/nibs.md)
+    - [reMarkable Cloud]()
+
 ---
 
 - [Information](info/index.md)
@@ -33,6 +39,8 @@
     - [rm2-make-pdf](scripts/rm2-make-pdf.md)
 
 - [Hacks](hacks/index.md)
+
+
 
 # Future
 
