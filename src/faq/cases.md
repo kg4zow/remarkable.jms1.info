@@ -22,4 +22,6 @@ The plastic lip on the left isn't as sturdy as I would like. One of the curved c
 
 ![case-corner-good.png](../images/case-corner-good.png)
 
+The cases also have a small compartment to store extra nibs. It holds 4-5 of them, but you still need a way to remove a  "dead" nib from the end of the stylus without damaging it. The [titanium nibs](nibs.md) I bought came with a "tool" to remove nibs, but I *think* if I ever needed to swap out a nib and didn't have that tool with me, I could use the pliers from my [pocketknife](https://www.gerbergear.com/en-us/shop/multi-tools/all-multi-tools/suspension-22-01471) to pull the old one out - I would just need to be careful to pull *only* the nib, without accidentally pulling part of the stylus itself as well.
+
 One other thing to mention ... the "with stand" versions have magnets inside the front cover to hold the stands closed when they aren't being used. Magnets can cause problems for e-ink screens, both in calibration (i.e. lines drawn around a specific part of the screen will "bulge" a little) and in possible "dead spots" (the display may not be able to detect the stylus around certain parts of the screen). My "with stand" case is on the "experimenting" tablet, and every few weeks I test the screen by using a plastic ruler to draw straight lines, and make sure the lines *are* actually straight on the screen.
