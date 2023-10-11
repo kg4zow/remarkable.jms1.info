@@ -21,13 +21,17 @@ There probably won't be much to see at first, but I plan to add information over
 
 These are links that I seem to be copying and pasting a lot whenever I talk to other people about the tablet. I'm putting them here so I know where to quickly find them when I need them.
 
-* [Case](https://www.amazon.com/dp/B0BWTN88W4) - I keep my tablet in this "CoBak" case. I ordered the reMarkable [Book Folio](https://remarkable.com/store/remarkable-2/folios) (in Gray) *with* the tablet, but the third-party cover fully encloses the tablet *and* the stylus. (I actually have two of these - green with a built-in stand for my primary tablet, and blue without the stand for my spare tablet.)
+* [Case](https://www.amazon.com/dp/B0CB5QQWHV) - I keep my tablet in this "CoBak" case. I ordered the reMarkable [Book Folio](https://remarkable.com/store/remarkable-2/folios) (in Gray) *with* the tablet, but the third-party cover fully encloses the tablet *and* the stylus.
 
-* [Titanium nibs](https://www.amazon.com/dp/B0BF9WJ8VX) - I used one of these "nibs" in my stylus (reMarkable "Marker Plus") for about a month. I've seen people online say that metal nibs can damage the screen, which makes sense ... any time there's friction between two things (like a nib and a screen), the *weaker* thing is going to take a bit of damage.
+    I actually have two of these - blue without the stand on my primary tablet, and [green with a built-in stand](https://www.amazon.com/dp/B0C699MLHC) on my "experimenting" tablet.
 
-    I haven't noticed any scratches, "smooth spots", or other damage on my screen, but I also don't press down very hard when I write. Either way, I don't want to take the chance of damaging my tablet (although I *might* use one with the "spare" tablet, just to see if I end up noticing anything.
+* [Titanium nibs](https://www.amazon.com/dp/B0BF9WJ8VX) - I used one of these "nibs" in my stylus (reMarkable "Marker Plus") for about three days. I had seen people online say that metal nibs can damage the screen, which makes sense ... any time there's friction between two things (like a nib and a screen), the *softer* thing is going to take a bit of damage.
 
-* [Plastic nibs](https://www.amazon.com/dp/B0BWX873ZX) - I've gone back to using the original reMarkable nib that came in the stylus, and I'll be trying these when that original nib wears down.
+    With a titanium nib, the softer thing which will be slowly damaged is the textured coating on the screen which makes it feel like writing on paper.
+
+    After a few days I didn't notice any scratches, "smooth spots", or other damage on my screen, but I also don't press down very hard when I write. Either way, I don't want to take any chances, so I'm now using ...
+
+* [Plastic nibs](https://www.amazon.com/dp/B0BWX873ZX) - I've gone back to using the original reMarkable nib that came in the stylus for my "experimenting" tablet, and I'm using one of these in my primary tablet. I don't feel any difference betwen the two.
 
 * [RCU](http://www.davisr.me/projects/rcu/) - third-party program to manage reMarkable tablets, especially tablets which don't connect to the reMarkable cloud service. **Highly recommended**, especially if you don't connect your tablet to the reMarkable cloud service.
 
