@@ -26,6 +26,14 @@ However.
 
 **If the nib is harder than the screen, then it will be the screen that wears down.** Or more specifically, the *coating* that reMarkable puts on the screen which gives it the "paper-like" feeling, will wear down, and then if you keep going, it could start wearing down the screen itself.
 
+### Manufacturer's warning
+
+The touch screen portion of the reMarkable tablets uses technology from Wacom, who provides [this warning](https://support.wacom.com/hc/en-us/articles/4415792440471-Can-I-use-3rd-party-nibs-such-as-Titanium-or-Steel-with-my-Wacom-pen-Can-I-use-3rd-party-nibs-such-as-Titanium-or-Steel-with-my-Wacom-pen-) about titanium nibs:
+
+> 3rd party nibs used with Wacom product is not recommended as warranty of your Wacom product cannot guaranteed. Wacom nibs are specifically designed to work with Wacom displays and tablets and under normal conditions provide a smooth and scratch free experience. Use of 3rd party nibs such as Titanium alloy, steel or other plastic material may cause damage and will be considered at users own risk.
+
+Thanks to the author of [this Reddit post](https://www.reddit.com/r/RemarkableTablet/comments/1794ted/comment/k55ilhj/) for the pointer.
+
 ### My own experience
 
 I bought [two titanium nibs](https://www.amazon.com/dp/B0BF9WJ8VX) for my stylii, and tried using one for three days. To me felt a little bit "smoother", more like writing with a ball-point pen than with a pencil. I didn't notice any degradation on the screen coating, but under the theory of "better safe than sorry", I don't use them anymore.
