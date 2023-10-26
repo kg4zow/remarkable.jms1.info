@@ -98,7 +98,6 @@ To clear this message, you need to tell your SSH client to "forget" the previous
 
     You should be able to find this file in the following locations:
 
-
     * windows: in the "Application Data" folder, which is most commonly ...
 
         ```
@@ -160,3 +159,238 @@ I'm not 100% sure *why* they require that upgrades be done in "steps", however I
 * The conversion process only knows how to convert *from* a limited number of "old versions". So in the A-B-C example above, the converter in the "C" firmware may only know how to convert B&#x2192;C, but not A&#x2192;C.
 
 Making users upgrade "in steps" means that every user whose files are "version X", arrived there using the same "chain of format upgrades" as everybody else, so there will only be one set of "upgrade code" to have to support.
+
+## Getting firmware images without updating
+
+My own tablets don't connect to the internet at large. (They do connect to the wifi network at my house, but my firewall is configured with rules to *not* forward traffic from the tablets to the outside world. This allows me to SSH into the tablets without a USB cable, and allows my Linux server to automatically back up the tablets whenever they're connected and not sleeping.)
+
+Because of this, I have to use [remarkable-update](https://github.com/ddvk/remarkable-update) to install firmware updates. However, that still leaves me with the problem of how to *get* the update images.
+
+The process I use is below.
+
+* This works with macOS and Linux, and it *might* work for windows, if the tools are avaliable for it.
+
+* I'm using the `10.11.99.x` IPs which are normally used when the tablet is connected to the computer via USB cable. If you connect to your tablet using wifi, or if you've manually changed the tablet's DHCP server to use a different IP range, you will need to adjust some IP addresses below.
+
+&#x2139;&#xFE0F; One of the items on my "to-do list" is to write a script which automates this process. This may or may not include *installing* the new image on a tablet, I'm not sure yet.
+
+### Identify your computer's IP address
+
+Identify the IP address *to which* the tablet will need to connect, in order to reach your laptop. You can see your computer's IP addresses using a command like "`ifconfig -a`" (or for windows I *think* it's "`ipconfig /all`" maybe?) You're looking for the IP which is in the same network segment with the tablet - if you're connected via USB cable this will be `10.11.99.[2-6]`.
+
+This document will assume the IP is `10.11.99.2`, adjust below as necessary.
+
+### Start a listener
+
+On the computer, start a copy of either [netcat](https://sectools.org/tool/netcat/) (aka `nc`) or [ncat](https://nmap.org/ncat/), listening on a port. For this document I'll use `8000` as the port number.
+
+```
+$ nc -ln 10.11.99.2 8000 > 01-req.txt
+```
+
+You probably won't see any output, this is fine. Whatever traffic it receives will be sent to the `01-req.txt` file.
+
+### Configure the tablet
+
+We need to make the tablet talk to our listener when searching for updates.
+
+SSH into the tablet, and edit the `/usr/share/remarkable/update.conf` file.
+
+```
+# nano /usr/share/remarkable/update.conf
+```
+
+If this is the first time you've done this (since the last OS upgrade), the file will contain something like this:
+
+```
+[General]
+#REMARKABLE_RELEASE_APPID={98DA7DF2-4E3E-4744-9DE6-EC931886ABAB}
+#SERVER=https://updates.cloud.remarkable.engineering/service/update2
+#GROUP=Prod
+#PLATFORM=reMarkable2
+REMARKABLE_RELEASE_VERSION=3.5.2.1807
+```
+
+Add a `SERVER=` line at the bottom which points to our listener. If you already had a `SERVER=` line which was not commented out, either comment that out or edit that line.
+
+* Use `http://` rather than `https://`.
+* Use the IP for the computer, and the port number where your listener is ... listening.
+* Copy the rest of the URL from the commented-out `SERVER=` line.
+
+When you're finished, the file should look something like this:
+
+```
+[General]
+#REMARKABLE_RELEASE_APPID={98DA7DF2-4E3E-4744-9DE6-EC931886ABAB}
+#SERVER=https://updates.cloud.remarkable.engineering/service/update2
+#GROUP=Prod
+#PLATFORM=reMarkable2
+REMARKABLE_RELEASE_VERSION=3.5.2.1807
+SERVER=http://10.11.99.2:8000/service/update2
+```
+
+Save your changes and exit the editor.
+
+* For `nano`, type CONTROL-X.
+* For `vi`, hit ESC then "`:wq`".
+
+### Trigger an update attempt
+
+Make sure the "update-engine" service is NOT running.
+
+This is especially important if you've just edited the config file - if it *was* already running and you don't stop it, it won't know about your config changes and will try to talk to whatever `SERVER=` was previously configured in the file.
+
+```
+systemctl stop update-engine.service
+```
+
+* This is the same as turning off the "automatic updates" switch in the tablet's Settings screen.
+
+Wait a few seconds, then start the service.
+
+```
+systemctl start update-engine.service
+```
+
+* This is the same as turning on the "automatic updates" switch in the tablet's Settings screen.
+
+Tell the service to check for updates NOW.
+
+```
+/usr/bin/update_engine_client -check_for_update
+```
+
+You won't see anything happening, but behind the scenes the "update-engine" service will be sending a request for available updates to your listener. (The listener won't *answer* the request, but that's fine - we're not trying to actually *do* an update right now.)
+
+Wait 5-10 seconds, and then stop the "update-engine" service.
+
+```
+systemctl stop update-engine.service
+```
+
+When you stop the service, the listener on your computer should also stop by itself.
+
+### Examine the request
+
+**If you're curious**, you can look at the request that the tablet sent to your listener (i.e. that it *thought* it was sending to reMarkable).
+
+```
+$ cat 01-req.txt
+POST /service/update2 HTTP/1.1
+Host: 10.11.99.2:8000
+Accept: */*
+Content-Type: text/xml
+Content-Length: 883
+
+<?xml version="1.0" encoding="UTF-8"?>
+<request protocol="3.0" version="3.5.2.1807" requestid="{nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn}" sessionid="{nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn}" updaterversion="0.4.2" installsource="ondemandupdate" ismachine="1">
+    <os version="codex 3.1.266-2" platform="reMarkable2" sp="3.5.2.1807_armv7l" arch="armv7l"></os>
+    <app appid="{98DA7DF2-4E3E-4744-9DE6-EC931886ABAB}" version="3.5.2.1807" track="Prod" ap="Prod" bootid="{nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn}" oem="RM110-nnn-nnnnn" oemversion="3.1.266-2" alephversion="3.5.2.1807" machineid="nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn" lang="en-US" board="" hardware_class="" delta_okay="false" nextversion="0.0.0" brand="" client="" >
+        <ping active="1"></ping>
+        <updatecheck></updatecheck>
+        <event eventtype="3" eventresult="2" previousversion=""></event>
+    </app>
+</request>
+```
+
+Note that I have obscured some values which could be used to identify the tablet I used as an example while writing this page.
+
+### Extract the request body
+
+We're going to send this request to reMarkable. In order to do this, we'll need to extract *just* the body from the request. You *can* do this by hand, but it's easier to use `sed` for this.
+
+```
+sed '1,/^$/d' 01-req.txt > 02-req.txt
+```
+
+This `sed` command is ...
+
+* `START,END d` = delete lines from `START` to `END` (inclusive)
+    * `1` is START, meaning the first line of the file
+    * `/^$/` is END, meaning the first empty line
+
+So this command will delete lines from the beginning of the file until the empty line (between the headers and the body), and copy all other lines as-is.
+
+**If you're curious**, you can inspect the results afterward, and see that it only contains the request body.
+
+```
+$ cat 02-req.txt
+<?xml version="1.0" encoding="UTF-8"?>
+<request protocol="3.0" version="3.5.2.1807" requestid="{nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn}" sessionid="{nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn}" updaterversion="0.4.2" installsource="ondemandupdate" ismachine="1">
+    <os version="codex 3.1.266-2" platform="reMarkable2" sp="3.5.2.1807_armv7l" arch="armv7l"></os>
+    <app appid="{98DA7DF2-4E3E-4744-9DE6-EC931886ABAB}" version="3.5.2.1807" track="Prod" ap="Prod" bootid="{nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn}" oem="RM110-nnn-nnnnn" oemversion="3.1.266-2" alephversion="3.5.2.1807" machineid="nnnnnnnnnnnnnnnnnnnnnnnnnnnnnnnn" lang="en-US" board="" hardware_class="" delta_okay="false" nextversion="0.0.0" brand="" client="" >
+        <ping active="1"></ping>
+        <updatecheck></updatecheck>
+        <event eventtype="3" eventresult="2" previousversion=""></event>
+    </app>
+</request>
+```
+
+### Send the request to reMarkable
+
+This will send a POST request to reMarkable, with the original message body that came from the tablet. As far as reMarkable knows, your tablet is sending the request.
+
+```
+curl -XPOST \
+    -H 'Content-Type: text/xml' \
+    -H "Content-Length: $( wc -c 02-req.txt | awk '{print $1}' )" \
+    --data-binary @02-req.txt \
+    https://updates.cloud.remarkable.engineering/service/update2 \
+    > 03-response.txt
+```
+
+As you can see, this saves reMarkable's response in an `03-response.txt` file.
+
+### Get the image URL
+
+Look at the response you received from reMarkable.
+
+```
+$ cat 03-response.txt
+<?xml version='1.0' encoding='UTF-8'?>
+<response protocol="3.0" server="prod">
+  <daystart elapsed_seconds="9791" elapsed_days="6142"/>
+  <app appid="{98DA7DF2-4E3E-4744-9DE6-EC931886ABAB}" status="ok">
+    <event status="ok"/>
+    <updatecheck status="ok">
+      <urls>
+        <url codebase="https://updates-download.cloud.remarkable.engineering:443/build/reMarkable%20Device/reMarkable2/3.7.0.1930/"/>
+      </urls>
+      <manifest version="3.7.0.1930">
+        <packages>
+          <package name="3.7.0.1930_reMarkable2-XSMSQgBATy.signed" required="true" size="79221928" hash="WLN5qHEaHxC24dLF65rGGoz8Ma4="/>
+        </packages>
+        <actions>
+          <action event="postinstall" successsaction="default" sha256="3Jl13KQIJvbdU+Z5AFagEo3Xx227lWAB2tDFbUxAil8=" DisablePayloadBackoff="true"/>
+        </actions>
+      </manifest>
+    </updatecheck>
+    <ping status="ok"/>
+  </app>
+</response>
+```
+
+There are two parts of this which need to be extracted:
+
+* `<url codebase="___" />`
+* `<package name="___" />`
+
+Copy and paste these two values into a single string. The result will look like this:
+
+```
+https://updates-download.cloud.remarkable.engineering:443/build/reMarkable%20Device/reMarkable2/3.7.0.1930/3.7.0.1930_reMarkable2-XSMSQgBATy.signed
+```
+
+**This is the URL of the actual image file.**
+
+### Download the image
+
+Fairly self-explanatory.
+
+**Note:** the option in this command is an "uppercase letter O", not "digit zero".
+
+```
+$ curl -O https://updates-download.cloud.remarkable.engineering:443/build/reMarkable%20Device/reMarkable2/3.7.0.1930/3.7.0.1930_reMarkable2-XSMSQgBATy.signed
+```
+
+This file can be installed on a reMarkable tablet using [remarkable-update](https://github.com/ddvk/remarkable-update).
