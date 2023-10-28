@@ -176,19 +176,35 @@ The process I use is below.
 
 ### Identify your computer's IP address
 
-Identify the IP address *to which* the tablet will need to connect, in order to reach your laptop. You can see your computer's IP addresses using a command like "`ifconfig -a`" (or for windows I *think* it's "`ipconfig /all`" maybe?) You're looking for the IP which is in the same network segment with the tablet - if you're connected via USB cable this will be `10.11.99.[2-6]`.
+Before we get into this, there's something that you'll need to understand.
+
+> **Computers don't have IP addresses.**
+>
+> **Computers have interfaces, and INTERFACES have IP addresses.**
+>
+> Every device which talks on a network will have one or more *interfaces*. The most common examples of this are ethernet ports, wifi connections, and a weird thing called a "localhost" interface which usually has `127.0.0.1` or `::1` as its address, and doesn't connect to anything other than the machine itself.
+>
+> When you connect a reMarkable tablet via USB cable, the computer thinks it's a USB ethernet interface, and uses DHCP to request an IP address. The tablet runs a DHCP server on the USB cable's "network", which assigns the interface at the computer's end of the cable, an IP address in the same IP range as the tablet. Normally the tablet is `10.11.99.1`, and the computer will be assigned an address in the `10.11.99.(2-6)` range.
+
+Identify the IP address *to which* the tablet will need to connect, in order to reach your laptop.
+
+You can see your computer's IP addresses using a command like "`ifconfig -a`" (or for windows I *think* it's "`ipconfig /all`" maybe?) You're looking for the IP which is in the same network segment with the tablet - if you're connected via USB cable this will be `10.11.99.[2-6]`.
 
 This document will assume the IP is `10.11.99.2`, adjust below as necessary.
 
 ### Start a listener
 
-On the computer, start a copy of either [netcat](https://sectools.org/tool/netcat/) (aka `nc`) or [ncat](https://nmap.org/ncat/), listening on a port. For this document I'll use `8000` as the port number.
+On the computer, start a copy of either [netcat](https://sectools.org/tool/netcat/) (aka `nc`) or [ncat](https://nmap.org/ncat/), listening on a port. One or both should be available from your system's software repositories (i.e. `yum`, `dnf`, `apt`, `brew`, etc.)
+
+For this document I'll use `nc` (because it comes with macOS) and `8000` as the port number.
 
 ```
 $ nc -ln 10.11.99.2 8000 > 01-req.txt
 ```
 
-You probably won't see any output, this is fine. Whatever traffic it receives will be sent to the `01-req.txt` file.
+You probably won't see any output right away, this is fine. Whatever traffic it receives will be sent to the `01-req.txt` file.
+
+At this point, your computer is listening for incoming network connections. Listening on the `10.11.99.x` interface means that only other devices on that network segment (i.e. the tablet) will be able to connect - if something on a wifi or other network tries to connect ro port 8000 they won't be able to.
 
 ### Configure the tablet
 
@@ -211,7 +227,7 @@ If this is the first time you've done this (since the last OS upgrade), the file
 REMARKABLE_RELEASE_VERSION=3.5.2.1807
 ```
 
-Add a `SERVER=` line at the bottom which points to our listener. If you already had a `SERVER=` line which was not commented out, either comment that out or edit that line.
+Add a `SERVER=` line at the bottom which points to our listener. If you already had a `SERVER=` line which was not commented out, either comment out the existing line, or edit that line.
 
 * Use `http://` rather than `https://`.
 * Use the IP for the computer, and the port number where your listener is ... listening.
@@ -236,39 +252,39 @@ Save your changes and exit the editor.
 
 ### Trigger an update attempt
 
-Make sure the "update-engine" service is NOT running.
+* Make sure the "update-engine" service is NOT running.
 
-This is especially important if you've just edited the config file - if it *was* already running and you don't stop it, it won't know about your config changes and will try to talk to whatever `SERVER=` was previously configured in the file.
+    This is especially important if you've just edited the config file - if it *was* already running and you don't stop it, it won't know about your config changes and will try to talk to whatever `SERVER=` was previously configured in the file.
 
-```
-systemctl stop update-engine.service
-```
+    ```
+    systemctl stop update-engine.service
+    ```
 
-* This is the same as turning off the "automatic updates" switch in the tablet's Settings screen.
+    This is the same as turning off the "automatic updates" switch in the tablet's Settings screen.
 
-Wait a few seconds, then start the service.
+* Wait a few seconds, then start the service.
 
-```
-systemctl start update-engine.service
-```
+    ```
+    systemctl start update-engine.service
+    ```
 
-* This is the same as turning on the "automatic updates" switch in the tablet's Settings screen.
+    This is the same as turning on the "automatic updates" switch in the tablet's Settings screen.
 
-Tell the service to check for updates NOW.
+* Tell the service to check for updates NOW.
 
-```
-/usr/bin/update_engine_client -check_for_update
-```
+    ```
+    /usr/bin/update_engine_client -check_for_update
+    ```
 
-You won't see anything happening, but behind the scenes the "update-engine" service will be sending a request for available updates to your listener. (The listener won't *answer* the request, but that's fine - we're not trying to actually *do* an update right now.)
+    You won't see anything happening, but behind the scenes the "update-engine" service will be sending a request for available updates to your listener. (The listener won't *answer* the request, but that's fine - we're not trying to actually *do* an update right now.)
 
-Wait 5-10 seconds, and then stop the "update-engine" service.
+* Wait 5-10 seconds, and then stop the "update-engine" service.
 
-```
-systemctl stop update-engine.service
-```
+    ```
+    systemctl stop update-engine.service
+    ```
 
-When you stop the service, the listener on your computer should also stop by itself.
+    When you stop the service, the listener on your computer should also stop by itself.
 
 ### Examine the request
 
@@ -293,7 +309,9 @@ Content-Length: 883
 </request>
 ```
 
-Note that I have obscured some values which could be used to identify the tablet I used as an example while writing this page.
+As you can see, there are two "parts" of the file - headers and body, separated by a blank line. The body is an XML message containing information about the tablet making the request, particularly the "current" firmware version. This is because firmware updates need to be done in "steps", as explained above.
+
+Note that I have obscured some values in the example which could be used to identify the tablets I used as an example while writing this page.
 
 ### Extract the request body
 
@@ -306,8 +324,8 @@ sed '1,/^$/d' 01-req.txt > 02-req.txt
 This `sed` command is ...
 
 * `START,END d` = delete lines from `START` to `END` (inclusive)
-    * `1` is START, meaning the first line of the file
-    * `/^$/` is END, meaning the first empty line
+    * START is "`1`", meaning the first line of the file
+    * END is "`/^$/`", meaning the first empty line in the fiel
 
 So this command will delete lines from the beginning of the file until the empty line (between the headers and the body), and copy all other lines as-is.
 
