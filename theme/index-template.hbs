@@ -110,21 +110,13 @@
 
         <nav id="sidebar" class="sidebar" aria-label="Table of contents">
             <div class="sidebar-scrollbox">
-
-<!-- Start extra link above the ToC -->
-<!--
-                &#x2192; <a class='part-title' href='https://github.com/'>GitHub</a>
-                <hr/>
--->
-<!-- End extra link above the ToC -->
-
                 {{#toc}}{{/toc}}
 
 <!-- Start version-commit content below ToC -->
-                <hr/>
+                <hr>
                 <div class="part-title">Version</div>
                 <div id="commit" class='version-commit-div'>
-                    <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
+                    <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span><br>
                     <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
                 </div>
                 <div class="part-title">Generated</div>
@@ -234,8 +226,8 @@
                     <main>
                         {{{ content }}}
 
-<!-- Start version-commit content below every page -->
-                        <hr/>
+<!-- Start version-commit content below page -->
+                        <hr>
                         <div class="version-commit-div" style="float: right">
                             Generated
                             <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
@@ -244,7 +236,7 @@
                             <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span>
                             <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
                         </div>
-<!-- End version-commit content below every page -->
+<!-- End version-commit content below page -->
 
                     </main>
 
