@@ -23,7 +23,7 @@
     - [RCU](info/rcu.md)
     - [goMarkableStream](info/goMarkableStream.md)
     - [Calibre](info/calibre.md)
-    - [Toltec]()
+    - [Issues with reMarkable](info/issues.md)
 
 - [Templates](templates/index.md)
     - [Basic Templates](templates/basic.md)
