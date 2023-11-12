@@ -1,0 +1,221 @@
+#!/usr/bin/env perl
+#
+# mdbook-index-template
+# jms1 2023-11-06
+#
+# Add my custom blocks to mdbook's index.hbs to make index-template.hbs
+#
+# This version contains hard-coded strings
+
+require 5.005 ;
+use strict ;
+use warnings ;
+
+use Getopt::Std ;
+
+########################################
+# Default blocks containing commit info
+
+my $after_toc   = <<EOF ;
+                <hr>
+                <div class="part-title">Version</div>
+                <div id="commit" class='version-commit-div'>
+                    <span class='version-commit-hash'><tt>\@VERSION_COMMIT_HASH\@</tt></span><br>
+                    <span class='version-commit-time'><tt>\@VERSION_COMMIT_TIME\@</tt></span>
+                </div>
+                <div class="part-title">Generated</div>
+                <div id="generated" class='version-commit-div'>
+                    <span class='version-commit-now'><tt>\@VERSION_COMMIT_NOW\@</tt></span>
+                </div>
+EOF
+
+my $after_page  = <<EOF ;
+                        <hr>
+                        <div class="version-commit-div" style="float: right">
+                            Generated
+                            <span class='version-commit-now'><tt>\@VERSION_COMMIT_NOW\@</tt></span>
+                        </div>
+                        <div class="version-commit-div">
+                            <span class='version-commit-hash'><tt>\@VERSION_COMMIT_HASH\@</tt></span>
+                            <span class='version-commit-time'><tt>\@VERSION_COMMIT_TIME\@</tt></span>
+                        </div>
+EOF
+
+########################################
+# Other globals
+
+my %opt         = () ;      # getopts
+my $add_atoc    = 0 ;       # -t
+my $add_apage   = 0 ;       # -p
+my $uplink_file = '' ;      # -U:
+my $atoc_file   = '' ;      # -T:
+my $apage_file  = '' ;      # -P:
+
+my $uplink_text = '' ;
+
+
+###############################################################################
+#
+# usage
+
+sub usage(;$)
+{
+    my $msg = ( shift || '' ) ;
+
+    print <<EOF ;
+$0 [options]
+
+Read the original 'index.hbs' from mdbook's source from STDIN. Write a modified
+version to STDOUT. The modifications will include 'git commit' information.
+
+-t      Include commit information below the Table of Contents.
+
+-T ___  Specify a file containing an HTML fragment to be included AS the
+        commit information below the Table of Contents. This file should
+        contain the correct substitution tokens. Implies '-t'.
+
+-p      Include commit information at the bottom of the page.
+
+-P ___  Specify a file containing an HTML fragment to be included AS the
+        commit information at the bottom of the page. This file should
+        contain the correct substitution tokens. Implies '-p'.
+
+-U ___  Specify a file containing an HTML fragment to be included above the
+        Table of Contents. This is normally used as a link "up" to an index
+        of related books.
+
+-h      Show this help message.
+
+EOF
+
+    if ( $msg ne '' )
+    {
+        print $msg ;
+        exit 1 ;
+    }
+
+    exit 0 ;
+}
+
+###############################################################################
+###############################################################################
+###############################################################################
+
+getopts ( 'htpU:T:P:' , \%opt ) ;
+$opt{'h'} && usage() ;
+$add_atoc       = ( $opt{'t'} ? 1 : 0 ) ;
+$add_apage      = ( $opt{'p'} ? 1 : 0 ) ;
+$uplink_file    = ( $opt{'U'} || '' ) ;
+$atoc_file      = ( $opt{'T'} || '' ) ;
+$apage_file     = ( $opt{'P'} || '' ) ;
+
+my $changing    = 0 ;
+
+############################################################
+# If an uplink file was specified, read it
+
+if ( $uplink_file ne '' )
+{
+    open( I , '<' , $uplink_file )
+        or die "ERROR: can't read \"$uplink_file\": $!\n" ;
+    while ( my $line = <I> )
+    {
+        $uplink_text .= $line ;
+    }
+    close I ;
+
+    $changing = 1 ;
+}
+
+############################################################
+# Figure out "after ToC"
+
+if ( $atoc_file ne '' )
+{
+    $after_toc = '' ;
+
+    open( I , '<' , $atoc_file )
+        or die "ERROR: can't read \"$atoc_file\": $!\n" ;
+    while ( my $line = <I> )
+    {
+        $after_toc .= $line ;
+    }
+    close I ;
+
+    $add_atoc   = 1 ;
+    $changing   = 1 ;
+}
+elsif ( ! $add_atoc )
+{
+    $after_toc  = '' ;
+}
+else
+{
+    $changing   = 1 ;
+}
+
+############################################################
+# Figure out "after page"
+
+if ( $apage_file ne '' )
+{
+    $after_page = '' ;
+
+    open( I , '<' , $apage_file )
+        or die "ERROR: can't read \"$apage_file\": $!\n" ;
+    while ( my $line = <I> )
+    {
+        $after_page .= $line ;
+    }
+    close I ;
+
+    $add_apage  = 1 ;
+    $changing   = 1 ;
+}
+elsif ( ! $add_apage )
+{
+    $after_page = '' ;
+}
+else
+{
+    $changing   = 1 ;
+}
+
+###############################################################################
+#
+# Do the deed
+
+while ( my $line = <> )
+{
+    if ( $line =~ m|\{\{#toc\}\}| )
+    {
+        if ( $uplink_text ne '' )
+        {
+            print "\n<!-- Start up-link content above ToC -->\n" ;
+            print $uplink_text ;
+            print "<!-- End up-link content above ToC -->\n\n" ;
+        }
+    }
+
+    print $line ;
+
+    if ( $line =~ m|\{\{/toc\}\}| )
+    {
+        if ( $add_atoc )
+        {
+            print "\n<!-- Start version-commit content below ToC -->\n" ;
+            print $after_toc ;
+            print "<!-- End version-commit content below ToC -->\n\n" ;
+        }
+    }
+
+    if ( $line =~ m|\{\{\{\s*content\s*\}\}\}| )
+    {
+        if ( $add_apage )
+        {
+            print "\n<!-- Start version-commit content below page -->\n" ;
+            print $after_page ;
+            print "<!-- End version-commit content below page -->\n\n" ;
+        }
+    }
+}
