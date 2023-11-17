@@ -28,31 +28,59 @@ A template file is an image file with the following properties:
 
 - Size: 1404x1872 pixels, 226 dpi
 
-- Colour depth: I create 8-bit greyscale, others may work as well
+- Colour depth: I normally create them using an 8-bit greyscale colour space. The tablet can handle full-colour images, however it will obviously *show* them as greyscale.
 
 - Transparency: I've read reports online saying that there can be issues with templates with a transparency layer (or "alpha channel"). In the templates I've made, I use white as the background and remove the alpha channel.
 
-The zone on the left (or right, if the tablet is in left-handed mode) where the menu bar appears and disappears, is 120 pixels wide. If the users of your template may want/need to work while the menu bar is on screen, you may want to be sure not to have anything important in this area. In most of my templates I draw a shaded rectangle there, so users don't accidentally draw there without meaning to.
+The zone on the left (or right, if the tablet is in left-handed mode) where the menu bar appears and disappears, *was* 120 pixels wide in the 3.0 firmware, and was reduced to 104 pixels in 3.5. If the users of your template may want/need to work while the menu bar is on screen, you may want to be sure not to have anything important in this area. In most of my templates I draw a lightly shaded rectangle there, so users don't accidentally draw there without meaning to.
 
 You can create the file using any graphics program which can save a PNG file. For example, I use ..
 
-* [Graphic Converter](https://www.lemkesoft.de/en/products/graphicconverter/) for "hands on" graphics work
 * [ImageMagick](https://imagemagick.org/) for simple scripts.
 * Perl with the [GD module](https://metacpan.org/pod/GD) (which is a wrapper around the [GD library](https://libgd.github.io/)) for more complex scripts.
+* [Graphic Converter](https://www.lemkesoft.de/en/products/graphicconverter/) or [GIMP](https://gimp.org/) for "hands on" graphics work.
 
 There *are* other programs and libraries out there, these are just the ones that I use personally.
 
-## Uploading Template Files
+## Uploading Template Files - Third Party Software
 
-Once you've created a template file, it needs to be uploaded and stored on the tablet, in the `/usr/share/remarkable/templates/` directory. The templates which are built into the reMarkable software are stored here, be careful not to change or delete them by accident.
+There are two primary methods of uploading templates to the tablet - using a third-party program, or doing it by hand.
 
-Note that you can create sub-directories here if you like. If you do this, remember to include the directory name in the `filename` value when you add the template to the JSON file.
+### RCU
 
-One thing to be aware of ... the `/usr/share/remarkable/templates/` directory will be wiped and replaced when the tablet's built-in software is updated. What I've seen other programs (such as [RCU](http://www.davisr.me/projects/rcu/)) do is, create a directory under `/home/root/` for your custom template files, and create *symlinks* in `/usr/share/remarkable/templates/` which point to the files in this new directory. This way when the software is updated, the files will still be there, and only the symlinks will need to be re-created.
+I use a program called [RCU](http://www.davisr.me/projects/rcu/) to upload templates. It's available for several Linux distributions, as well as FreeBSD, macOS, and windows.
 
-## Updating the `template.json` file
+RCU can also be used to download documents in a format which can be uploaded and edited again, i.e. it doesn't "burn" the pen strokes into the PDF like the reMarkable software. It can also be used to upload custom "splash screens", such as the "sleep screen" that the tablet shows when you aren't using it.
 
-In the same directory is a file called `template.json`. This is a JSON file containing the filename, description (the caption below the template's icon in the reMarkable software), which icon to use for the template, and which categories should "contain" the template.
+When it uploads templates or splash screens, it stores the *files* in the partition which doesn't get replaced when the firmware is updated, and *links* the files into the system directories where the reMarkable software looks for them. When the firmware is updated, RCU can detect files which were previously uploaded but are no longer linked, and will offer to re-link them automatically.
+
+It's not free (as in "zero pricetag") but it's not expensive - I believe it's only $12/yr for access to upgrades as they're released, which includes access to the source code and a "developers" mailing list.
+
+### Notable Utility
+
+[Notable Utility](https://notableutility.com/) is another option. I haven't used it, but from the web site it looks like (1) it's free (zero pricetag), and (2) it *only* manages templates, it doesn't also manage documents or splash screens.
+
+I also don't know if it uploads and "links" files the same way that RCU does, or if you would need to re-upload your custom template files after every firmware update.
+
+### Others
+
+At some point I want to look at these ...
+
+- [reMarkable Assistant](https://github.com/richeymichael/remarkable-assistant)
+    - free (can't find any mention of which license it uses)
+    - Last commit 2018-02-17
+
+I know there are others out there, but I don't remember them off the top of my head. I'll update this page if I happen to see them.
+
+## Uploading Template Files - Manually
+
+Custom template files need to be uploaded and stored on the tablet, in the `/usr/share/remarkable/templates/` directory. The templates which are built into the reMarkable software are stored here, be careful not to change or delete them by accident.
+
+Note that the `/usr/share/remarkable/templates/` directory will be replaced when the tablet's built-in software is updated.
+
+### Updating the `templates.json` file
+
+In the same directory is a file called `templates.json`. This is a JSON file containing the filename, description (the caption below the template's icon in the reMarkable software), which icon to use for the template, and which categories should "contain" the template.
 
 The file itself looks like this:
 
@@ -99,9 +127,12 @@ Within each object are the following items:
 
 * `name` = The caption shown below the icon in the "template chooser" interface.
 
-* `filename` = The ifilename of PNG/SVG file, without the extension.
+* `filename` = The filename of PNG/SVG file, without the extension.
 
-    Some of the built-in templates have both `.png` and `.svg` files, I *guess* the software looks for one before the other, and uses whichever one it finds first?
+    Most of the built-in templates have both `.png` and `.svg` files, My *guess* is that ...
+
+    * The software looks for an `.svg` file before looking for a `.png` file, and uses whichever one it finds first.
+    * With `.svg` files, the software is able to "repeat" a pattern when doing the "infinite scrolling" thing (i.e. if you scroll the page down to keep writing).
 
 * `iconCode` = Unicode character number used as the template's icon in the "template chooser" interface.
 
@@ -111,13 +142,13 @@ Within each object are the following items:
 
 * `landscape` = whether template is meant for landscape mode (i.e. tablet rotated 90&deg;)
 
-    * defaults to `false`
-    * not sure what setting this to `true` actually *does* yet
-
 * `categories` = which tabs in the "template chooser" UI should "contain" this template. The same template can appear in multiple tabs.
 
     * The "All" tab doesn't need to be listed because it already contains every template listed in the file.
-    * Not sure what happens if you add a name which isn't one of the built-in tabs.
+
+    * The tablet combines all of the category names from all of the templates to build the "tabs" along the top of the template chooser interface.
+
+    Note that you *can* add your own tabs, but be careful not to "overflow" the width of the screen. I normally change "Life/organize" to "LifeOrg" for all of the existing templates to make room on the screen, and then use "Custom" for all of my own custom templates.
 
 ### Restarting the reMarkable Software
 
@@ -130,27 +161,6 @@ systemctl restart xochitl
 If you watch the tablet, you will see the screen reset and it will look like it's rebooting, although the process doesn't take as long as a full reboot.
 
 
-## Easier options to upload templates
-
-I'm using these ...
-
-- [RCU](http://www.davisr.me/projects/rcu/) = reMarkable Connection Utility
-    - $12, includes 365 days of updates and email support from author
-    - Claims to be "free software" but ...
-        - the price is not zero (i.e. it's not "free beer")
-        - the source code is only available to paying customers (i.e. it's just *barely* "free speech", although technically it *is* within the limits of most open-source licenses, thanks RedH... er, IBM)
-
-At some point I want to look at these ...
-
-- [`templatectl`](https://github.com/PeterGrace/templatectl)
-    - command line utility, written in rust
-    - looks like it ONLY updates the JSON file
-
-- [reMarkable Assistant](https://remarkablewiki.com/tips/assistant)
-    - free
-    - [Github](https://github.com/richeymichael/remarkable-assistant)
-
-
 ## Other Sources of Templates
 
 I've seen several places online offering ready-made templates for download, and people are even *selling* them. The one(s) listed here are the ones that actually seem useful to me.
@@ -159,6 +169,7 @@ I've seen several places online offering ready-made templates for download, and 
     - GENERATES grids (square) or isometric (triangular), using dots, lines, or anything in between (i.e. "+" marks)
     - Adjustable sizes, offsets, and colours
     - Javascript, runs in your browser
+
 
 ## My Templates
 
