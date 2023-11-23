@@ -8,6 +8,8 @@ I've had mine for about a month, and have yet to actually connect it to *any* wi
 
 ### Tablet asks about updates
 
+reMarkable seems to be using the **Omaha Client-Server Protocol V3** for updates, which is documented [here](https://github.com/google/omaha/blob/main/doc/ServerProtocolV3.md), though slight modifications seem to have been made, such as the addition of various new attributes (`track`, `ap`, `bootid`, etc.) to the `app` element.
+
 The tablet sends an HTTPS POST request to a reMarkable server, asking if an update is available. The body of the request is an XML block containing ...
 
 * The current firmware version.
@@ -16,7 +18,9 @@ The tablet sends an HTTPS POST request to a reMarkable server, asking if an upda
 
 * A language code. (Mine says "`en-US`".)
 
-* Several other pieces of information which, to be honest, I don't know what they're for.
+* Two randomly generated UUIDs as request and session IDs.
+
+* Several other pieces of information. Details for most of these are available in the documentation linked above.
 
 ### Server responds
 
@@ -340,6 +344,17 @@ $ cat 02-req.txt
         <ping active="1"></ping>
         <updatecheck></updatecheck>
         <event eventtype="3" eventresult="2" previousversion=""></event>
+    </app>
+</request>
+```
+
+It should be noted that most of the parameters can be omitted or left empty while still receiving a successful response. A minimal request may look like this:
+
+```XML
+<request protocol="3.0" version="3.5.2.1807" requestid="{nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn}" sessionid="{nnnnnnnn-nnnn-nnnn-nnnn-nnnnnnnnnnnn}" installsource="ondemandupdate" ismachine="1">
+    <os version="" platform="reMarkable2" sp="" arch="armv7l"></os>
+    <app appid="{98DA7DF2-4E3E-4744-9DE6-EC931886ABAB}" version="3.5.2.1807" ap="Prod" lang="" nextversion="" brand="" client="">
+        <updatecheck></updatecheck>
     </app>
 </request>
 ```
