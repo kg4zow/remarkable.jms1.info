@@ -20,33 +20,45 @@ A lot of people, including myself, have *figured out* bits and pieces of how thi
 
 Having some kind of policy statement from reMarkable about this would help. For example, "this file's format is guaranteed to stay the same for all 3.x firmware versions, but may change in 4.x".
 
+### Limited sleep options
+
+The tablet has an "Auto sleep" function where, if you don't interact with it for 20 minutes, the tablet will put itself to sleep. **The time should be configurable**, either as a list of options (with "one hour" as one of the options), or as an entry field where the user can enter how many minutes (where I would enter `60`.)
+
+### Limited security options
+
+The tablet has a feature which allows you to set a four-digit PIN number to unlock it. **This should be more configurable.**
+
+Ideally it should allow the user to create an arbitrary-length password, and the "correct' password should be stored as a hash (like what *most* Linux machines store in the `/etc/shadow` file) so that if somebody finds a backup, they won't be able to just *read* the password out of the `xochitl.conf` file like they can with the current four-digit PIN.
+
+If that's too hard, then *at least* allow arbitrary length numeric PIN codes - maybe with a *minimum* of four digits, but allow longer numbers. As an example, the code I *currently* use to unlock my phone is ten digits, and at one point in the past it was 17 digits.
+
 ## Cloud service
 
 ### Required
 
-The software on the tablet was designed around the idea that every tablet would be connected to the cloud service. It doesn't seem like a whole lot of thought went into tablets that *don't* connect to the cloud.
+The software on the tablet seems to have been *designed* around the idea that every tablet would be connected to the cloud service. It doesn't look like a whole lot of thought went into tablets that *don't* connect to the cloud.
 
 * Some people are not ALLOWED to connect to the cloud, because of corporate policy or legal compliance reasons.
 
-    One example of this would be HIPAA, the US law covering privacy of healthcare records. I know it's possible to sign a BAA which would make reMarkable liable in case of a breach due to their cloud systems, but (1) even with a BAA in place I wouldn't want to take that chance with healthcare information in the first place, and (2) there are other reasons, such as lawyer/client confidentiality, which preclude people from using the cloud service.
+    One example of this would be HIPAA, the US law covering privacy of healthcare records. I know it's possible to sign a BAA which would make reMarkable liable in case of a breach due to their cloud systems, but (1) even with a BAA in place I wouldn't want to take that chance with healthcare information in the first place, and (2) there are other reasons, such as lawyer/client confidentiality, which would preclude people from using the cloud service.
 
 * Others, like myself, don't WANT to connect to the cloud.
 
-    In my case, it's because the cloud is hosted with google, who I *absolutely* do not trust at all. Their core business is advertising, and I don't trust them *not* to scan through copies of the sync'ed files from my tablets and use them to build or refine an "advertising profile" against me.
+    In my case, it's because the cloud is hosted with google, who I *absolutely* do not trust at all. Their core business is advertising, and I don't trust them *not* to scan through copies of the sync'ed files from my tablets and use them to build or refine an "advertising profile" against me, or to write their own handwriting recognition program to convert pen strokes to text - again, to feed their ad-targeting database.
 
 This is a problem because some parts of the tablet's functionality require the cloud service.
 
 * The third-party sync functionality with Dropbox, google, and microsoft, was designed to work through the cloud.
 
-    When you create a link to these services, the authentication tokens are held on reMarkable's cloud servers. The tablet itself never talks to these services - whenever you exchange files with these services, the cloud servers are actually doing the work, and the tablet picks up the changes through the existing "sync to reMarkable cloud" mechanism.
+    When you create a link to these services, the authentication tokens are held on reMarkable's cloud servers. The tablet itself never talks to these services - when you exchange files with them, the cloud servers are actually doing the work, and the tablet picks up the changes through the sync mechanism it already uses.
 
-    This is definitely a simpler design, but it means that reMarkable employees, and anybody who hacks into reMarkable's servers, have access to those authentication tokens, and therefore have access to your accounts on these third-party services. It's possible for them to read, add, delete, or change any files that you have access to on those other services, whether you interact with the files through the reMarkable tablet or not.
+    This is definitely a *simpler* design to implement, but it means that reMarkable employees, and anybody who hacks into reMarkable's servers, have access to those authentication tokens, and therefore have access to your accounts on these third-party services. It's possible for them to read, add, delete, or change any files that you have access to on those other services, whether you interact with the files through the reMarkable tablet or not. (I'm not saying that reMarkable employees *would* do this, but ... How often do you read in the news about these "ransomware" jokers selling millions of peoples' data on the "dark web"?)
 
-    The software which talks to these external services *could have been* designed to run directly on the tablet, either by building the clients into the reMarkable software, or even better, through a documented "plug-in" interface, which would allow others to write file-exchange plug-ins that could run on the tablet. In my case I have no interest in Dropbox, google, or microsoft, but I would be VERY interested in using (or maybe writing?) a plug-in to exchange files with [Keybase](https://keybase.io/).)
+    The software which talks to these external services *could have been* designed to run directly on the tablet, either by building their clients into the tablet software, or even better, through a documented "plug-in" interface, which would allow others to write file-exchange plug-ins that could also run on the  tablet. In my case I have no interest in Dropbox, google, or microsoft, but I would be VERY interested in using (or maybe writing?) a plug-in to exchange files with [Keybase](https://keybase.io/).)
 
-* The handwriting recognition is performed by a company called [MyScript](https://www.myscript.com/). When you ask for handwriting to be "recognized", the tablet sends the pen-strokes to a reMarkable cloud server, which then forwards the information to MyScript.
+* The handwriting recognition is performed by a third-party company called [MyScript](https://www.myscript.com/). When you ask for handwriting to be "recognized", the tablet sends the pen-strokes to a reMarkable cloud server, which then forwards the information to MyScript.
 
-    In a way this makes sense. I'm sure reMarkable is *paying* for an API key with MyScript, which is used for *all* of the handwriting recognition requests from all reMarkable tablets, and they don't want their API key to exist on the tablets where "hackers" like me could find it and use it for things which have nothing to do with a reMarkable tablet.
+    In a way this makes sense. I'm sure reMarkable is *paying* for an API key with MyScript, which it uses for *all* of the handwriting recognition requests from all reMarkable tablets, and they don't want their API key to exist on the tablets where "hackers" like me could find it and use it for handwriting recognition requests from other devices or programs.
 
     I do wish they had built in an *option* for users to get their own API key from MyScript, and have the tablet send handwriting recognition requests directly to them, but ... to be fair, that would mean two totally different "code paths" for handwriting recognition, which would make the software harder to maintain and support.
 
@@ -54,11 +66,13 @@ This is a problem because some parts of the tablet's functionality require the c
 
 ### Not encrypted
 
+(This is the big one.)
+
 **The files stored in the cloud are not encrypted.**. If they were, and the encryption keys were *only* available to the endpoints (tablets, desktop/mobile apps, etc.), it would mean that reMarkable (and google, and random governments or government-*ish* groups around the world who can create "legal orders" of some flavour or another) would not be ABLE to read peoples' documents.
 
-A "master copy" of each account's encryption key could also be stored in the cloud, in a file which is itself encrypted using the user's login password (or even better, using a separate passphrase), so that only people who have the password would be able to access the encryption key to access the files, or to set up a new device on the account.
+A "master copy" of each account's encryption key could also be stored in the cloud, in a file which is itself encrypted using the user's login password (or even better, using a separate passphrase), so that only people who know the password would be able to access the encryption key to access the files, or to set up a new device on the account.
 
-Encrypting the files in such a way that **nobody** other than the user can read the files stored in the cloud, would go a LONG way towards making people like myself, and companies who currently don't allow reMarkable tablets to be used, *trust* the cloud service. (This includes reMarkable, google, intelligence agencies, and random anklebiters who manage to hack any of their systems.)
+Encrypting the files in such a way that **nobody** other than the user (including reMarkable, google, intelligence agencies, and random anklebiters who manage to hack into any of their systems) can read the files stored in the cloud, would go a LONG way towards making people like myself, and companies who currently don't allow reMarkable tablets to be used, *trust* the cloud service.
 
 
 ## Tablet software
@@ -73,9 +87,11 @@ The reMarkable software comes with a collection of "templates", which serve as a
 
 Different people have different needs. In my case, some of these templates are useful (lines, grids, dots, and "blank") but most of the others (sheet music lines, perspective grids for art, storyboards, half-page variants of lines/grids/dots, etc.) are just "taking up space", and there's so many of them that it feels like they're *in the way* when I need to choose the template for a new page.
 
-Also, I have created several "custom templates" that I use every day. I was able to use a third-party program called [RCU](http://www.davisr.me/projects/rcu/) to upload my own templates to the tablet, which has made the tablet a LOT more useful.
+Also, I have created several "custom templates" that I use every day. I normally use a third-party program called [RCU](http://www.davisr.me/projects/rcu/) to upload my own templates to the tablet, but I also *can* upload them by hand and manually edit the `templates.json` file so `xochitl` knows about them.
 
-**I really wish the tablet had a built-in way to *manage* templates.** This would include ...
+**I really wish the tablet had a built-in way to *manage* templates.**
+
+This would include ...
 
 * Adding a way for the built-in web server, and for the "cloud", to handle uploading custom template files.
 
@@ -87,15 +103,15 @@ Also, I have created several "custom templates" that I use every day. I was able
 
 * Allowing the "icon" for each template (shown when choosing a template for a page) to be customized. For some of the templates (graphs, dots, etc.) it makes sense to have a zoomed-in portion of the page, but for others it would make sense to use a miniature version of the entire page. (It may be worth adding a way to upload custom icon files for templates?)
 
-    The current implementation uses a collection of "icons" which is fixed into a custom font file, making it *very* difficult (although probably not impossible, I haven't looked in detail yet) to customize. This *sorta* makes sense in a world where the list of templates is fixed, but if the list of available templates is *not* fixed, another solution is needed.
+    The current implementation uses a collection of "icons" which is fixed into a custom font file, making it *very* difficult (although probably not impossible, I haven't looked in detail yet) to customize. These should be actual *thumbnail images*, generated on the fly the first time they're needed, and then stored (like you already do with notebook page thumbnail images).
 
 * Providing documentation on what makes a file usable as a template.
 
     In particular, explain how the "repeating background" thing works for the built-in templates, so that people who design their own templates which *should* logically repeat when a page is extended downward (or to the right), can design them accordingly. Specifically, how does the tablet know how many rows of pixels to repeat at the bottom of the template when "extending" a page downward?
 
-### Sleep screens
+### Splash screens
 
-Everything I said above about templates, also applies to the "static screens", specifically the following files in the `/usr/share/remarkable/` directory:
+Everything I said above about templates, also applies to the "splash screens", specifically the following files in the `/usr/share/remarkable/` directory:
 
 * `batteryempty.png`
 * `factory.png`
@@ -106,25 +122,27 @@ Everything I said above about templates, also applies to the "static screens", s
 * `starting.png`
 * `suspended.png`
 
-The software should provide a way for users to customize at least *some* of these files.
+The software could provide a way for users to upload their own versions of these files, or at least `suspended.png` and `poweroff.png` (again, via the built-in web interface and/or the "cloud").
 
-The documentation should also explain how many pixels to reserve at the bottom of the image to leave room for the "owner information" to be overlaid when the `suspended.png` "sleep screen". I *guessed* for my own sleep screen and it worked out okay, but it would have been nice not to *need* to guess.
+The documentation should also explain how many pixels to reserve at the bottom of the image to leave room for the "owner information" to be overlaid when the "Personal information" setting is enabled. For my own sleep screen I *guessed* and it worked out okay, but it would have been nice not to *need* to guess.
 
 ### Text
 
 The way the tablets handle text right now is ... I don't know any other way to say it, it's *horrible.* It's like whoever designed the feature, figured that every page should be *either* text *or* handwriting, but not both at the same time ... and that text pages should always be laid out exactly the same way.
 
-I don't know for sure what the "right way" to handle text might be. The only times I've dealt with text as part of a GUI was using [gimp](https://gimp.org/) or [Graphic Converter](https://www.lemkesoft.de/en/products/graphicconverter/), both of which treat text as an "object" which exists "above" the canvas, and gets "flattened into" the image when saving the file to a normal image format.
+I don't know for sure what the "right way" to handle text might be. The only times I've dealt with text as part of a GUI was using [gimp](https://gimp.org/) or [Graphic Converter](https://www.lemkesoft.de/en/products/graphicconverter/), both of which treat text as an "object" which exists "above" the canvas, and gets "flattened into" the image when saving the file to an image file which doesn't support "layers".
 
 So my suggestion is this ...
 
 * **Text would be contained in "text objects".**
 
-* Each object would have a font, font size, and alignment setting. All text within the object would use the same font, size, and alignment. The text will support modifiers (bold, italic, underline, strike-through, and super/subscript) for character ranges within the text.
+* Each object would have a font, font size, and alignment setting. All text within the object would use the same font, size, and alignment.
+
+* Text will support modifiers (bold, italic, underline, strike-through, and super/subscript) for character ranges within the text.
 
 * Each object would have its own position on the page, totally independent of other objects or pen strokes.
 
-    In particular, if text objects end up overlapping with each other or with pen strokes, or if a user draws pen strokes "on top of" an existing text object, *that's what the user wants*, so allow it to happen. Don't try to "move text out of the way", or automatically enforce weird margins to try and make text avoid pen strokes or other text objects.
+    In particular, if text objects end up overlapping with each other or with pen strokes, or if a user draws pen strokes "on top of" an existing text object, **that's what the user wants**, so allow it to happen. Don't try to "move text out of the way", or automatically enforce weird margins to try and make text avoid pen strokes or other text objects. People are *going* to want to add text and then manually circle or highlight that text using the stylus.
 
 * Each object's *width* would be resizable. The height would be automatic, based on how much text is *in* the object. Each object would have a minimum height of one line of text, based on the object's font size.
 
@@ -134,19 +152,23 @@ So my suggestion is this ...
 
 ### Drawing tools
 
-Tools to draw simple shapes would be nice. This would include things like circles/ellipses, squares/rectangles, and generic polygons. The shapes could be solid (filled) or empty (outline only).
+Tools to draw simple shapes would be *awesome*. This would include things like circles/ellipses, squares/rectangles, and generic polygons. The shapes could be solid (filled) or empty (outline only).
 
-Also, maybe a setting of some kind that, if enabled, would ensure that all lines are either "always straight", or "always straight *and* aligned with the nearest 45&#xB0; angle". (This would only affect lines above a certain length, to preclude interfering with normal handwriting.)
+Also, maybe a setting of some kind that, if enabled, would ensure that all lines are either "always straight", or "always straight *and* aligned with the nearest 45&#xB0; angle". (This would only affect lines above a certain length, to preclude interfering with normal handwriting.) I'm not sure if this is already happening in the 3.8.2 release or not, but if so, that's something you could have mentioned in the release notes.
 
-And, a "fill" tool that would flood an area with a colour.
+And, a "fill" tool that would flood an area with "ink".
 
 ### Image support
 
-It would be nice if the tablet had a way to handle images - maybe as "image objects", similar to the "text objects" I suggested above, which would contain a raster image, which supports transparency.
+It would be nice if the tablet had a way to handle images - maybe as "image objects", similar to the "text objects" I suggested above, which would contain a raster image.
 
 Images could be created by allowing images to be selected and copied from existing documents, either "from the current layer only", or "from all visible layers", and then pasted as a new "image object". If a user needs to upload an image, they can use a PDF and then copy/paste the image *from* the PDF.
 
 Once pasted into a page, image objects could be moved and resized. There would be a setting where the user can choose either allow or not allow the aspect ratio to be changed while resizing.
+
+Image objects, text objects, and pen strokes should be allowed to freely overlap with each other. Don't try to move things around to avoid this, trust the user to know what they want to do.
+
+Ideally, images should support transparency. This means *real* transparency, not "faking it". In particualr, white pixels should "cover up" whatever is "below" it with white, like the eraser tool used to do before 3.8.0.
 
 ### Interoperability
 
@@ -160,17 +182,19 @@ A few examples ...
 
     Adding this now would be a *huge* effort. I'm not pushing for this, I'm just saying that I wish it had been designed this way to begin with.
 
-* They could have added a signal handler, or maybe an API server listening on `http://127.0.0.1:nnn/`, so other processes could tell the software to re-read its file storage after documents (or templates) have been added, deleted, or modified.
+* They could have added a signal handler, or maybe an API server listening on `http://127.0.0.1:nnn/`, so other processes *on the tablet* could tell the software to re-scan its file storage after documents (or templates) are added, deleted, or modified.
 
     This actually wouldn't be a *huge* effort to add in now, especially if it's just a signal handler. If I had access to (and was familiar with) the source code I could probably have a pull request ready in a day or two for the signal handler idea, or maybe a week or two for the API server idea (which could later be used to support other operations as well). `#justsayin`
 
-* They could *publish* the API used by the cloud service, and commit to not making any breaking changes to it. This would make it easier to write and maintain programs like [rmfakecloud](https://github.com/ddvk/rmfakecloud), so companies (and people) don't have to worry about their data leaving their own systems.
+* They could *publish* the API used by the cloud service, and commit to not making any breaking changes to it. This would make it easier to write programs with interact with the cloud, and it would also make it easier to write things like [rmfakecloud](https://github.com/ddvk/rmfakecloud), which can provide the same "cloud" functionality, so that companies (and people) don't have to worry about their data leaving their own systems.
 
     This would require the tablet to have a new configuration item for "sync server hostname", but otherwise the end user experience would be the same.
 
-Don't get me wrong, I realize that the way they're doing it is perfectly in line with the various software licenses involved. I have no reason to believe that the reMarkable is violating any licenses, I'm sure they have a legal department who reviews thier SBOMs and has to sign off on every release. That's not what I'm saying.
+Don't get me wrong, I realize that the way they're doing it is perfectly *legal* according to the various software licenses involved. I have no reason to believe that the reMarkable is violating any licenses, that's not what I'm saying at all.
 
-What I *am* saying is ... it seems like such a *waste*. There are *so many things* that people *could be* doing with these tablets, if reMarkable had designed some "hooks" into the software to *allow* other programs to "play nice" with it.
+What I *am* saying is ... it seems like such a *waste*. There are *so many things* that people *could be* doing with these tablets, if reMarkable had designed some "hooks" into the software to *allow* other programs to "play nice" with it. Obviously they can put a bunch of disclaimers on their web site (and on the tablet) saying that they don't provide support beyond a certain point, and maybe even make the user tap an "I agree" button on the tablet before showing them the root password for the first time.
+
+But the community, probably the *existing* community, would end up helping each other out and "providing support" for people who want to customize things.
 
 ### Actually ...
 

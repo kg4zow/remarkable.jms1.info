@@ -174,11 +174,17 @@ The process I use is below.
 
 &#x2139;&#xFE0F; One of the items on my "to-do list" is to write a script which automates this process. This may or may not include *installing* the new image on a tablet, I'm not sure yet.
 
+> &#x26A0;&#xFE0F; **The reMarkable 1 and reMarkable 2 use different images.**
+>
+> This is because they have different hardware. The rm2 images, for example, don't include support for the three hardware buttons on the rm1.
+>
+> If you own both models, you will need to do this process once for each model, and you'll need to be careful to install the correct image on each tablet.
+
 ### Identify your computer's IP address
 
 Before we get into this, there's something that you'll need to understand.
 
-> **Computers don't have IP addresses.**
+> Computers don't have IP addresses.
 >
 > **Computers have interfaces, and INTERFACES have IP addresses.**
 >
@@ -188,7 +194,7 @@ Before we get into this, there's something that you'll need to understand.
 
 Identify the IP address *to which* the tablet will need to connect, in order to reach your laptop.
 
-You can see your computer's IP addresses using a command like "`ifconfig -a`" (or for windows I *think* it's "`ipconfig /all`" maybe?) You're looking for the IP which is in the same network segment with the tablet - if you're connected via USB cable this will be `10.11.99.[2-6]`.
+You can see your computer's IP addresses using a command like "`ip -4 addr show`" or "`ifconfig -a`". (For windows I *think* it's "`ipconfig /all`" maybe?) You're looking for the IP which is in the same network segment with the tablet - if you're connected via USB cable this will be in the `10.11.99.(2-6)` range.
 
 This document will assume the IP is `10.11.99.2`, adjust below as necessary.
 
@@ -199,12 +205,12 @@ On the computer, start a copy of either [netcat](https://sectools.org/tool/netca
 For this document I'll use `nc` (because it comes with macOS) and `8000` as the port number.
 
 ```
-$ nc -ln 10.11.99.2 8000 > 01-req.txt
+$ nc -ln 10.11.99.2 8000 | tee 01-req.txt
 ```
 
-You probably won't see any output right away, this is fine. Whatever traffic it receives will be sent to the `01-req.txt` file.
-
 At this point, your computer is listening for incoming network connections. Listening on the `10.11.99.x` interface means that only other devices on that network segment (i.e. the tablet) will be able to connect - if something on a wifi or other network tries to connect ro port 8000 they won't be able to.
+
+You won't see any output right away, this is fine. When the tablet sends a request to ask for available upgrades, you will see it in this window, *and* it will be sent to the `01-req.txt` file as well.
 
 ### Configure the tablet
 
@@ -318,16 +324,18 @@ Note that I have obscured some values in the example which could be used to iden
 We're going to send this request to reMarkable. In order to do this, we'll need to extract *just* the body from the request. You *can* do this by hand, but it's easier to use `sed` for this.
 
 ```
-sed '1,/^$/d' 01-req.txt > 02-req.txt
+sed '1,/^\r*$/d' 01-req.txt > 02-req.txt
 ```
 
 This `sed` command is ...
 
 * `START,END d` = delete lines from `START` to `END` (inclusive)
     * START is "`1`", meaning the first line of the file
-    * END is "`/^$/`", meaning the first empty line in the fiel
+    * END is "`/^\r*$/`", meaning the first line in the file which is either empty, or contains only "`\r`" (the "carriage return" character, ASCII 13).
 
-So this command will delete lines from the beginning of the file until the empty line (between the headers and the body), and copy all other lines as-is.
+        This is because the request that the tablet sends uses "`\r\n`" as the line ending. Some versions of `sed` may recognize this as a line ending, but most will only recognize "`\n`" (the "newline" or "line feed" character, ASCII 10) as the line ending, so that supposedly blank line may actually contain a "`\r`" character. The pattern "`^\r*$`" matches *either* a line containing just "`\r`", or a line containing nothing at all.
+
+    So this command will delete lines from the beginning of the file until the empty line (between the headers and the body), and then copy all other lines as-is.
 
 **If you're curious**, you can inspect the results afterward, and see that it only contains the request body.
 
@@ -348,7 +356,7 @@ $ cat 02-req.txt
 
 This will send a POST request to reMarkable, with the original message body that came from the tablet. As far as reMarkable knows, your tablet is sending the request.
 
-```
+ ```
 curl -XPOST \
     -H 'Content-Type: text/xml' \
     -H "Content-Length: $( wc -c 02-req.txt | awk '{print $1}' )" \
@@ -405,10 +413,10 @@ https://updates-download.cloud.remarkable.engineering:443/build/reMarkable%20Dev
 
 Fairly self-explanatory.
 
-**Note:** the option in this command is an "uppercase letter O", not "digit zero".
+**Note:** the option in this command is an "uppercase letter O", not a "digit zero".
 
 ```
-$ curl -O https://updates-download.cloud.remarkable.engineering:443/build/reMarkable%20Device/reMarkable2/3.7.0.1930/3.7.0.1930_reMarkable2-XSMSQgBATy.signed
+$ curl -LOv https://updates-download.cloud.remarkable.engineering:443/build/reMarkable%20Device/reMarkable2/3.7.0.1930/3.7.0.1930_reMarkable2-XSMSQgBATy.signed
 ```
 
-This file can be installed on a reMarkable tablet using [remarkable-update](https://github.com/ddvk/remarkable-update).
+This file can then be installed on a reMarkable tablet using [RCU](http://www.davisr.me/projects/rcu/) or [remarkable-update](https://github.com/ddvk/remarkable-update).

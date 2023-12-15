@@ -7,6 +7,7 @@
 - [FAQ](faq/index.md)
     - [Cases](faq/cases.md)
     - [Eraser](faq/eraser.md)
+    - [File Types](faq/file-types.md)
     - [Nibs](faq/nibs.md)
     - [reMarkable Cloud]()
 
