@@ -35,23 +35,33 @@ The reMarkable tablets allow you to upload ebooks in EPUB and PDF formats.
 
 * **EPUB files contain text** with formatting instructions. These include things like which words should be **bold** or *italic*, where each paragraph starts and ends, when each chapter starts and ends, and so forth. EPUB file are actually ZIP files containing HTML and CSS files, so when you're reading an EPUB file you're actually looking at a web page.
 
-When you upload an EPUB file to a reMarkable tablet, the tablet converts it to PDF internally. When you "read" the file on the tablet, you are actually reading the PDF.
+In cases where the same document is available as both an EPUB and a PDF, it's always better to have the EPUB file, for a couple of reasons:
 
-My *guess* is that reMarkable set it up this way because they wanted to allow users to be able to "write" on top of EPUB files, the same way they can with PDF files.
+* If you have an EPUB, you can use Calibre to *create* a PDF. (Or HTML, Markdown, plain text, or another ebook format like MOBI, if you want to read it on an amazon "kindle" device.)
 
-Most ebook readers allow EPUB files to be re-formatted on the fly. This would be a problem for the reMarkable tablet, because they want to allow the user to add annotations.
+* EPUB files *contain* text, which means they can be processed by assistive reading devices, so that people who are blind or otherwise can't read them, are still able to "consume" them.
+
+**When you upload an EPUB file to a reMarkable tablet, the tablet converts it to PDF internally.** When you "read" the file on the tablet, you are actually reading the PDF file. reMarkable set it up this way because they wanted to allow users to be able to "write" on top of EPUB files, the same way they can with PDF files.
+
+Most ebook readers allow EPUB files to be re-formatted on the fly. This would be a problem for the reMarkable tablet, because they want to allow the user to write "on top of" the file.
 
 * Pen strokes are always stored at the position on the page where they were written.
 
 * Some annotations are made because of where they are *relative to the page*. For example, somebody might write in an empty space at the bottom of a page, because that part of the page happens to be empty.
 
-* Other annotations are made at a position *relative to the text* in the underlying file. For example, if you highlight a sentence or draw a circle around a word, that annotation "belongs with" that part of the text
+* Other annotations are made at a position *relative to the text* in the underlying file. For example, if you highlight a sentence or draw a circle around a word, that annotation "belongs with" that part of the text.
 
-Some annotations are relative to the page, and others are relative to the text. Think about what would happen if the text were re-formatted on the fly. For example, if the font was made larger, the lines of text would "shift down" on each page, and the text at the bottom of a page would be moved to the top of the next page. There's no way for the tablet to "know" which annotations to move with the text, or which piece of text each annotation should be "attached to".
+Think about what would happen if the text were re-formatted on the fly. For example, if the font was made larger, the lines of text would "shift down" on each page, and the text at the bottom of a page would be moved to the top of the next page. And later in the document, text may end up moving *several pages* away from where it started.
+
+There is no way for the tablet to know *why* each pen stroke was placed where it was, so it won't know which pen strokes need to move with the text, which ones need to move to "a blank space at the bottom of the page containing ___", or which should stay exactly where they are.
+
+This is why, when you re-format an EPUB file on the tablet, it warns you about your pen strokes (or "annotations", as it calls them) possibly not being in the right positions anymore.
 
 ### Conversion on the tablet
 
-This conversions done by the tablet ... have issues. I had two different books where some of the diagrams were *missing* when I read the file on my tablet. And in one of these files, the text was so large that tables of pre-formatted text ended up being "wrapped" on the page and almost unreadable. Being able to make the text smaller (a *little* bit smaller anyway) would have made that particular table a lot easier to read. (Both of the files where this happened are copyrighted, otherwise I would include them here so you can see for yourself what happened.)
+This conversions done by the tablet, ... have issues. This is true for conversions done when uploading an EPUB file *and* conversions done when re-formatting an existing file.
+
+I had two different books where some of the diagrams were *missing* when I read the file on my tablet. And in one of these files, the text was so large that tables of pre-formatted text ended up being "wrapped" on the page and almost unreadable. Being able to make the text smaller (a *little* bit smaller anyway) would have made that particular table a lot easier to read. (Both of the files where this happened are copyrighted, otherwise I would include them here so you can see for yourself what happened.)
 
 At first I didn't think the tablet *had* a way to change the text formatting, because it's hidden in a sub-menu that otherwise never gets used. However, when I pointed this out [on Reddit](https://www.reddit.com/r/RemarkableTablet/comments/15vi742/comment/jwydeye/), somebody pointed out that they were *looking at the menu* where these settings could be changed, so I went back and searched again. I finally found them, hidden in a sub-menu.
 
@@ -89,7 +99,7 @@ Rather than trying to memorize all of the options I normally use, I wrote a scri
 
 If you're more comfortable using the GUI to do it by hand, here's my *attempt* at documenting the options.
 
-> I'm a "command line guy" by nature, I don't normally write documentation about using a GUI like this, so if you notice anything I missed or which isn't explained clearly, please let me know so I can update the page.
+> I'm a "command line guy" by nature, I don't normally write documentation about using a GUI like this. If you notice anything I missed or which isn't explained clearly, please let me know so I can update this page.
 
 Start by adding the EPUB (or other ebook) file to Calibre's library. In my case this is easy, because I use Calbre *as* the primary place to store all of my ebooks, and I make it a point to have EPUB versions of every book where that is possible. (The only time it's not is when I've purchased a book which is *only* available as a PDF.)
 
@@ -108,7 +118,7 @@ The important and/or useful settings are:
 * Look &amp; feel
 
     * Disable font size rescaling: NO
-    * Base font size: 12pt (try this first, preview the resulting PDF, and adjust up/down as needed)
+    * Base font size: 12pt (try this first and preview the resulting PDF, both on the computer screen and then later on the tablet. Adjust up/down as needed, to make things look right to you.)
 
 * Page setup
 
@@ -125,7 +135,7 @@ The important and/or useful settings are:
     * Standard font: which font "family" to use by default (serif/sans/mono)
     * Default font size: 20px
     * Monospace font size: 16px
-    * At the bottom, under "Page margins", set the page margins. I normally use `72pt` (1 inch) for whichever edge the menu appears on (i.e. left edge, if the tablet is set for "right handed"), and `18pt` (&#xBC; inch) for the others.
+    * At the bottom, under "Page margins", set the page margins. I normally use `72pt` (1 inch, 25.4mm) for whichever edge the menu appears on (i.e. left edge, if the tablet is set for "right handed"), and `18pt` (&#xBC; inch, 6.35mm) for the others.
 
     ![convert-3.png](../images/convert-3.png)
 
@@ -153,4 +163,4 @@ Upload the PDF file to your tablet.
 
 * [Liberation Fonts](https://github.com/liberationfonts/liberation-fonts/releases) are open-source fonts whose characters are designed to have the exact same metrics (character sizes, spacing, etc.) as "Times New Roman", "Arial", and "Courier New", all of which are copyrighted and cannot legally be distributed in a PDF file. I use them in the PDFs I create, both for legal reasons *and* because I like how they look.
 
-* [Little Brother](https://craphound.com/littlebrother/about/) (the book I used as an example in the screenshots) is copyrighted. The author, [Cory Doctorow](https://craphound.com/bio/), is an even bigger believer in "open source" than I am, and offers free downloads of the ebook versions of most of his books, including the entire "Little Brother" series.
+* [Little Brother](https://craphound.com/littlebrother/about/) (the book I used as an example in the screenshots) is copyrighted. The author, [Cory Doctorow](https://craphound.com/bio/), is an even bigger believer in "open source" than I am, and offers free downloads of the ebook versions of many of his books, including "Little Brother".
