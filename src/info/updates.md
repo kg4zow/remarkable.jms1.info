@@ -48,6 +48,10 @@ The next time the tablet reboots, it will boot using the newly selected partitio
 
 In addition to the newer software being available, any files which previously existed outside of the `/home/` filesystem will be gone, and will need to be created again. This means ...
 
+
+
+
+
 ### The tablet's `root` password will be changed
 
 If you didn't set up a `/home/root/.ssh/authorized_keys` file, you will need to go into the "Settings &#x2192; Help &#x2192; Copyrights and licenses" screen and get the tablet's new root password, as you've probably done before, and then update wherever you may have saved the password.
@@ -130,9 +134,30 @@ reMarkable: ~/
 
 Things like custom templates, static screens, and other "unofficial" customizations will be gone.
 
-If your customizations were installed using [RCU](http://www.davisr.me/projects/rcu/), the custom files themselves will still *exist* under the `/home/` filesystem, but the reMarkable software won't *know* that they exist. When you connect the tablet to RCU after upgrading, RCU will detect these "un-linked" files and offer to re-link them, which will make the reMarkable software know about them again.
+If your customizations were installed using [RCU](http://www.davisr.me/projects/rcu/) ...
 
-Other methods of customizing the tablet may have their own mechanisms to automatically re-install themselves. If worse comes to worst, you may have to just re-load the files, and (in the case of templates) find every page which *was* using the old template, and update it to use the one you just reloaded.
+* **For custom splash screens**, RCU stores *copies* of your files under the `/home/root/.local/share/davisr/rcu/splash/` directory.
+
+    When RCU connects to the tablet after an upgrade, it will notice that these files are not the same as the ones in `/usr/share/remarkable/` directory (where the reMarkable software stores them), and offer to copy them into place for you.
+
+* **For custom templates**, RCU stores your files in the `/home/root/.local/s
+hare/remarkable/templates/` directory. The `/usr/share/remarkable/templates/` directory (where the reMarkable software's built-in templates are stored) will contain *symbolic links* to these files.
+
+    When RCU connects to the tablet after an upgrade, it will notice the custom files without their corresponding symlinks, and will offer to "re-link" them for you.
+
+Other methods of customizing the tablet may have their own mechanisms to automatically re-install themselves. If worse comes to worst, you may have to just re-upoad the original files.
+
+If you do this, you will then have to go through every notebook in the tablet and find every page which *was* using the old template. These pages will now have no visible template, because (1) every time RCU uploads a PNG/SVG template, it assigns a random UUID as the filename within the tablet, and (2) the page's metadata will be pointing to the *old* UUID. As you find each page, you'll need to update them to use the *new* template from the on-screen menu.
+
+### Automatic updates will be enabled
+
+**Every OS upgrade will turn on the "Automatic updates" flag.**
+
+This is because the files which control whether the automatic update service is running or not, are contained in the filesystem with the OS itself. The files within the image are set up so the service is enabled.
+
+If you don't want this enabled, you will have to remember to disable it after every OS upgrade. If you don't do this, the tablet may download and install OS updates by itself, and you won't know anything about it until you see the black bar at the bottom of the screen, telling you that an update has been installed, and you need to reboot.
+
+**If this happens to you**, and you don't want to upgrade, the [Undo a firmware update](#undo-a-firmware-update) section below explains how to undo it.
 
 ## Upgrade in Steps
 
@@ -420,3 +445,109 @@ $ curl -LOv https://updates-download.cloud.remarkable.engineering:443/build/reMa
 ```
 
 This file can then be installed on a reMarkable tablet using [RCU](http://www.davisr.me/projects/rcu/) or [remarkable-update](https://github.com/ddvk/remarkable-update).
+
+## Undo a firmware update
+
+If you suddenly see the black bar at the bottom of the screen telling you that an OS upgrade has been installed, and you don't *want* to start using that new OS, you may be able to "undo the damage". The upgrade process changes a "firmware variable" that tells the bootloader which partition to load the OS from. You can change the same variable, to control which partition YOU want it to boot into.
+
+* If you *have* rebooted since the OS was upgraded, you will already be running the new version. Changing the flags and rebooting will make it boot into the previous OS.
+
+* If you *have not* rebooted, the OS upgrade swaps the variables at the end of the process. If you swap them back, the tablet won't boot into the new OS.
+
+Either way, you should check the system to be sure which version is on each partition before changing anything.
+
+> &#x2139;&#xFE0F; Remember that the tablet stores OS images in partition numbers 2 and 3.
+
+### Figure out the state of the tablet
+
+* Figure out which partition your current OS is *currently running* from.
+
+    ```
+    # rootdev
+    /dev/mmcblk2p2
+    ```
+
+    In this example, the device name ends with `p2`, so the *running* OS is stored in partition #2. For rM1 and rM2 tablets, this will either be 2 or 3.
+
+    The OS upgrade process installs the new OS in whichever partition is NOT the currently running system. In this example, the tablet is running from partition 2, so if a new OS was installed, it will be in partition 3. And if a new OS was *not* installed, partition 3 will contain the *previous* OS.
+
+* Figure out which partition the tablet is set to boot from.
+
+    ```
+    # fw_printenv active_partition
+    active_partition=3
+    ```
+
+    The next time the tablet boots, it will load the OS from this partition.
+
+In this example, the tablet is running from partition 2, and set to boot from partition 3. This usually means that an OS update was installed, and the tablet is waiting for the user to reboot.
+
+### Verify which versions are on each partition
+
+You can manually check which version is installed in each partition.
+
+**For the *running* partition**, check the file which configures the software update service.
+
+```
+# grep VERSION /usr/share/remarkable/update.conf
+REMARKABLE_RELEASE_VERSION=3.8.2.1965
+```
+
+**For the *other* partition**, mount that partition read-only (so we can't accidentally change anything there) and read the same file from within that partition. In this example, the tablet is running from partition 2, so we're going to mount partition 3.
+
+```
+# mount -o ro /dev/mmcblk2p3 /mnt
+# grep VERSION /mnt/usr/share/remarkable/update.conf
+REMARKABLE_RELEASE_VERSION=3.9.3.1986
+```
+
+In this example, the tablet is *running* 3.8.2, and if we reboot it, it will boot into 3.9.3.
+
+Before we forget, un-mount the other partition.
+
+```
+# umount /mnt
+```
+
+### Change which partition the tablet boots from
+
+**If you need to change which partition the tablet boots from**, you'll need to change a few "firmware variables". These are ...
+
+* `active_partition` is the partition the tablet will boot from.
+
+* `fallback_partition` is the partition it will boot from if it can't boot from the active partition. I believe it will try the active partition three times before "falling back". This should be set to the "non-active" partition.
+
+* `bootcount` is a counter used to monitor how many times the tablet has tried to boot from the active partition. This is incremented each time the bootloader tries to boot Linux from a partition, and if this counter reaches 3(?), it will boot from the fallback partition instead. When the tablet boots successfully, this variable will be set back to 0.
+
+* `upgrade_available` ... unsure, but every script I've seen that involves the OS upgrade process, sets the value to 0. Not sure what effect setting it to another value would have.
+
+For this example, we want the tablet to boot from partition 2, so it doesn't boot into the OS which was just installed without your knowledge.
+
+```
+# fw_setenv active_partition 2
+# fw_setenv fallback_partition 3
+# fw_setenv bootcount 0
+# fw_setenv upgrade_available 0
+```
+
+While we're looking at this stuff, let's also make sure the auto-update flag is turned off.
+
+```
+# systemctl disable --now update-engine.service
+```
+
+Note that thhis command does *exactly* the same thing as turning the "Automatic updates" switch off in the Settings &#x2192; General &#x2192; Software screen.
+
+> &#x2139;&#xFE0F; If you ever want to *enable* the service, use this command instead:
+>
+> `systemctl enable --now update-engine.service`
+
+### Reboot
+
+If you changed anything, or if you just want to reboot the tablet, this command will do it.
+
+```
+# systemctl reboot
+```
+
+This will disconnect your SSH session, and a few seconds later you'll see the tablet rebooting.
