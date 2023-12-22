@@ -56,12 +56,6 @@ When it uploads templates or splash screens, it stores the *files* in the partit
 
 It's not free (as in "zero pricetag") but it's not expensive - I believe it's only $12/yr for access to upgrades as they're released, which includes access to the source code and a "developers" mailing list.
 
-### Notable Utility
-
-[Notable Utility](https://notableutility.com/) is another option. I haven't used it, but from the web site it looks like (1) it's free (zero pricetag), and (2) it *only* manages templates, it doesn't also manage documents or splash screens.
-
-I also don't know if it uploads and "links" files the same way that RCU does, or if you would need to re-upload your custom template files after every firmware update.
-
 ### Others
 
 At some point I want to look at these ...
