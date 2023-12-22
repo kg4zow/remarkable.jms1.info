@@ -215,7 +215,7 @@ The reMarkable software doesn't provide a way to add more templates, but if you 
 
     This now makes me want to run `strings` against the `xochitl` executable (aka "the reMarkable software") to see what other directories the software uses. Hrmmmmm...
 
-## Static Screens
+## Splash Screens
 
 The `/usr/share/remarkable/` directory contains the graphics files shown on the screen when the tablet is sleeping, rebooting, starting up, and so forth. Most of the filenames make it obvious what each file is used for.
 
@@ -243,6 +243,6 @@ You can replace these files to change the screens shown by the tablet. Your cust
 
 #### Notes
 
-* The directory contains more than just these graphics files. Be very careful not to accidentally delete, rename, or otherwise modify anything.
+* The directory contains more than just these graphics files. Be very careful not to delete, rename, or otherwise modify anything by accident.
 
 * These files will be replaced with reMarkable's original files whenever the tablet's OS is upgraded. As with templates, you may want to store your custom files under `/home/root/` somewhere, and create *symlinks* in the `/usr/share/remarkable/` directory which point to your custom files.
