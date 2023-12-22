@@ -1,6 +1,10 @@
 # Introduction
 
-I am the owner of a new (as of 2023-06-27) [reMarkable 2](https://remarkable.com/) tablet. (Update: I picked up a used tablet so I can experiment with it, without any risk of losing or accidentally sharing the files in my primary tablet.)
+I am the owner of a new (as of 2023-06-27) [reMarkable 2](https://remarkable.com/) tablet.
+
+* Update: I picked up a used tablet so I can experiment with it, without any risk of losing or accidentally sharing the files in my primary tablet.
+
+* Update: I also picked up a used rM1 tablet, also for experimentation.
 
 I'm using this site as a way to record the information I learn about them, and the things I do to customize them. I'm doing this for two reasons:
 
@@ -16,62 +20,60 @@ There probably won't be much to see at first, but I plan to add information over
 
 ![rss.svg](images/rss.svg) [RSS feed](https://remarkable.jms1.info/commits.xml) - if you use an RSS reader, this feed contains a post for each commit in the git repo where I track the site's source files. (The git repo is [stored in Keybase](https://book.keybase.io/git), although I *could* move it to Github if people are interested in looking at it.) (This web site is also [hosted using Keybase Sites](https://book.keybase.io/sites).)
 
+## Similar Sites
 
-## Links
+This site is becoming "known" in the reMarkable community ... which is cool I guess, but I'm not really trying to become "the one site" for everything relating to reMarkable tablets. There are other sites out there with more/better information, and/or which cover things I haven't covered (and may *never* cover) on this site.
 
-These are links that I seem to be copying and pasting a lot whenever I talk to other people about the tablet. I'm putting them here so I know where to quickly find them when I need them.
+* [`remarkable.guide`](https://remarkable.guide/) has been around a lot longer than this site. Most of the pages there seem to very quick little "what to do" articles, which is cool if you just want to "do the thing" and don't care about why you need to do it, or what's actually happening under the covers.
 
-* [Case](https://www.amazon.com/dp/B0CB5QQWHV) - I keep my tablet in this "CoBak" case. I ordered the reMarkable [Book Folio](https://remarkable.com/store/remarkable-2/folios) (in Gray) *with* the tablet, but the third-party cover fully encloses the tablet *and* the stylus.
+    I've always been more curious and tend to want to understand things in more detail, so I tend to write longer, more detailed pages - especially because I *use* the site myself (I don't remember every little detail about everything I write about, that's why I write it down).
 
-    I actually have two of these - blue without the stand on my primary tablet, and [green with a built-in stand](https://www.amazon.com/dp/B0C699MLHC) on my "experimenting" tablet.
-
-* [Titanium nibs](https://www.amazon.com/dp/B0BF9WJ8VX) - I used one of these "nibs" in my stylus (reMarkable "Marker Plus") for about three days. I had seen people online say that metal nibs can damage the screen, which makes sense ... any time there's friction between two things (like a nib and a screen), the *softer* thing is going to take a bit of damage.
-
-    With a titanium nib, the softer thing which will be slowly damaged is the textured coating on the screen which makes it feel like writing on paper.
-
-    After a few days I didn't notice any scratches, "smooth spots", or other damage on my screen, but I also don't press down very hard when I write. Either way, I don't want to take any chances, so I'm now using ...
-
-* [Plastic nibs](https://www.amazon.com/dp/B0BWX873ZX) - I've gone back to using the original reMarkable nib that came in the stylus for my "experimenting" tablet, and I'm using one of these in my primary tablet. I don't feel any difference betwen the two.
-
-* [RCU](http://www.davisr.me/projects/rcu/) - third-party program to manage reMarkable tablets, especially tablets which don't connect to the reMarkable cloud service. **Highly recommended**, especially if you don't connect your tablet to the reMarkable cloud service.
 
 ## reMarkable Cloud
 
-**For now**, I'm planning to NOT connect my tablet to the "reMarkable Cloud" at all. I'm doing this for a few reasons:
+I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing this for a few reasons:
 
 * **Privacy**
 
-    If you know anything about me, you know that privacy is *very* important to me. Not that I have any great secrets, I just don't like the feeling of somebody (or thousands of somebodies) watching everything I do over my shoulder, especially when they are monetizing everything they see without sharing any of that money with me.
+    Privacy is *very* important to me. Not that I have any great secrets, I just don't like the feeling of somebody (or thousands of somebodies) watching everything I do over my shoulder, especially when they are using that information against me by targeting ads.
 
     reMarkable has pretty much designed the tablet's software to keep everything synchronized to their "cloud", which is hosted on Google's "cloud" in Europe.
 
-    There *are* benefits in doing it this way.
+    There *are* some benefits in doing it this way.
 
-    * You'll have an automatic backup in case the tablet is physically damaged or needs to be replaced.
+    * If your tablet is damaged or lost, you can buy another tablet and sign it into the same account, and your documents will sync back from the cloud.
 
-    * It allows the reMarkable apps on your computer or phone to access the cloud and work with files on the tablet, without having to connect *directly* to the tablet.
+    * It allows the reMarkable apps on your computer or phone to access the cloud and work with documents on the tablet, without having to connect *directly* to the tablet.
 
-    * Since the API that the apps use to "talk to" the cloud is *mostly* known, it allows third-party apps to also interact with your tablet (i.e. upload and download documents) by talking to your cloud account.
+    * Since the API that the apps use to "talk to" the cloud is *mostly* known, third-party apps are  also able to interact with your documents by talking to your cloud account.
 
     However.
 
     Synchronizing the tablet to the cloud means that copies of all of your content - every notebook, every "quick sheet", every PDF or EPUB file you upload into the tablet - are being uploaded to their cloud.
 
-    The files in the cloud are "encrypted", however the keys are held by reMarkable and/or Google, which means that your files can be read by reMarkable or Google employees, along with any shady three-letter government agencies who ask, and any random anklebiter who manages to hack into reMarkable's or Google's systems. (Because, you know, large companies with obscene amounts of money to pay dedicated security staffers [never get hacked](https://techcrunch.com/2023/07/17/microsoft-lost-keys-government-hacked/)).
+    On some level, the files in the cloud are encrypted. However, the encryption keys are held by reMarkable and/or Google, which means that your files can be read by reMarkable or Google employees, along with any shady three-letter government agencies (from *any* country) who ask, along with any random anklebiter who manages to hack into reMarkable's or Google's systems. (Because as we all know, large companies who pay obscene amounts of money for dedicated security staffers [never get hacked](https://techcrunch.com/2023/07/17/microsoft-lost-keys-government-hacked/).)
 
     These people can also *change* what's in the cloud, and your tablet will happily download those changes, changing or deleting content however *somebody else* wants.
 
-    It IS possible to structure the cloud service in such a way that the files in the cloud are encrypted, with the encryption keys only available to the devices and apps attached to the account. (This is how [Keybase](https://keybase.io/) is structured, each *device* has its own encryption keys.) reMarkable did not structure their cloud service this way, and as a result, any files created or side-loaded into a reMarkable tablet are available to hundreds of other people, thousands of government employees, and unknown hordes of "hackers".
+    It IS possible to structure a cloud service in such a way that the files in the cloud are "end-to-end" encrypted, with the encryption keys only available to the devices and apps attached to the account. ([Keybase](https://keybase.io/) is a good example of this, each *device* has its own encryption keys.) reMarkable didn't structure their cloud service this way, and as a result, any files created or side-loaded on a reMarkable tablet which connects to the cloud service are available to hundreds of other people, thousands of government employees (for various values of "government"), and unknown hordes of "hackers".
+
+* **Security of Third Party Services**
+
+    reMarkable offers integrations with third-party file storage services, currently including Dropbox, Google, and Microsoft. **These integrations are done by the reMarkable cloud servers.** Your tablet never talks to these other services directly, the only things it ever talks to are reMarkable's servers (other than basic networking services).
+
+    Part of setting up each integration involves generating a security token that gives the reMarkable servers access to your accounts on these other providers. These tokens are held on reMarkable's servers.
+
+    Just like how reMarkable employees, government-ish agencies, and random hackers who get into reMarkable's systems are able to access the files on your tablet, they are also able to access files in your accounts on these other services.
 
 * **Compliance/Legal**
 
-    My current `$DAYJOB` is with a company in the healthcare industry. My particular job (software development, system and network administration, and other related "technical" stuff) doesn't involve *regular* exposure to any PHI (protected health information), however some of my cow-orkers deal with HIPAA issues all day long, so they wouldn't *legally* be able to use the cloud service.
+    My current `$DAYJOB` is with a company in the healthcare industry. My particular job (software development, system and network administration, and other related "technical" stuff) doesn't involve *regular* exposure to PHI (protected health information), however some of my cow-orkers deal with log files containing small bits of PHI on a regular basis, so they wouldn't *legally* be able to use the cloud service.
 
     I have since found that reMarkable *IS WILLING* to execute a HIPAA Business Associate Agreement (see the [reMarkable Account Terms and Conditions](https://support.remarkable.com/s/article/Terms-and-Conditions-reMarkable-Accounts), section 7) with their users. A BAA is a legally binding document where reMarkable agrees to be held liable in case of a data breach in/through their cloud. The fact that they are *willing* to make this agreement is an indicator that *they* believe in the security of their cloud. (It isn't clear to me whether they have also executed such an agreement with Google, but for *their* sake I would hope so.)
 
-    The other thing that would me *me personally* more comfortable would be a statement that nobody, not even reMarkable employees, are able to look at the contents of the notes that people store in the cloud ... but from their description of how the service is structured, it's obvious to me that this is not the case.
+    The other thing that would me *me personally* more comfortable would be a clear statement that nobody, not even reMarkable employees, are able to look at peoples' documents in the cloud ... but from their description of how the service is structured, it's obvious to me that this is not the case.
 
-    For what it's worth, [rmfakecloud](https://ddvk.github.io/rmfakecloud/) is a project which duplicates most of the "cloud sync" functionality, but hosted on a server that YOU control. This includes handwriting recognition, by talking to the same [third-party service](https://www.myscript.com/) that reMarkable uses to provide handwriting recognition.
+    For what it's worth, [rmfakecloud](https://ddvk.github.io/rmfakecloud/) is a project which duplicates most of the "cloud sync" functionality, but hosted on a server that YOU control. This includes handwriting recognition, by talking to [MyScript](https://www.myscript.com/) (the third-party service that reMarkable uses to perform handwriting recognition).
 
 * **Functionality**
 
@@ -80,6 +82,12 @@ These are links that I seem to be copying and pasting a lot whenever I talk to o
     **When I buy a product, I expect that product to be able to do the same job, even if the original manufacturer goes out of business.**
 
     In the case of the reMarkable tablet, one of the things you miss out on by not connecting to their "cloud" is handwriting recognition (where the tablet turns the pen strokes you draw with the stylus, into actual text). I remember reading somewhere that this happened on the tablet itself, which was one of the reasons I decided to buy one. I later found that this was not the case, however it has already replaced the paper notebooks I used to keep, so returning the tablet is not an option.
+
+> &#x26A0;&#xFE0F; **The reMarkable cloud service is not a backup.**
+>
+> Anything you delete on the tablet will also be deleted from the cloud, and anything deleted from the cloud will also be deleted from the tablet.
+>
+> Think of it as a *mirror* of your tablet.
 
 ## Created with `mdbook`
 
@@ -93,11 +101,11 @@ And rather than making the same customizations every time I start a new "book" (
 
 I make use of [Keybase](https://keybase.io/) on a *very* regular basis.
 
-* This site's "source code" is being tracked in a [Keybase git](https://book.keybase.io/git) repo.
+* This site's "source code" was originally tracked in a [Keybase git](https://book.keybase.io/git) repo. (It's now being tracked in [Github](https://github.com/kg4zow/remarkable.jms1.info/) so people can "watch" the repo).
 
 * The site is being served using [Keybase Sites](https://book.keybase.io/sites).
 
-Either or both of these functions *could* be replaced by Github, however I prefer using Keybase in general (again, privacy), so unless I have a good reason to move them to Github, I plan to leave them where they are.
+The web hosting function *could* be replaced by Github, however I prefer using Keybase in general (again, privacy), so I plan to leave it where it is unless there's a good reason to move it to Github.
 
 ## Feedback
 
