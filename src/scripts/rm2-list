@@ -15,6 +15,11 @@
 # 2023-07-20 jms1 - adjusting for UUID.metadata files whose "parent" element
 #   is missing or null.
 #
+# 2023-08-21 jms1 - fix sort so directories appear before files
+#
+# 2023-12-26 jms1 - write output in UTF-8 mode (prevents "wide character"
+#   warnings if display names contain multi-byte characters)
+#
 ###############################################################################
 #
 # The MIT License (MIT)
@@ -237,8 +242,8 @@ sub by_fullname($$)
     my $a = shift ;
     my $b = shift ;
 
-    my $an = fullname( $a ) . $a ;
-    my $bn = fullname( $b ) . $b ;
+    my $an = fullname( $a ) . " $a" ;
+    my $bn = fullname( $b ) . " $b" ;
 
     return ( ( lc $an ) cmp ( lc $bn ) ) ;
 }
@@ -318,12 +323,13 @@ sub show_uuid($)
 
         $show_uuid && printf '%-37s ' , $uuid ;
 
-        printf "%-7s %-5s %-3s %7s %s\n" ,
+        printf "%-7s %-5s %-3s %7s %s%s\n" ,
             ( $deleted ? 'DELETED' : '' ) ,
             ( $fname =~ m|^Trash/| ? 'TRASH' : '' ) ,
             ( $pinned  ? ' *'  : '' ) ,
             $pages ,
-            $fname ;
+            $fname ,
+            $type ;
     }
 }
 
@@ -341,6 +347,8 @@ $show_cmds  = ( $opt{'x'} ? 1 : 0 ) ;
 $tablet_ip  = ( $opt{'I'} || $tablet_ip ) ;
 
 $workdir    = ( shift || '' ) ;
+
+binmode( STDOUT , ":encoding(UTF-8)" ) ;
 
 ###############################################################################
 #
