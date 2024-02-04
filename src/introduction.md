@@ -24,7 +24,7 @@ There probably won't be much to see at first, but I plan to add information over
 
 This site is becoming "known" in the reMarkable community ... which is cool I guess, but I'm not really trying to become "the one site" for everything relating to reMarkable tablets. There are other sites out there with more/better information, and/or which cover things I haven't covered (and may *never* cover) on this site.
 
-* [`remarkable.guide`](https://remarkable.guide/) has been around a lot longer than this site. Most of the pages there seem to very quick little "what to do" articles, which is cool if you just want to "do the thing" and don't care about why you need to do it, or what's actually happening under the covers.
+* [`remarkable.guide`](https://remarkable.guide/) has been around a lot longer than this site. Most of the pages there seem to be quick little "what to do" articles, which is cool if you just want to "do the thing" and aren't interested in why you need to do it, or what's actually happening under the covers.
 
     I've always been more curious and tend to want to understand things in more detail, so I tend to write longer, more detailed pages - especially because I *use* the site myself (I don't remember every little detail about everything I write about, that's why I write it down).
 
