@@ -18,7 +18,7 @@ There probably won't be much to see at first, but I plan to add information over
 >
 > Some of the items in the Table of Contents menu may not actually link to pages yet, and some of the pages which *exist* may not be complete. I'm writing this in my spare time, and `$DAYJOB` doesn't give me a whole lot of that. If you're paying attention, you'll probably notice there are more updates on the weekends. Please be patient.
 
-![rss.svg](images/rss.svg) [RSS feed](https://remarkable.jms1.info/commits.xml) - if you use an RSS reader, this feed contains a post for each commit in the git repo where I track the site's source files. (The git repo is [stored in Keybase](https://book.keybase.io/git), although I *could* move it to Github if people are interested in looking at it.) (This web site is also [hosted using Keybase Sites](https://book.keybase.io/sites).)
+![rss.svg](images/rss.svg) [RSS feed](https://remarkable.jms1.info/commits.xml) - if you use an RSS reader, this feed contains a post for each commit in the git repo where I track the site's source files. (The git repo is [stored in Github](https://github.com/kg4zow/remarkable.jms1.info), and the web site is [hosted using Keybase Sites](https://book.keybase.io/sites).)
 
 ## Similar Sites
 
@@ -69,11 +69,19 @@ I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing
 
     My current `$DAYJOB` is with a company in the healthcare industry. My particular job (software development, system and network administration, and other related "technical" stuff) doesn't involve *regular* exposure to PHI (protected health information), however some of my cow-orkers deal with log files containing small bits of PHI on a regular basis, so they wouldn't *legally* be able to use the cloud service.
 
-    I have since found that reMarkable *IS WILLING* to execute a HIPAA Business Associate Agreement (see the [reMarkable Account Terms and Conditions](https://support.remarkable.com/s/article/Terms-and-Conditions-reMarkable-Accounts), section 7) with their users. A BAA is a legally binding document where reMarkable agrees to be held liable in case of a data breach in/through their cloud. The fact that they are *willing* to make this agreement is an indicator that *they* believe in the security of their cloud. (It isn't clear to me whether they have also executed such an agreement with Google, but for *their* sake I would hope so.)
+    reMarkable **used to be** willing to execute a HIPAA Business Associate Agreement with their users, however when they updated their [Terms and Condtions](https://support.remarkable.com/s/article/Terms-and-Conditions-reMarkable-Accounts) in 2024-02 they removed that paragraph - section 7 *used to* have three parargraphs, now it only has two.
 
-    The other thing that would me *me personally* more comfortable would be a clear statement that nobody, not even reMarkable employees, are able to look at peoples' documents in the cloud ... but from their description of how the service is structured, it's obvious to me that this is not the case.
+    The page *says* "Effective date: February 27, 2023" but the change was made in 2024, I choose to attribute this to human carelessness rather than as an attempt to "back-date" the agreement, especially since the same change also messed up the formatting of the page (look at how the section headers are formatted, it looks like a *bad* micosoft word document).
 
-    For what it's worth, [rmfakecloud](https://ddvk.github.io/rmfakecloud/) is a project which duplicates most of the "cloud sync" functionality, but hosted on a server that YOU control. This includes handwriting recognition, by talking to [MyScript](https://www.myscript.com/) (the third-party service that reMarkable uses to perform handwriting recognition).
+    Something that would make *me personally* more comfortable would be a clear statement that nobody, not even reMarkable employees, are able to look at peoples' documents in the cloud. But from their description of how the service is structured, and the fact that they DID offer to execute BAA's but now they don't, it's obvious to me that this is not the case.
+
+    > &#x2139;&#xFE0F; **rmfakecloud**
+    >
+    > [rmfakecloud](https://ddvk.github.io/rmfakecloud/) is a project which duplicates most of the "cloud sync" functionality, but hosted on a server that YOU control. This includes handwriting recognition, by talking to [MyScript](https://www.myscript.com/) (the third-party service that reMarkable uses to perform handwriting recognition).
+    >
+    > If you do this, you do have to get your own service with MyScript if you plan to use the handwriting recognition functionality. MyScript's service charges based on the number of "recognition events" you perform each month. I *think* reMarkable has some kind of volume discount with MyScript. The API requests to perform the handwriting recognition all use reMarkable's account with MyScript, and reMarkable pays for them as part of peoples' monthly subscription fees for the reMarkable cloud.
+    >
+    > I have not played with `rmfakecloud` yet, however it is on my list of things to check out.
 
 * **Functionality**
 
@@ -83,11 +91,13 @@ I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing
 
     In the case of the reMarkable tablet, one of the things you miss out on by not connecting to their "cloud" is handwriting recognition (where the tablet turns the pen strokes you draw with the stylus, into actual text). I remember reading somewhere that this happened on the tablet itself, which was one of the reasons I decided to buy one. I later found that this was not the case, however it has already replaced the paper notebooks I used to keep, so returning the tablet is not an option.
 
-> &#x26A0;&#xFE0F; **The reMarkable cloud service is not a backup.**
->
-> Anything you delete on the tablet will also be deleted from the cloud, and anything deleted from the cloud will also be deleted from the tablet.
->
-> Think of it as a *mirror* of your tablet.
+### NOT A BACKUP
+
+**The reMarkable cloud service is not a backup.**
+
+Anything you delete on the tablet will also be deleted from the cloud, and anything deleted from the cloud will also be deleted from the tablet.
+
+Think of it as a *mirror* of your tablet.
 
 ## Created with `mdbook`
 
@@ -101,7 +111,7 @@ And rather than making the same customizations every time I start a new "book" (
 
 I make use of [Keybase](https://keybase.io/) on a *very* regular basis.
 
-* This site's "source code" was originally tracked in a [Keybase git](https://book.keybase.io/git) repo. (It's now being tracked in [Github](https://github.com/kg4zow/remarkable.jms1.info/) so people can "watch" the repo).
+* This site's "source code" was *originally* tracked in a [Keybase git](https://book.keybase.io/git) repo. It's now being tracked in [Github](https://github.com/kg4zow/remarkable.jms1.info/) so people can "watch" the repo.
 
 * The site is being served using [Keybase Sites](https://book.keybase.io/sites).
 
@@ -113,6 +123,8 @@ I would appreciate any feedback you may have to offer about this book. This *esp
 
 * Email: `jms1@jms1.net`
 * [Keybase: `jms1`](https://keybase.io/jms1/)
+
+    I am also `kg4zow` on Keybase, however I only use that account for amateur radio stuff. If you try to contact me there, there's a good chance I won't see it for several months.
 
 ## License
 

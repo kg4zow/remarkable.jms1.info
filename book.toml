@@ -12,7 +12,7 @@ title               = "Information about reMarkable 2"
 [output.html]
 additional-css      = [ "section-lines.css" , "version-commit.css" ]
 curly-quotes        = false
-#git-repository-url  = ""
+git-repository-url  = "https://github.com/kg4zow/remarkable.jms1.info"
 no-section-label    = true
 
 [preprocessor.version-commit]
