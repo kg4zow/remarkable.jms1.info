@@ -6,12 +6,10 @@ I've created a [Github repo](https://github.com/kg4zow/rm2-scripts) to host the 
 
 ### TODO
 
-Finish creating dirctories in the repo for each already-existing script
+Create dirctories in the Github repo for each already-existing script on this site.
 
-* convert this book's page text to a `README.md` file in each script's directory
+* convert each scripts page on this site, to a `README.md` file in each script's directory
 
 * for template scripts, write/test individual `generate` scripts to make sure samples and thumbnails look right in the Github web interface
 
-Update pages in this book to point to Github for each script, so I don't have to keep maintaining two copies of each script and two sets of documentation.
-
-Move this page from "Future" to "Information" in the ToC (and change its title) once everything is migrated.
+* update pages in this book to point to Github for each script, so I don't have to keep maintaining two sets of documentation.

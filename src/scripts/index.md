@@ -6,7 +6,18 @@ I have written a few scripts to work with the reMarkable tablet, and after the "
 >
 > I don't use windows anymore. The only windows machine I own is an old laptop infected with windows 7, that I keep around for programming an older ham radio. Since then, [CHIRP](https://chirp.danplanet.com/projects/chirp/wiki/Home) has added support for those older radios and I can program them from a Mac, so I probably don't even need it anymore.
 >
+> The fact that I haven't physically *touched* that laptop in almost two years is another good sign that I don't need it anymore.
+>
 > I've heard that there are ways to run Linux-ish things on windows these days, but other than running Linux in a VM (using something like [VirtualBox](https://www.virtualbox.org/)) and making sure the USB device for the tablet is passed through to the guess, I can't really tell you how to do it.
+
+### Github
+
+Since I started this site, I started a Github repo for these scripts. This ended up being a lot easier for me to manage.
+
+Going forward, all of my reMarkable scripts are being tracked and published there. When I have time, the scripts listed on *this* site will also be moved there.
+
+&#x21D2; [kg4zow/rm2-scripts](https://github.com/kg4zow/rm2-scripts/)
+
 
 ## SSH Access
 
@@ -42,7 +53,7 @@ Again, it may already be installed. To check, run this command: (The last charac
 $ perl -MJSON -e1
 ```
 
-If it shows the next command prompt without printing anything, it is installed.
+If it shows the next command prompt without printing anything, the module is installed.
 
 If it shows a message like this ...
 
@@ -66,9 +77,9 @@ $ cpan install JSON
 
 ## Golang
 
-I'm trying to teach myself the Go language (aka "Golang") in my spare time. As part of this, I'm thinking about creating Golang versions of some of these scripts.
+I'm trying to teach myself the Go language (aka "Golang") in my spare time.
 
-Golang allows you to compile a program to run on a different platform than where you're compiling it. For example, I can write and compile a program on macOS and produce executables for a wide assortment of operating systems and CPU types (including windows, if you're into that sort of thing), all without having to figure out a bunch of "cross compilers" and different versions of libraries.
+Golang allows you to compile a program to run on a different platform than where you're compiling it. For example, I can write and compile a program on macOS and produce executables for a wide assortment of operating systems and CPU types (including windows, if you're into that sort of thing), all without having to figure out a bunch of "cross compilers" and different versions of libraries. And the people who *use* these programs, don't have to deal with installing a bunch of libraries (like the Perl JSON library) in order to use the program.
 
 Specifically, I have found that a simple "hello world" program written in Go, compiled with the following settings, can be uploaded and executed as-is on the reMarkable 2 tablet.
 
@@ -80,4 +91,6 @@ Specifically, I have found that a simple "hello world" program written in Go, co
 
 I mention this because when I get some time, I plan to re-write these Perl scripts in Golang, so people don't have to deal with installing Perl or CPAN modules. Instead, they'll be able to download and use a single binary.
 
-Note that when/if I do this, the Perl versions of the scripts won't be going away - both versions will be available from the scripts' pages.
+Note that when/if I do this, the Perl versions of the scripts won't be going away. Both versions will continue to be available, possibly from the pages on this site, but definitely from Github - although the different Golang programs will be in their own repos, so I can use Github's "releases" functionality to let users download compiled executables for their own systems.
+
+The [`rmweb`](https://github.com/kg4zow/rmweb) program is an example of this. It's a command line utility which uses the tablet's web interface to list the documents on a tablet, and download them as PDF files. Executables are available for macOS (Intel and ARM), Linux (x86 and x86_64), and ms-windows (Intel 32- and 64-bit).

@@ -24,9 +24,15 @@ There probably won't be much to see at first, but I plan to add information over
 
 This site is becoming "known" in the reMarkable community ... which is cool I guess, but I'm not really trying to become "the one site" for everything relating to reMarkable tablets. There are other sites out there with more/better information, and/or which cover things I haven't covered (and may *never* cover) on this site.
 
-* [`remarkable.guide`](https://remarkable.guide/) has been around a lot longer than this site. Most of the pages there seem to be quick little "what to do" articles, which is cool if you just want to "do the thing" and aren't interested in why you need to do it, or what's actually happening under the covers.
+* [`remarkable.guide`](https://remarkable.guide/) is run by some of the same people who maintain [Toltec](https://toltec-dev.org/), which is "a community-maintained repository of free software for the reMarkable tablet". These guys do a LOT more low-level hacking on the tablets than I do, including modifying or replacing the software entirely. (I would probably do the same thing if I had more time, but `$DAYJOB` keeps me pretty busy - I'm actually kinda surprised that I have the time and energy to update this page right now.)
 
-    I've always been more curious and tend to want to understand things in more detail, so I tend to write longer, more detailed pages - especially because I *use* the site myself (I don't remember every little detail about everything I write about, that's why I write it down).
+    This site has been around longer than this site. Most of the pages there seem to be quick little "what to do" articles, which is cool if you just want to "do the thing" and aren't interested in *why* you need to do it, or in what's actually happening under the covers.
+
+    I've always been more curious and want to understand things in more detail, so I tend to write longer, more detailed pages - especially because I *use* this site myself. I can't remember every little detail about everything I'm interested in, which is why I write it all down - so I can refer back to it later. (The [`jms1.info`](https://jms1.info/) site is the same idea, but not focused on reMarkable tablets.)
+
+* [`remarkablewiki.com`](https://remarkablewiki.com/) &#x274C; **not working** - When I first got my first tablet, this site had a similar collection of articles. The site has since been taken down, the current page is a generic "this web site is not available" page from a web hosting company in Germany. The domain's registration information was last updated on 2023-11-10.
+
+    My guess is that whoever started the site, stopped paying for the hosting, and the hosting company took over the domain. I'm not aware of any mirrors out there, but from what I remember, the site was fairly useful.
 
 
 ## reMarkable Cloud
@@ -79,7 +85,11 @@ I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing
     >
     > [rmfakecloud](https://ddvk.github.io/rmfakecloud/) is a project which duplicates most of the "cloud sync" functionality, but hosted on a server that YOU control. This includes handwriting recognition, by talking to [MyScript](https://www.myscript.com/) (the third-party service that reMarkable uses to perform handwriting recognition).
     >
-    > If you do this, you do have to get your own service with MyScript if you plan to use the handwriting recognition functionality. MyScript's service charges based on the number of "recognition events" you perform each month. I *think* reMarkable has some kind of volume discount with MyScript. The API requests to perform the handwriting recognition all use reMarkable's account with MyScript, and reMarkable pays for them as part of peoples' monthly subscription fees for the reMarkable cloud.
+    > If you do this, you do have to get your own service with MyScript if you plan to use the handwriting recognition functionality. MyScript's service charges based on the number of "recognition events" you perform each month.
+    >
+    > My guess is that reMarkable has some kind of volume discount with MyScript. reMarkable pays MyScript for all handwriting recognition requests made by reMarkable tablets connected to the reMarkable cloud service. If your tablet is connected to rmfakecloud and you use the handwriting recognition function, you would need to make your own arrangements with MyCloud to pay for that service.
+    >
+    > [This page](https://developer.myscript.com/pricing) contains what little they're willing to say about pricing - basically the first 2000 requests each month are free, and after that, "contact us". An [old message](https://developer-support.myscript.com/support/discussions/topics/16000030978) on their developer support forum mentions the pricing beyond that as $10 per 1000 requests, I have no idea if that's still accurate or not.
     >
     > I have not played with `rmfakecloud` yet, however it is on my list of things to check out.
 
@@ -93,9 +103,11 @@ I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing
 
 ### NOT A BACKUP
 
-**The reMarkable cloud service is not a backup.**
+**The reMarkable cloud service is not a backup.** It's a sync service.
 
-Anything you delete on the tablet will also be deleted from the cloud, and anything deleted from the cloud will also be deleted from the tablet.
+The reMarkable desktop and mobile apps all work by talking to a cloud account, and relying on the tablet to sync any changes when they happen.
+
+In particular, anything you delete on the tablet will also be deleted from the cloud, and anything deleted from the cloud will also be deleted from the tablet.
 
 Think of it as a *mirror* of your tablet.
 

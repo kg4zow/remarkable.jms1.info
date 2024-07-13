@@ -4,6 +4,8 @@
 
 [Definitions](definitions.md)
 
+[Moving scripts to Github](info/github.md)
+
 - [FAQ](faq/index.md)
     - [Cases](faq/cases.md)
     - [Eraser](faq/eraser.md)
@@ -35,6 +37,7 @@
 
 - [Scripts](scripts/index.md)
     - [rm2-backup](scripts/rm2-backup.md)
+    - [rm2-cal](scripts/rm2-cal.md)
     - [rm2-clean](scripts/rm2-clean.md)
     - [rm2-list](scripts/rm2-list.md)
     - [rm2-make-pdf](scripts/rm2-make-pdf.md)
@@ -45,9 +48,6 @@
 
 # Future
 
-- [Move scripts to Github](info/github.md)
 - [`rm2-download` script](scripts/rm2-download.md)
 - [`rm2-upload` script](scripts/rm2-upload.md)
-- [`rm2-merge` script](scripts/rm2-merge.md)
-- [Single 'rm2' Golang program](scripts/rm2.md)
-- [Calendar PDF script](scripts/rm2-cal.md)
+- [`rmssh` program](scripts/rmssh.md)
