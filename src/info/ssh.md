@@ -6,7 +6,7 @@ The tablet allows incoming SSH connections from the computer, as the `root` user
 
 ## Creating an SSH key pair
 
-If you don't already have an SSH key pair, you may want to think about creating one. Having a key pair allows you to authenticate to the tablet *without* having to type a password every time.
+If you want to be able to SSH into your tablet (or any other Linux machine) without a password, you will need to generate an SSH key pair. Having a key pair allows you to authenticate to the tablet *without* having to type a password every time.
 
 There are probably thousands of pages on the net which explain how to create a key pair, so I'm not going to go into a whole lot of detail about it. The quick version is ...
 
@@ -25,9 +25,13 @@ SHA256:6HXEMxPkVDSoTHWfYXZJybczcMmzrzkkVaHYMxDt4ZA jms1@laptop.local
 
 BE SURE TO USE A STRONG PASSPHRASE. Not just a pass*word*, but a pass*phrase*. This is because if anybody manages to steal a copy of your secret key file, this passphrase will be the only thing keeping them from being able to use it.
 
-This will create two files. The `id_rsa` file will contain the SECRET key, encrypted using whatever passphrase you entered. This file should never be shared with anybody, or copied to any machine that you don't have physical control over.
+This will create two files in your `$HOME/.ssh/` directory.
 
-The `id_rsa.pub` file contains your PUBLIC key. This *can* be shared with others, and in this case will be copied to the tablet. Below when it talks about a public key file, this is the file it's talking about.
+* The `id_rsa` file will contain the SECRET key, encrypted using whatever passphrase you entered. This file should never be shared with anybody, or copied to any machine that you don't have physical control over.
+
+* The `id_rsa.pub` file contains your PUBLIC key. This *can* be shared with others, and in this case will be copied to the tablet. Below when it talks about a public key file, this is the file it's talking about.
+
+Note that if you have an ED25519 key pair, the files will be named `id_ed25519` and `id_ed25519.pub`.
 
 ## Accessing the tablet via SSH
 
@@ -54,11 +58,13 @@ Host 10.11.99.1 rm rm2 remarkable remarkable2
     ForwardX11              no
 ```
 
+Note that if you already have a `$HOME/.ssh/config` file, check to see if it has a `Host *` section. If so, the `Host *` section should be the *last* `Host` section in the file.
+
 ### Make sure your workstation has a `10.11.99.x` IP
 
 When the tablet is connected to a computer, the computer "sees" a USB ethernet device, with the tablet "plugged into the other end" of the ethernet wire. The tablet assigns itself `10.11.99.1/29`, and runs a DHCP server which will assign an address in the `10.11.99.(2-6)` range to the computer.
 
-Once the cable is connected, make sure the interface was created on your workstation, and that it has an appropriate IP address. This will generally involve running a command line this:
+Once the cable is connected, make sure the interface was created on your workstation, and that it has an appropriate IP address. This will generally involve running a command like this:
 
 ```
 (jms1@laptop) 205 $ ifconfig -a
@@ -72,6 +78,10 @@ en6: flags=8863<UP,BROADCAST,SMART,RUNNING,SIMPLEX,MULTICAST> mtu 1500
 	media: autoselect (100baseTX <full-duplex>)
 	status: active
 ```
+
+As you can see, this machine's `en6` interface has `10.11.99.3` as an `inet` (IPv4) address.
+
+> &#x2139;&#xFE0F; I don't use ms-windows, but a few people have told me that the equivalent command on ms-windows is `ipconfig /all`.
 
 ### Get the root password
 
@@ -91,7 +101,7 @@ Once your workstation has an IP, you can find the root password in the tablet's 
 
     To do so, this device acts as an USB ethernet device, and you can connect
     using the SSH protocol using the username 'root' and the password
-    'xxxxxxxx'.
+    'xxxxxxxxxx'.
 
     The IP addresses available to connect to are listed below:
 
@@ -100,10 +110,10 @@ Once your workstation has an IP, you can find the root password in the tablet's 
 
 ### SSH into the tablet
 
-Once you have the password, you can SSH into the tablet.
+Once you have the password, you can SSH into the tablet. The first time you do this, you will need to use the password.
 
 ```
-(jms1@supermini) 212 $ ssh root@rm
+(jms1@laptop) 212 $ ssh root@rm
 The authenticity of host '10.11.99.1 (10.11.99.1)' can't be established.
 ED25519 key fingerprint is SHA256:aLkWmgMQAF/BmQVaNyOlAz5y6pcOz5TEKM/dW/hFh5A.
 This key is not known by any other names.
@@ -129,34 +139,62 @@ If you DO have an SSH key that you use on a regular basis, you can install the p
 
 > You can use the same SSH key pair to access other machines by installing the same public key on *those* machines, using the same process shown below.
 >
-> For what it's worth, I use my personal SSH key pair to access about thirty different machines, and I use a different SSH key pair for work which lets me access several hundred machines. (I also store my SSH secret keys on YubiKeys rather than on the computers' disks, but that's a topic for a different web page that I haven't written yet.)
+> For what it's worth, I use my personal SSH key pair to access about thirty different machines, and I use a different SSH key pair for work which lets me access several hundred machines. (I also store my SSH secret keys on YubiKeys rather than on the computers' disks, but that's a topic for a [different web page](https://jms1.info/yubikey/ssh.html) entirely.)
 
 While I was figuring this out, I was pleasantly surprised to find that the tablet's SSH server supports `ed25519` SSH keys. (One of my normal SSH keys is an `ed25519` key.) I was also happy to find that `nano` (my preferred text editor) was also already installed. The `vi` and `vim` editors are also installed, if you're more comfortable using them.
+
+* On your local machine, copy your SSH public key file to the tablet.
+
+    ```
+    (jms1@laptop) 1 ~ $ scp $HOME/.ssh/id_rsa.pub root@rm:
+    id_rsa.pub                                    100%  763   314.1KB/s   00:00
+    ```
 
 * Create the `$HOME/.ssh` directory
 
     ```
     reMarkable: ~/ mkdir ~/.ssh
-    reMarkable: ~/ cd ~/.ssh
-    reMarkable: ~/.ssh/ nano authorized_keys
     ```
 
-* Copy/paste the public key lines, starting with `ssh-rsa` or `ssh-ed25519`, one key on each line, with no blank lines or comments.
+* Move the `id_rsa.pub` file into the `.ssh` directory, and at the same time rename it to `authorized_keys`.
 
-* Save changes.
+    ```
+    reMarkable: ~/ mv id_rsa.pub ~/.ssh/authorized_keys
+    ```
 
 * Make sure the file and directory permissions are correct.
 
     ```
-    reMarkable: ~/.ssh/ chmod -R go= .
-    reMarkable: ~/.ssh/ ls -laF
+    reMarkable: ~/ chmod -R go= ~/.ssh/
+    reMarkable: ~/ ls -laF ~/.ssh/
     drwx------    2 root     root          4096 Jun 27 20:26 ./
     drwx------    6 root     root          4096 Jun 27 20:21 ../
     -rw-------    1 root     root          1570 Jun 27 20:26 authorized_keys
-    reMarkable: ~/.ssh/
+    reMarkable: ~/
     ```
 
-Once this is done, you will be able to SSH into the tablet using any of the secret keys which correspond to the public keys you stored in the `$HOME/.ssh/authorized_keys` file.
+Once this is done, you should be able to SSH into the tablet using any of the secret keys which correspond to the public keys you stored in the `$HOME/.ssh/authorized_keys` file.
+
+Test this by opening a new window and trying to SSH in there.
+
+> &#x26A0;&#xFE0F; **Don't exit from *this* window until you've verified that it works as expected.**
+>
+> If you made a typo somewhere above and you can't log in, you'll still be logged in on *this* window and it may be the only way you can fix the problem.
+
+```
+(jms1@laptop) 215 $ ssh root@rm
+ｒｅＭａｒｋａｂｌｅ
+╺━┓┏━╸┏━┓┏━┓   ┏━┓╻ ╻┏━╸┏━┓┏━┓
+┏━┛┣╸ ┣┳┛┃ ┃   ┗━┓┃ ┃┃╺┓┣━┫┣┳┛
+┗━╸┗━╸╹┗╸┗━┛   ┗━┛┗━┛┗━┛╹ ╹╹┗╸
+reMarkable: ~/
+```
+
+There should be no password prompt, although you *may* be prompted for your SSH key's passphrase, especially if it's the first time you've made an outbound SSH connection using the key.
+
+It is normal to be asked for the key's passphrase one time after logging into the machine. If you are asked for a passphrase *every* time you try to use the key, you'll need to set up an "SSH agent". This is normally something that your desktop environment does for you automatically. If not, you'll need to do some web searching and figure out how to do it yourself. (I *have* done it in the past, but it was a long time ago, I don't remember the details.)
+
+Hint: if it's working correctly, running `ssh-add -L` on your workstation should print your SSH public key.
 
 ## Customize the shell
 
@@ -187,7 +225,7 @@ reMarkable: ~/ mv .bashrc .bashrc.dist
 At this point there *is* no `.bashrc` file, so I'm going to copy the file from my laptop.
 
 ```
-(jms1@laptop) 17 ~ $ scp .bashrc rm2:
+(jms1@laptop) 17 ~ $ scp .bashrc rm:
 ```
 
 Back on the tablet, we can `source` this file to run the commands it contains, within the current shell. This is the same thing the shell does when it first starts up (when the user logs in).
@@ -201,8 +239,7 @@ Next we log out of the tablet and log back in, to make sure the new `.bashrc` fi
 
 ```
 reMarkable: ~/ exit
-(jms1@laptop) 18 ~ $ ssh rm2
-Warning: Permanently added '10.11.99.1' (ED25519) to the list of known hosts.
+(jms1@laptop) 18 ~ $ ssh rm
 ｒｅＭａｒｋａｂｌｅ
 ╺━┓┏━╸┏━┓┏━┓   ┏━┓╻ ╻┏━╸┏━┓┏━┓
 ┏━┛┣╸ ┣┳┛┃ ┃   ┗━┓┃ ┃┃╺┓┣━┫┣┳┛
@@ -220,32 +257,23 @@ At the moment I own two reMarkable tablets. My prompt contains the machine's hos
 
 On each tablet, I did the following ...
 
-* Find the tablet's serial number. (This is what I'm using as the hostnames on the two tablets.)
+* Choose the hostname(s). I'm using `rm2a` and `rm2b` for my two tablets. (Update: I later got a used rM1 tablet, its hostname is `rm1c` if anybody cares.)
 
-    The serial numbers are stored in a special partition on the internal [MMC](https://en.wikipedia.org/wiki/MultiMediaCard) storage. (Thanks to [RCU](http://www.davisr.me/projects/rcu/) for figuring out how to get the serial number.)
+* Set the hostname. This is actually done in two places.
 
-    ```
-    (root@reMarkable) 1 ~ # BDEV=$( mount | awk '/\/home/{print substr($1,1,index($1,"p")-1)}' )
-    (root@reMarkable) 2 ~ # SERIAL=$( dd if=${BDEV}boot1 bs=1 skip=4 count=15 2>/dev/null )
-    (root@reMarkable) 3 ~ # echo $SERIAL
-    RM110-313-xxxxx
-    ```
+    * This command stores the new hostname in the file that the system reads while booting up, to set the hostname.
 
-* Set the hostname.
+        ```
+        (root@reMarkable) 4 ~ # echo rm2a > /etc/hostname
+        (root@reMarkable) 5 ~ #
+        ```
 
-    This command tells the running Linux kernel to use the new hostname.
+    * This command tells the running Linux kernel to use the new hostname.
 
-    ```
-    (root@reMarkable) 4 ~ # hostname $SERIAL
-    (root@reMarkable) 5 ~ #
-    ```
-
-    This command stores the new hostname in the file that the system reads while booting up, to set the hostname.
-
-    ```
-    (root@reMarkable) 5 ~ # echo $SERIAL > /etc/hostname
-    (root@reMarkable) 6 ~ #
-    ```
+        ```
+        (root@reMarkable) 5 ~ # hostname rm2a
+        (root@reMarkable) 6 ~ #
+        ```
 
 * Start a new shell.
 
@@ -253,38 +281,36 @@ On each tablet, I did the following ...
 
     To make `bash` use the new hostname in the prompt, you need to start a new `bash` shell process. There are a few ways to do this.
 
-    * Log out and log back in. (This is what I actually did while changing the hostname and writing this page.)
-
-        ```
-        (root@reMarkable) 6 ~ $ exit
-        (jms1@laptop) 19 ~ $ ssh rm2
-        Warning: Permanently added '10.11.99.1' (ED25519) to the list of known hosts.
-        ｒｅＭａｒｋａｂｌｅ
-        ╺━┓┏━╸┏━┓┏━┓   ┏━┓╻ ╻┏━╸┏━┓┏━┓
-        ┏━┛┣╸ ┣┳┛┃ ┃   ┗━┓┃ ┃┃╺┓┣━┫┣┳┛
-        ┗━╸┗━╸╹┗╸┗━┛   ┗━┛┗━┛┗━┛╹ ╹╹┗╸
-        (root@RM110-313-xxxxx) 1 ~ $
-        ```
-
-    * Restart the current shell. (I've done this in the past on other systems, this example shows what the process *would* look like.)
+    * Restart the current shell.
 
         ```
         (root@reMarkable) 6 ~ $ exec $SHELL
-        (root@RM110-313-xxxxx) 1 ~ $
+        (root@rm2a) 1 ~ $
         ```
 
         As you can see, the "command number" started over from 1 because it's a brand new `bash` process.
 
+    * Log out and log back in.
+
+        ```
+        (root@reMarkable) 6 ~ $ exit
+        (jms1@laptop) 19 ~ $ ssh rm
+        ｒｅＭａｒｋａｂｌｅ
+        ╺━┓┏━╸┏━┓┏━┓   ┏━┓╻ ╻┏━╸┏━┓┏━┓
+        ┏━┛┣╸ ┣┳┛┃ ┃   ┗━┓┃ ┃┃╺┓┣━┫┣┳┛
+        ┗━╸┗━╸╹┗╸┗━┛   ┗━┛┗━┛┗━┛╹ ╹╹┗╸
+        (root@rm2a) 1 ~ $
+        ```
+
 After doing this on both tablets, the other tablet looks like this when I log into it:
 
 ```
-(jms1@laptop) 22 ~ $ ssh rm2
-Warning: Permanently added '10.11.99.1' (ED25519) to the list of known hosts.
+(jms1@laptop) 22 ~ $ ssh rm
 ｒｅＭａｒｋａｂｌｅ
 ╺━┓┏━╸┏━┓┏━┓   ┏━┓╻ ╻┏━╸┏━┓┏━┓
 ┏━┛┣╸ ┣┳┛┃ ┃   ┗━┓┃ ┃┃╺┓┣━┫┣┳┛
 ┗━╸┗━╸╹┗╸┗━┛   ┗━┛┗━┛┗━┛╹ ╹╹┗╸
-(root@RM110-147-xxxxx) 1 ~ #
+(root@rm2b) 1 ~ #
 ```
 
-As you can see, the prompt contains the other tablet's serial number.
+As you can see, the prompts contain the correct serial number, to remind me which tablet I'm working on.
