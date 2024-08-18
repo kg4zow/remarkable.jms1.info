@@ -6,6 +6,8 @@ Most machines, *including the reMarkable tablet*, have a real-time clock, or "RT
 
 Most systems run a program which talks to "time servers" (aka "NTP servers", since the NTP protocol is the "language" they're speaking) on the internet, and keeps the kernel clock accurate with the time in the real world. On the reMarkable tablets, this program only runs while the tablet is connected to wifi. For tablets which *never* connect to wifi, this service never runs at all, so the only "accurate" source of time is the hardware clock, and that only stays accurate while its battery is working. (Some systems have a separate battery for the hardware clock, I'm not sure how the reMarkable tablets handle this.)
 
+It's important to note that the RTC in the reMarkable tablet does not appear to have its own battery, so it can only keep accurate time when the main battery is not entirely empty. This means if your tablet's battery is totally drained, the RTC will also lose track of time. When the battery is charged back up enough, the RTC will try to do its job, but it will probably have some random value for the current time, so it won't be accurate until the tablet's NTP client gets the real time from an NTP server and *sets* the RTC to the correct time (which presumably happens at the same time it sets the kernel clock).
+
 ### Why is the clock's accuracy important?
 
 There are several reasons, however the most important ones have to do with the SSL process that happens when connecting to an `https://` web site. The reMarkable software makes a lot of connections to `https://` servers when talking to the reMarkable cloud, and if the clock is not accurate, the tablet won't be able to connect.
