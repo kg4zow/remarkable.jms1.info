@@ -9,24 +9,22 @@
 - [FAQ](faq/index.md)
     - [Cases](faq/cases.md)
     - [Eraser](faq/eraser.md)
-    - [File Types](faq/file-types.md)
+    - [File Types (PDF vs EPUB)](faq/file-types.md)
     - [Nibs](faq/nibs.md)
     - [reMarkable Cloud]()
 
 ---
 
 - [Information](info/index.md)
-    - [First Impressions](info/first.md)
-    - [SSH Access](info/ssh.md)
-    - [Clock](info/clock.md)
     - [Backing Up the Tablet](info/backups.md)
-    - [Filesystem](info/filesystem.md)
+    - [Clock](info/clock.md)
     - [Controlling the Network](info/network.md)
-    - [Updating the Firmware](info/updates.md)
-    - [RCU](info/rcu.md)
-    - [goMarkableStream](info/goMarkableStream.md)
-    - [Calibre](info/calibre.md)
+    - [Filesystem](info/filesystem.md)
+    - [First Impressions](info/first.md)
+    - [Fonts](info/fonts.md)
     - [Issues with reMarkable](info/issues.md)
+    - [SSH Access](info/ssh.md)
+    - [Updating the Firmware](info/updates.md)
 
 - [Templates](templates/index.md)
     - [Basic Templates](templates/basic.md)
@@ -41,6 +39,11 @@
     - [rm2-clean](scripts/rm2-clean.md)
     - [rm2-list](scripts/rm2-list.md)
     - [rm2-make-pdf](scripts/rm2-make-pdf.md)
+
+- [Other Programs](other/index.md)
+    - [Calibre](other/calibre.md)
+    - [goMarkableStream](other/goMarkableStream.md)
+    - [RCU](other/rcu.md)
 
 - [Hacks](hacks/index.md)
 

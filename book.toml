@@ -20,3 +20,8 @@ preferred-dark-theme    = "ayu"
 [preprocessor.version-commit]
 renderers               = [ "html" ]
 command                 = "./version-commit"
+
+[output.html.redirect]
+"/info/calibre.html"            = "/other/calibre.html"
+"/info/goMarkableStream.html"   = "/other/goMarkableStream.html"
+"/info/rcu.html"                = "/other/rcu.html"

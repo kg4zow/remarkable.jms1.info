@@ -1,10 +1,6 @@
 # Introduction
 
-I am the owner of a new (as of 2023-06-27) [reMarkable 2](https://remarkable.com/) tablet.
-
-* Update: I picked up a used tablet so I can experiment with it, without any risk of losing or accidentally sharing the files in my primary tablet.
-
-* Update: I also picked up a used rM1 tablet, also for experimentation.
+I am the owner of four [reMarkable 2](https://remarkable.com/) tablets - one rM1, two rM2's, and now an rMPP. I've been using them since 2023-06-27. Currently, one of the rM2's is my "primary" tablet, and the other three are for experimentation.
 
 I'm using this site as a way to record the information I learn about them, and the things I do to customize them. I'm doing this for two reasons:
 
@@ -12,7 +8,7 @@ I'm using this site as a way to record the information I learn about them, and t
 
 * So that others who may find this information useful will have access to it as well.
 
-There probably won't be much to see at first, but I plan to add information over time after and I start playing/working with them.
+I plan to add information over time, especially with the release of the rMPP.
 
 > &#x2139;&#xFE0F; **In Progress**
 >
