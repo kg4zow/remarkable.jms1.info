@@ -115,9 +115,11 @@ You *can* also change notebooks' "display names" to include characters in these 
 
 **However.** You can't do this using xochitl (the software running on the tablet itself), because neither the on-screen keyboard, nor the "type folio", have the ability to type arbitrary characters in languages other than the ones supported by the software.
 
-I don't honestly know if you can rename documents using the reMarkable desktop or mobile apps, because I've never installed or used them. My *guess* is that if the app has the ability to rename documents, and your computer or mobile device has the ability to type characters in arbitrary languages (as macOS does), then you *should* be able to rename documents to use names as shown in the image above. (If anybody can tell me for sure whether this works or not, I'll update this page accordingly.)
+A user on Reddit [reports](https://www.reddit.com/r/RemarkableTablet/comments/1g1kl3x/emojis_in_titles/) that the reMarkable desktop and/or mobile apps are able to rename folders and documents to include emoji in the title, and that those emoji carried over to the tablet. I can't use their desktop or mobile apps because I don't use the reMarkable cloud, so I have no way to verify this, however it does make sense - if the computer, tablet, or phone where the app is running provides a keyboard with full unicode support.
 
-The other option is to edit the document's metadata file.
+They also reported that, even though they have an rMPP with a colour screen, the emoji they were using appeared in colour on the computer, but in greyscale on the tablet. I suspect this is because their computer had a font file containing colour glyphs for those emoji, but the tablet has a font file with greyscale glyphs.
+
+If this is also not an option for you, the other option is to edit the document's metadata file.
 
 > &#x26A0;&#xFE0F; **Be very careful.**
 >
