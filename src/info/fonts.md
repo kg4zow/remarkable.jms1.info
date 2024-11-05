@@ -24,7 +24,7 @@ It is possible to add font files to the tablet. If you do this, and the tablet n
 
 ![With Korean font](../images/glyphs-present.png) With the [Noto Serif KR](https://fonts.google.com/noto/specimen/Noto+Serif+KR) font installed
 
-## Installing Custom Fonts
+## Custom Fonts
 
 The tablet uses the [fontconfig](https://www.freedesktop.org/wiki/Software/fontconfig/) library to manage fonts. Any font which fontconfig knows about, will be available for use by `xochitl` if needed.
 
@@ -52,52 +52,110 @@ mkdir -f /home/root/.local/share/fonts
 
 You can create other sub-directories under this if you like, the `fc-cache` program (below) will scan all sub-directories looking for font files.
 
+### Font Cache Directory
+
+Rather than having to scan potentially hundreds of font files in several directories, the fontconfig library uses a database of which fonts exist in which files.
+
+Programs which *use* the fontconfig library to draw text are able to just use a font name, size, and style, rather than having to manually search through a list of directories and find the actual file which contains the font they want to use. The library also provides substitutions, so if the program asks for a font which isn't installed, the library will use a font which is "close" to what was requested.
+
+This database is stored in the `/var/cache/fontconfig/` directory.
+
+Whenever font files are added, updated, or removed from the system, you need to run the `fc-cache` program to rebuild these cache files.
+
+### reMarkable Paper Pro
+
+On the rMPP, the `/var/cache/` directory tree is set up to be "non-persistent", meaning that any changes made to it will disappear when the tablet reboots. This is done in two ways:
+
+* The `/` filesystem is mounted read-only. Any attempt to write to any files there will fail, with a "read-only filesystem" error.
+
+* There is an "overlay" filesystem mounted as `/var/cache/`. This uses a RAM disk to hold any files which are written to the `/var/cache/` directory, and makes them "appear" instead of the files which are physically in the `var/cache/` directory in the `/` filesystem (and therefore read-only).
+
+Because of this, `fc-cache` is able to do its job, however the updated font cache files only exist in the RAM disk. When the tablet reboots, those updated font cache files are gone. So if we want the updated font cache to survive a reboot, we need to do two things:
+
+* Un-mount the overlay filesystem, so that `/var/cache/` is the actual `var/cache/` directory on the `/` filesystem
+
+* Make the `/` filesytem writable.
+
+Note that we don't want to *leave* the `/` filesytem writable. The reMarkable startup scripts make it read-only for safety reasons, and while there are times you may need to make it read-write for a specific purpose (like updating the font cache files), as a rule it should say read-only in order to prevent accidental damage.
+
+## Updating Fonts
+
 ### Adding Font Files
 
-Upload your custom font files to the `/home/root/.local/share/fonts/` directory.
+Upload your custom font files to the `/home/root/.local/share/fonts/` directory. You may need to create this if it doesn't already exist.
 
-You can use any SSH file transfer program to do this, I normally use the `scp` command line client. For example ...
+```
+mkdir -p /home/root/.local/share/fonts
+```
+
+You can then use any SSH file transfer program to do this, I normally use the `scp` command line client. For example ...
 
 ```
 scp filename.ttf root@10.11.99.1:/home/root/.local/share/fonts/
 ```
 
+If you need to update or remove any custom font files, update or remove those files now as well.
+
 ### Rebuild the Font Cache
 
-Any time you add, remove, or update font files, you need to run this command to rebuild fontconfig's cache files.
+Any time you add, remove, or update font files, you need to rebuild the font cache files.
 
-```
-fc-cache -fv
-```
+* **rMPP:** If you want the updated font cache files to be persistent, you'll need to expose the *real* `/var/cache/` directory and make it writable.
 
-The `-f` option tells it to rebuild the cache files for directories which were previously cached.
+    * If the `/var/cache/` overlay is mounted, un-mount it. This only needs to be done once after the tablet reboots.
 
-The `-v` option tells the command to show more information about what it's doing. Specifically, it shows you each directory it's processing.
+        ```
+        umount -l /var/cache
+        ```
 
-```
-# fc-cache -fv
-/usr/share/fonts: caching, new cache contents: 0 fonts, 1 dirs
-/usr/share/fonts/ttf: caching, new cache contents: 0 fonts, 2 dirs
-/usr/share/fonts/ttf/ebgaramond: caching, new cache contents: 12 fonts, 0 dirs
-/usr/share/fonts/ttf/noto: caching, new cache contents: 13 fonts, 0 dirs
-/home/root/.local/share/fonts: caching, new cache contents: 0 fonts, 1 dirs
-/home/root/.local/share/fonts/NotoSerifKRFont: caching, new cache contents: 7 fonts, 0 dirs
-/home/root/.fonts: skipping, no such directory
-/usr/share/fonts/ttf: skipping, looped directory detected
-/home/root/.local/share/fonts/NotoSerifKRFont: skipping, looped directory detected
-/usr/share/fonts/ttf/ebgaramond: skipping, looped directory detected
-/usr/share/fonts/ttf/noto: skipping, looped directory detected
-/var/cache/fontconfig: cleaning cache directory
-/home/root/.cache/fontconfig: not cleaning non-existent cache directory
-/home/root/.fontconfig: not cleaning non-existent cache directory
-fc-cache: succeeded
-```
+        Note: this is a lowercase "L", not an uppercase "i" or a digit "one".
 
-The "looped directory" messages are harmless, they just mean that `fc-cache` has already scanned that directory and is refusing to scan it a second time.
+    * Make the `/` filesystem writable.
+
+        ```
+        mount -o remount,rw /
+        ```
+
+* **All tablets:** Run this command to rebuild fontconfig's cache files.
+
+    ```
+    fc-cache -fv
+    ```
+
+    The `-f` option tells it to rebuild the cache files for directories which were previously cached.
+
+    The `-v` option tells the command to show more information about what it's doing. Specifically, it shows you each directory it's processing.
+
+    ```
+    # fc-cache -fv
+    /usr/share/fonts: caching, new cache contents: 0 fonts, 1 dirs
+    /usr/share/fonts/ttf: caching, new cache contents: 0 fonts, 2 dirs
+    /usr/share/fonts/ttf/ebgaramond: caching, new cache contents: 12 fonts, 0 dirs
+    /usr/share/fonts/ttf/noto: caching, new cache contents: 13 fonts, 0 dirs
+    /home/root/.local/share/fonts: caching, new cache contents: 0 fonts, 1 dirs
+    /home/root/.local/share/fonts/NotoSerifKRFont: caching, new cache contents: 7 fonts, 0 dirs
+    /home/root/.fonts: skipping, no such directory
+    /usr/share/fonts/ttf: skipping, looped directory detected
+    /home/root/.local/share/fonts/NotoSerifKRFont: skipping, looped directory detected
+    /usr/share/fonts/ttf/ebgaramond: skipping, looped directory detected
+    /usr/share/fonts/ttf/noto: skipping, looped directory detected
+    /var/cache/fontconfig: cleaning cache directory
+    /home/root/.cache/fontconfig: not cleaning non-existent cache directory
+    /home/root/.fontconfig: not cleaning non-existent cache directory
+    fc-cache: succeeded
+    ```
+
+    The "looped directory" messages are harmless, they just mean that `fc-cache` has already scanned that directory and is refusing to scan it a second time.
+
+* **rMPP:** Make the `/` filesystem read-only again.
+
+    ```
+    mount -o remount,ro /
+    ```
 
 ### Restart xochitl
 
-After rebuilding the font cache, you need to restart xochitl. This is because it doesn't re-read the font cache after starting, it only reads it once when it starts up.
+After rebuilding the font cache, you need to restart xochitl. This is because it doesn't automatically re-read the font cache files every time they get rebuilt, it only reads them once when it starts up.
 
 ```
 systemctl restart xochitl.service
@@ -105,7 +163,7 @@ systemctl restart xochitl.service
 
 If you're watching the tablet's display, you'll see the screen go black and then see the "loading" message while the software starts up.
 
-Once this is done, the new fonts will be available if needed.
+Once this is done, the new fonts will be available as needed.
 
 ## Renaming Notebooks
 
@@ -115,7 +173,7 @@ You *can* also change notebooks' "display names" to include characters in these 
 
 **However.** You can't do this using xochitl (the software running on the tablet itself), because neither the on-screen keyboard, nor the "type folio", have the ability to type arbitrary characters in languages other than the ones supported by the software.
 
-A user on Reddit [reports](https://www.reddit.com/r/RemarkableTablet/comments/1g1kl3x/emojis_in_titles/) that the reMarkable desktop and/or mobile apps are able to rename folders and documents to include emoji in the title, and that those emoji carried over to the tablet. I can't use their desktop or mobile apps because I don't use the reMarkable cloud, so I have no way to verify this, however it does make sense - if the computer, tablet, or phone where the app is running provides a keyboard with full unicode support.
+A user on Reddit [reports](https://www.reddit.com/r/RemarkableTablet/comments/1g1kl3x/emojis_in_titles/) that the reMarkable desktop and/or mobile apps are able to rename folders and documents to include emoji in the title, and that those emoji carried over to the tablet. I can't use their desktop or mobile apps because I don't use the reMarkable cloud, so I have no way to verify this, however it does make sense - if the computer, tablet, or phone where the app is running provides a keyboard with full unicode support, it can "type" unicode characters (such as emoji).
 
 They also reported that, even though they have an rMPP with a colour screen, the emoji they were using appeared in colour on the computer, but in greyscale on the tablet. I suspect this is because their computer had a font file containing colour glyphs for those emoji, but the tablet has a font file with greyscale glyphs.
 
@@ -133,9 +191,9 @@ reMarkable documents are stored in the tablet's [filesystem](filesystem.md) as c
 
 > &#x2139;&#xFE0F; **UUID**
 >
-> A UUID is a "Universal Unique IDentifier". It's a 128-bit random number. The idea is, every document must have a unique identifier, and the chances of the tablet choosing a UUID which is already being used are very small (technically, it's a one in 2<sup>128</sup> chance).
+> A [UUID](https://en.wikipedia.org/wiki/Universally_unique_identifier) is a "Universal Unique IDentifier". It's a 128-bit number, normally written using [hexdecimal](https://en.wikipedia.org/wiki/Hexadecimal) digits. The idea is, every document must have a unique identifier, and the chances of the tablet choosing a UUID which is already being used are very small (technically, it's a one in 2<sup>128</sup> chance).
 
-This is because the tablet will allow you to give multiple documents the same "display name", if you really want to so do. (I don't recommend it, there's no way to tell which document is which - unless they have different numbers of pages or something.)
+This is because the tablet will allow you to give multiple documents the same "display name", if you really want to so do. (I don't recommend it, there's no obvious way to tell which document is which on the tablet's display - unless they have different numbers of pages or something.)
 
 You will need the UUID in order to identify which file to edit. What I normally do is this:
 
@@ -149,7 +207,9 @@ You will need the UUID in order to identify which file to edit. What I normally 
     9cc3f363-8076-4ecc-aeb7-ebddbfeaad8c.metadata:    "visibleName": "xyzzy"
     ```
 
-    It should only find one file. If it finds more than one, go back and rename the document to something unique and try again.
+    In this example, `9cc3f363-8076-4ecc-aeb7-ebddbfeaad8c` is the document's UUID.
+
+It should only find one file. If it finds more than one, go back and rename the document to something unique and try again.
 
 ### Edit the `UUID.metadata` file
 
@@ -166,7 +226,7 @@ There are a few ways to do this.
 
     If you do this, be sure you're using a TEXT EDITOR which can use (and save) files having only LF (aka `\n`) characters at the ends of the lines. DO NOT use a "word processor". You must, Must, MUST make sure that the file you upload back to the tablet contains nothing but JSON.
 
-However you edit the file, you're going to need to either use an editor which allows you to type Unicode characters (`vi` and `nano` on the tablet do not), or you're going to have to manually look up the Unicode "code point" values for each character. (This is what I did, to make the Korean and Hebrew filenames you see in the example above.)
+However you edit the file, you're going to need to either use an editor which allows you to type Unicode characters (`vi` and `nano` on the tablet do not), or you're going to have to manually look up the Unicode "code point" values for each character. (This is what I did, to make the Korean and Hebrew filenames you see in the examples on this page.)
 
 Assuming you're entering the Unicode code points directly, you'll need to encode each non-latin character as `\uXXXX`, where `XXXX` is the code point number in exactly four hexadecimal digits. For example ...
 
@@ -177,9 +237,13 @@ Assuming you're entering the Unicode code points directly, you'll need to encode
 
 Before you save your changes ...
 
-* DO NOT edit anything other than the `"visibleName"` line.
+* Be aware that some languages (such as Hebrew or Arabic) are written as "right-to-left" text. The tablet will show strings of these characters in right-to-left on the display. Be careful to enter their code point values in right-to-left order as well.
 
-* MAKE SURE the string has double-quotes before and after the new title.
+    For example, `&#x05E9;` is "&#x05E9;". It's the first character in the string in the file, but it appears at the far right when the word is shown on the screen.
+
+* DO NOT edit anything other than the value on the `"visibleName"` line.
+
+* MAKE SURE the string has double-quotes before and after the title.
 
 * If the line you edited DID HAVE a comma at the end, don't remove it.
 
@@ -201,9 +265,11 @@ Before you save your changes ...
 
     > &#x2139;&#xFE0F; **Different file formats**
     >
-    > This example is from an rM2 running 3.14.1.9. Different versions of the reMarkable software may include more, less, or "other" keys than the ones shown here. As long as the `"visibleName"` line is the only one you edit, you should be fine.
+    > This example is from an rM2 running 3.14.1.9. Different versions of the reMarkable software may include more, less, or "other" keys than the ones shown here.
+    >
+    > As long as the `"visibleName"` line is the only one you edit, you should be fine.
 
-Once you're sure taht the file is correct, save your changes.
+Once you're sure that the file is correct, save your changes.
 
 ### Restart xochitl
 
