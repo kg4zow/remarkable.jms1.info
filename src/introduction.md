@@ -1,6 +1,6 @@
 # Introduction
 
-I am the owner of four [reMarkable 2](https://remarkable.com/) tablets - one rM1, two rM2's, and now an rMPP. I've been using them since 2023-06-27. Currently, one of the rM2's is my "primary" tablet, and the other three are for experimentation.
+I am the owner of four [reMarkable tablets](https://remarkable.com/) - one rM1, two rM2's, and now an rMPP. The first one arrived on 2023-06-27. Currently I'm in the process of migrating from the original rM2 to the rMPP as my "primary" tablet, while the others are being used for experimentation (so I can try things which might be dangerous, without any risk to my real notes).
 
 I'm using this site as a way to record the information I learn about them, and the things I do to customize them. I'm doing this for two reasons:
 
@@ -22,9 +22,9 @@ This site is becoming "known" in the reMarkable community ... which is cool I gu
 
 * [`remarkable.guide`](https://remarkable.guide/) is run by some of the same people who maintain [Toltec](https://toltec-dev.org/), which is "a community-maintained repository of free software for the reMarkable tablet". These guys do a LOT more low-level hacking on the tablets than I do, including modifying or replacing the software entirely. (I would probably do the same thing if I had more time, but `$DAYJOB` keeps me pretty busy - I'm actually kinda surprised that I have the time and energy to update this page right now.)
 
-    This site has been around longer than this site. Most of the pages there seem to be quick little "what to do" articles, which is cool if you just want to "do the thing" and aren't interested in *why* you need to do it, or in what's actually happening under the covers.
+    The `remarkable.guide` site has been around longer than my site (the one you're reading right now). Most of the pages there seem to be quick little "what to do" articles, which is cool if you just want to "do the thing" and aren't interested in *why* you need to do it, or in what's actually happening under the covers.
 
-    I've always been more curious and want to understand things in more detail, so I tend to write longer, more detailed pages - especially because I *use* this site myself. I can't remember every little detail about everything I'm interested in, which is why I write it all down - so I can refer back to it later. (The [`jms1.info`](https://jms1.info/) site is the same idea, but not focused on reMarkable tablets.)
+    I've always been more curious and want to understand things in more detail, so I tend to write longer, more detailed pages - especially because I *use* this site myself. I can't remember every little detail about everything I'm interested in, which is why I write it all down - so I can refer back to it later. (The [`jms1.info`](https://jms1.info/) site is the same idea, but not focused on reMarkable tablets. And it also suffers from the same "not enough time" problem.)
 
 * [`remarkablewiki.com`](https://remarkablewiki.com/) &#x274C; **not working** - When I first got my first tablet, this site had a similar collection of articles. The site has since been taken down, the current page is a generic "this web site is not available" page from a web hosting company in Germany. The domain's registration information was last updated on 2023-11-10.
 
@@ -33,11 +33,11 @@ This site is becoming "known" in the reMarkable community ... which is cool I gu
 
 ## reMarkable Cloud
 
-I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing this for a few reasons:
+I am NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing this for a few reasons:
 
 * **Privacy**
 
-    Privacy is *very* important to me. Not that I have any great secrets, I just don't like the feeling of somebody (or thousands of somebodies) watching everything I do over my shoulder, especially when they are using that information against me by targeting ads.
+    Privacy is *very* important to me. Not that I have any great secrets, I just don't like the feeling of somebody (or thousands of somebodies) watching everything I do over my shoulder, especially when they are using that information against me (by targeting ads, training AI models, or whatever else they do with it, without my permission or knowledge).
 
     reMarkable has pretty much designed the tablet's software to keep everything synchronized to their "cloud", which is hosted on Google's "cloud" in Europe.
 
@@ -45,13 +45,15 @@ I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing
 
     * If your tablet is damaged or lost, you can buy another tablet and sign it into the same account, and your documents will sync back from the cloud.
 
-    * It allows the reMarkable apps on your computer or phone to access the cloud and work with documents on the tablet, without having to connect *directly* to the tablet.
+    * It allows the reMarkable apps on your computer or phone to access the cloud and work with documents on the tablet, without needing to connect *directly* to the tablet.
 
     * Since the API that the apps use to "talk to" the cloud is *mostly* known, third-party apps are  also able to interact with your documents by talking to your cloud account.
 
+        Note that the API was changed in mid-2024, and it looks like one of the design goals for the new API was to prevent third-party programs from being able to use the API.
+
     However.
 
-    Synchronizing the tablet to the cloud means that copies of all of your content - every notebook, every "quick sheet", every PDF or EPUB file you upload into the tablet - are being uploaded to their cloud.
+    Synchronizing the tablet to the cloud means that copies of all of your content - every notebook, every "quick sheet", every PDF or EPUB file you upload into the tablet - are being uploaded to their cloud. There is no way to choose which documents are uploaded, it's "all or nothing".
 
     On some level, the files in the cloud are encrypted. However, the encryption keys are held by reMarkable and/or Google, which means that your files can be read by reMarkable or Google employees, along with any shady three-letter government agencies (from *any* country) who ask, along with any random anklebiter who manages to hack into reMarkable's or Google's systems. (Because as we all know, large companies who pay obscene amounts of money for dedicated security staffers [never get hacked](https://techcrunch.com/2023/07/17/microsoft-lost-keys-government-hacked/).)
 
@@ -65,11 +67,11 @@ I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing
 
     Part of setting up each integration involves generating a security token that gives the reMarkable servers access to your accounts on these other providers. These tokens are held on reMarkable's servers.
 
-    Just like how reMarkable employees, government-ish agencies, and random hackers who get into reMarkable's systems are able to access the files on your tablet, they are also able to access files in your accounts on these other services.
+    Just like how reMarkable employees, government-ish agencies, and random hackers who get into reMarkable's systems are able to access the files on your tablet, they are also able to access those tokens, and therefore **able to access your accounts on these other services**.
 
 * **Compliance/Legal**
 
-    My current `$DAYJOB` is with a company in the healthcare industry. My particular job (software development, system and network administration, and other related "technical" stuff) doesn't involve *regular* exposure to PHI (protected health information), however some of my cow-orkers deal with log files containing small bits of PHI on a regular basis, so they wouldn't *legally* be able to use the cloud service.
+    My current `$DAYJOB` is with a company in the healthcare industry. My particular job (software development, system and network administration, "DEVOPS", and other related "technical" things) doesn't involve *regular* exposure to PHI (protected health information), however I do sometimes need to deal with log files containing small bits of PHI. This means that if I were using the reMarkable cloud, I would have to be careful about writing down any information from those log files, because *legally* that information cannot be shared with outsiders (including reMarkable or google).
 
     reMarkable **used to be** willing to execute a HIPAA Business Associate Agreement with their users, however when they updated their [Terms and Condtions](https://support.remarkable.com/s/article/Terms-and-Conditions-reMarkable-Accounts) in 2024-02 they removed that paragraph - section 7 *used to* have three parargraphs, now it only has two.
 
@@ -87,7 +89,9 @@ I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing
     >
     > [This page](https://developer.myscript.com/pricing) contains what little they're willing to say about pricing - basically the first 2000 requests each month are free, and after that, "contact us". An [old message](https://developer-support.myscript.com/support/discussions/topics/16000030978) on their developer support forum mentions the pricing beyond that as $10 per 1000 requests, I have no idea if that's still accurate or not.
     >
-    > I have not played with `rmfakecloud` yet, however it is on my list of things to check out.
+    > I have not played with rmfakecloud yet, however it is on my list of things to check out.
+    >
+    > Also, it's worth pointing out that rmfakecloud uses the *original* cloud API. The last I heard, the tablet software was capable of using either version of the API, but it's possible that versions released after reMarkable changed their servers to use the newer API are no longer able to "speak" the older API. This means you might need to downgrade your tablet to an older OS if you want to use rmfakecloud.
 
 * **Functionality**
 
@@ -95,7 +99,7 @@ I'm NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing
 
     **When I buy a product, I expect that product to be able to do the same job, even if the original manufacturer goes out of business.**
 
-    In the case of the reMarkable tablet, one of the things you miss out on by not connecting to their "cloud" is handwriting recognition (where the tablet turns the pen strokes you draw with the stylus, into actual text). I remember reading somewhere that this happened on the tablet itself, which was one of the reasons I decided to buy one. I later found that this was not the case, however it has already replaced the paper notebooks I used to keep, so returning the tablet is not an option.
+    In the case of the reMarkable tablet, one of the things you miss out on by not connecting to their "cloud" is handwriting recognition (where the tablet turns the pen strokes you draw with the stylus, into actual text). I remember reading somewhere that this happened on the tablet itself, which was one of the reasons I decided to buy one. I later found that this was not the case (i.e. that the handwriting recognition was done "in the cloud"), however it has already replaced the paper notebooks I used to keep, so returning the tablet is not an option.
 
 ### NOT A BACKUP
 
@@ -129,10 +133,13 @@ The web hosting function *could* be replaced by Github, however I prefer using K
 
 I would appreciate any feedback you may have to offer about this book. This *especially* includes if you spot any typos, if you see any information which is incorrect or incomplete, or if there's something you'd like to see me cover.
 
-* Email: `jms1@jms1.net`
 * [Keybase: `jms1`](https://keybase.io/jms1/)
 
     I am also `kg4zow` on Keybase, however I only use that account for amateur radio stuff. If you try to contact me there, there's a good chance I won't see it for several months.
+
+* [reMarkable Community Discord](https://discord.gg/JSSGnFY): `kg4zow`
+
+* Email: `jms1@jms1.net`
 
 ## License
 
@@ -148,4 +155,4 @@ Short version, you're free to use, copy, and re-share the information, including
 
 ### Exception
 
-The `/theme/index-template.hbs` file in the git repo, whose contents make up part of every generated HTML page, was copied from `/src/theme/index.hbs` in [the mdbook source](https://github.com/rust-lang/mdBook/blob/master/src/theme/index.hbs) and then modified. As such, that file is technically covered by the [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/), as noted [in their repo](https://github.com/rust-lang/mdBook/blob/master/LICENSE).
+The `/theme/index-template.hbs` file in the git repo, whose contents make up part of every generated HTML page, was copied from `/src/theme/index.hbs` in [the mdbook source code](https://github.com/rust-lang/mdBook/blob/master/src/theme/index.hbs) and then modified. As such, that one file is covered by the [Mozilla Public License 2.0](https://www.mozilla.org/en-US/MPL/), as noted [in their repo](https://github.com/rust-lang/mdBook/blob/master/LICENSE).
