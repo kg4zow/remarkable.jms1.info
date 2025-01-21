@@ -1,11 +1,17 @@
 all: build
 
 build:
+	rm -f theme/*.hbs
 	mdbook build
 	if [ -f .git2rss -a -x git2rss ] ; then ./git2rss > book/commits.xml ; fi
 
 serve:
+	rm -f theme/*.hbs
 	mdbook serve --open --hostname 127.0.0.1
+
+serve-all:
+	rm -f theme/*.hbs
+	mdbook serve --open --hostname 0.0.0.0
 
 ###############################################################################
 #

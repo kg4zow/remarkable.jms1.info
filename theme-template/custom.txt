@@ -1,0 +1,181 @@
+This file isn't used in the process of building the book, this is just where
+I keep the blocks I add to the 'theme-template/' files whenever I update them
+from the mdbook source code.
+
+https://github.com/rust-lang/mdBook/tree/master/src/theme/
+
+Note that mdbook v0.4.41 changed the list of files needing to be updated.
+Previously it was just index.hbs, now there are three different files. I
+updated the 'version-commit' script to process all three files.
+
+-------------------------------------------------------------------------------
+
+Original *.hbs files last copied from mdbook's source 2024-12-23, from commit
+59e6afcaad9cb752d794756de1256745da2dd2b5 2024-11-25 (which is v0.4.43 plus
+one PR described as "Add aarch64-apple-darwin release target", which only
+updates a Github workflow file).
+
+###############################################################################
+#
+# index.hbs - main template for every page
+
+########################################
+# Version/commit info at the bottom of the main page
+#
+# below {{{ content }}} tag
+
+                <div id="content" class="content">
+                    <main>
+                        {{{ content }}}
+
+<!-- Start version-commit content below every page -->
+                        <hr/>
+                        <div class="version-commit-div" style="float: right">
+                            Generated
+                            <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
+                        </div>
+                        <div class="version-commit-div">
+                            <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span>
+                            <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
+                        </div>
+<!-- End version-commit content below every page -->
+
+                    </main>
+
+
+###############################################################################
+#
+# toc.html.hbs - Table of Contents, for browsers not running javascript
+
+########################################
+# Extra link at the top of ToC. I don't use it for *this* book, but several
+# books at $DAYJOB have a link back to a "list of books" page.
+#
+# above {{#toc}}{{/toc}} tags
+
+        <nav id="sidebar" class="sidebar" aria-label="Table of contents">
+            <div class="sidebar-scrollbox">
+
+<!-- Start extra link above the ToC -->
+<!--
+                &#x2192; <a class='part-title' href='https://github.com/'>GitHub</a>
+                <hr/>
+-->
+<!-- End extra link above the ToC -->
+
+                {{#toc}}{{/toc}}
+
+########################################
+# Version/commit info below the ToC
+#
+# below {{#toc}}{{/toc}} tags
+
+                {{#toc}}{{/toc}}
+
+<!-- Start version-commit content below ToC -->
+                <hr/>
+                <div class="part-title">Version</div>
+                <div id="commit" class='version-commit-div'>
+                    <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
+                    <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
+                </div>
+                <div class="part-title">Generated</div>
+                <div id="generated" class='version-commit-div'>
+                    <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
+                </div>
+<!-- End version-commit content below ToC -->
+
+            </div>
+            <div id="sidebar-resize-handle" class="sidebar-resize-handle"></div>
+
+
+###############################################################################
+#
+# toc.js.hbs - Table of Contents for browsers using javascript
+#
+# - Using backticks for multi-line strings. This was apparently added in
+#   ECMAScript 6, which appears to be supported by modern browsers (including
+#   Firefox 133, which I'm using as I write this).
+# - If you need to support earlier versions, you could use backslashes at the
+#   end of each line for multi-line string literals, i.e.#   Example:
+#
+#       this.innerHTML = "xxx\
+#       \
+#       adding text\
+#       " ;
+#
+# - Another option, which seems safer in terms of support for older browsers
+#   but is a pain in the tail to maintain, is string concatenation.
+#
+#       this.innerHTML = '\n' +
+#           '<#-- Start extra link above the ToC -->\n' +
+#           '<!--\n' +
+#           '                &#x2192; <a class="part-title" href="https://github.com/">GitHub</a>\n' +
+#       ...
+#           '{{#toc}}{{/toc}}\n\n' ;
+
+########################################
+# Extra link at the top of ToC. I don't use it for *this* book, but several
+# books at $DAYJOB have a link back to a "list of books" page.
+#
+# above {{#toc}}{{/toc}} tags
+
+        this.innerHTML = `
+
+<!-- Start extra link above the ToC -->
+<!--
+                &#x2192; <a class="part-title" href="https://github.com/">GitHub</a>
+                <hr/>
+-->
+<!-- End extra link above the ToC -->
+
+{{#toc}}{{/toc}}`;
+
+########################################
+# Version/commit info below the ToC
+
+        this.innerHTML = `{{#toc}}{{/toc}}
+
+<!-- Start version-commit content below ToC -->
+                <hr/>
+                <div class="part-title">Version</div>
+                <div id="commit" class="version-commit-div">
+                    <span class="version-commit-hash"><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
+                    <span class="version-commit-time"><tt>@VERSION_COMMIT_TIME@</tt></span>
+                </div>
+                <div class="part-title">Generated</div>
+                <div id="generated" class="version-commit-div">
+                    <span class="version-commit-now"><tt>@VERSION_COMMIT_NOW@</tt></span>
+                </div>
+<!-- End version-commit content below ToC -->
+
+`;
+
+########################################
+# Both of the above
+
+        this.innerHTML = `
+
+<!-- Start extra link above the ToC -->
+<!--
+                &#x2192; <a class="part-title" href="https://github.com/">GitHub</a>
+                <hr/>
+-->
+<!-- End extra link above the ToC -->
+
+{{#toc}}{{/toc}}
+
+<!-- Start version-commit content below ToC -->
+                <hr/>
+                <div class="part-title">Version</div>
+                <div id="commit" class="version-commit-div">
+                    <span class="version-commit-hash"><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
+                    <span class="version-commit-time"><tt>@VERSION_COMMIT_TIME@</tt></span>
+                </div>
+                <div class="part-title">Generated</div>
+                <div id="generated" class="version-commit-div">
+                    <span class="version-commit-now"><tt>@VERSION_COMMIT_NOW@</tt></span>
+                </div>
+<!-- End version-commit content below ToC -->
+
+`;
