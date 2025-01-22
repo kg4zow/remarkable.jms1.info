@@ -1,50 +1,59 @@
 # Backing Up the Tablet
 
-One of the first things I did was make a backup of everything stored in the tablet.
+**reMarkable's cloud service is a SYNC service, not a BACKUP service**. A lot of people *treat* it like a backup service, and it can be used as kind of a backup if you're careful, however ...
 
-I've been using a backup script based on 'rsync' for many years. (I don't really remember *when* I started, but the fist time I documented the idea was in 2008.) Apparently the idea of using `rsync` with SSH was relatively new back then, I don't honestly remember.
+* If somebody or something deletes a document from the cloud, *even by accident*, that file is gone. And as soon as your tablet checks in with the cloud, the tablet will delete its copy of that document as well.
 
-&#x21D2; [old documentation](https://jms1.net/code/rsync-backup.shtml), if you're really curious
+* The "somebody or something" which deletes documents from the cloud is *normally* another reMarkable tablet or app, but it could also be a malicious "hacker" who breaks into reMarkable's or Google's servers, or who gets the password for your cloud account.
 
-Since then, `rsync` has added the "`--link-dest`" option. This works by comparing each file which could be backed up, to a file with the same name in another directory. If the two files are identical, then instead of copying the file, it creates a "hard link" in the backup, referring to the corresponding file in that other directory. This way, if you're backing up a system on a regular basis and a file on that system never changes, the disk where you're storing the backups only contains one copy of the file, even if there are dozens or hundreds of different filenames "pointing to" the file.
+* People *have* reported documents suddenly being deleted with no warning, and no way to get them back. I think I've heard about this three times over the past year and a half, and to be fair it's *possible* that these problems could all be attributed to human error, but unless I can be 100% sure, I don't recommend relying on it.
 
-I've been using `rsync` with the `--link-dest` option to make recurring backups (usually daily) of my servers, both personally and for whatever `$DAYJOB` was at the time, for many years now.
+Whether you use the reMarkable cloud or not, I encourage you to make *real backups* of your documents, as `.rmdoc` files, on a regular basis. You may also want to make backups as PDF files as well, since this allows you to view or print the documents from your computer.
+
+### File Types
+
+Files can be backed up in a few different formats. The most common formats are:
+
+* **PDF files** are a standard file format for presentation-ready pages. They contain directions for how to "draw" a series of pages, either on a computer screen or on a printer. Most operating systems include programs to view and print PDF files.
+
+    If you download a reMarkable notebook as a PDF, any pen strokes you've added "on top of" the original PDF will be "burned into" the downloaded PDF. If you later upload that PDF back to the tablet, you will find that your original pen strokes are no longer edit-able.
+
+* **RMDOC files** are what reMarkable calls "Archives". You can think of them as ZIP file containing all of the individual files from the tablet's internal filesystem which make up that document, because that's exactly what they are.
+
+    Because they contain the *actual* files from the tablet's internal filesystem, if you uplod them back to a tablet, the original pen strokes will still be pen strokes, and will still be edit-able.
+
+* **RMN files** are the same basic idea as RMDOC files, however they use TAR instead of ZIP as the container format. These files are used with [RCU](http://www.davisr.me/projects/rcu/), a third-party program which
 
 
-## The `rm2-backup` Script
+## The `rm2-backup` script
 
-I wrote a script to back up my tablet, whcih is essentially the same script I run on a dedicated "backup server" at work (except at work, it pulls backups from a *list* of other machines.) I removed some details which aren't necessary in this case, and added some comments so that people reading the script should be to follow along with what the script is doing.
+One of the first things I did when I got my first reMarkable tablet was figure out how to make a backup of everything stored in the tablet. I started by copying a script I've been using to back up Linux servers for 25+ years. It saves disk space by building a series of directories whose names are timestamps of when the backup started. Files which haven't changed since the previous backup are stored as "hard links" to the same file in the previous backup.
 
-&#x21D2; The script itself is documented in more detail on [this page](../scripts/rm2-backup.md).
+I removed a few details which aren't necessary for backing up a tablet, and added some comments so that people reading the script should be to follow along with what the script is doing.
 
-The `$HOME/bin/` directory on my laptop contains a copy of the `rm2-backup` script. When I connect the tablet, if it's been a while (a few hours if I've added or updated anything, or a few days otherwise) since I last did a backup, I run the script by hand. Unless I've uploaded a batch of new ebook files, it normally takes 5-10 seconds to finish.
+The script itself is documented in more detail on [this page](../scripts/rm2-backup.md).
 
-In this example, it had only been about 15 minutes since the last backup, so there wasn't really much that had changed.
 
-```
-$ rm2-backup
-+ rsync -avzHl --link-dest=../2023-06-29T122931Z --exclude /dev --exclude /proc --exclude /run --exclude /sys root@10.11.99.1:/ /Users/jms1/backup-rm2/2023-06-29T130720Z/
-receiving incremental file list
-created directory /Users/jms1/backup-rm2/2023-06-29T130720Z
-home/root/.bash_history
-home/root/log.txt
-home/root/.cache/remarkable/xochitl/telemetry/09a0a8f691b9ee6d/events/20230629-746b1474-81ad-4aca-a22d-ce6f1524ddd9
-home/root/.cache/remarkable/xochitl/telemetry/0c091fbab5349230/events/20230628-92752869-9913-417b-8428-b486a1900941
-home/root/.cache/remarkable/xochitl/telemetry/18b173bd76b11fe8/events/20230629-5068fd25-f944-450a-aba6-d71d50eb36df
-home/root/.cache/remarkable/xochitl/telemetry/294b1efd8e146687/events/20230629-db6a17d6-4a18-41d2-bd5a-b755cd719bd1
-home/root/.cache/remarkable/xochitl/telemetry/298cd0ca7547d81b/
-home/root/.cache/remarkable/xochitl/telemetry/50568fd036d7eb2c/events/20230628-50289b63-74cf-414e-a0e1-4f43aa2a3f3f
-home/root/.cache/remarkable/xochitl/telemetry/b5f6e098bc215a31/events/20230629-700035b4-efe3-4074-896b-6d303aeba58c
-home/root/.cache/remarkable/xochitl/telemetry/d6e23be7e72320a0/events/20230628-a0725a9c-2b03-484e-83eb-e4239f590c57
-home/root/.cache/remarkable/xochitl/telemetry/dcfa227bd5c7e14c/events/20230629-e7d47bd1-5eda-4b27-afcb-8f21bd0865b9
-var/lib/update_engine/
-var/lib/update_engine/prefs/
-var/log/lastlog
-var/log/wtmp
-var/log/journal/0f9d28f6d9674924ae87cf7637194d00/system.journal
+## The `rmbackup` script
 
-sent 9,902 bytes  received 331,124 bytes  97,436.00 bytes/sec
-total size is 293,688,680  speedup is 861.19
-```
+After a few people started using `rm2-backup`, somebody on reddit suggested tracking successive backups as commits in a git repo, rather than in timestamped directories. I thought this was a great idea, so I wrote an entirely new backup script which also uses `rsync` to copy the files, but without the options to create timestamped directories.
 
-This command took about two seconds to finish. As you can see, the total size of all files on the tablet is 293 MB, but `rsync` only had to copy 331 KB of data, because 99% of the files hadn't changed since the previous backup.
+It *can* also ...
+
+* create `.rmdoc` and/or `.rmn` files from the backed-up raw files
+* download PDF files from the tablet's built-in web interface
+* track the backed-up files in a git repo
+* push that repo to a remote server
+
+This is the "big brother" of `rm2-backup`, and is the one I use to back up my primary tablet every day.
+
+&#x21D2; [Github](https://github.com/kg4zow/rm2-scripts/tree/main/rmbackup)
+
+
+## The `rmweb` program
+
+This is a backup program which uses *only* the tablets' built-in web interface. I started it as a side project, to get some experience with [Go](https://go.dev/). When the rMPP was announced and "developer mode" was explained, I realized that people whose tablets were not in "developer mode" would still need a way to make backups, so I got the program into a working state, figured out how to make "releases" on Github, and started telling people about it.
+
+It isn't able to back up the internal files from the tablet's filesystem, but it can download `.rmdoc` and PDF files.
+
+&#x21D2; [Github](https://github.com/kg4zow/rmweb)
