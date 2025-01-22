@@ -1,6 +1,6 @@
 # Introduction
 
-I am the owner of four [reMarkable tablets](https://remarkable.com/) - one rM1, two rM2's, and now an rMPP. The first one arrived on 2023-06-27. Currently I'm in the process of migrating from the original rM2 to the rMPP as my "primary" tablet, while the others are being used for experimentation (so I can try things which might be dangerous, without any risk to my real notes).
+I am the owner of four [reMarkable tablets](https://remarkable.com/) - one rM1, two rM2's, and now an rMPP. The first one arrived on 2023-06-27. I'm using the original rM2 as my "primary" tablet, while the others are being used for experimentation (so I can try things which might be dangerous, without any risk to my real notes).
 
 I'm using this site as a way to record the information I learn about them, and the things I do to customize them. I'm doing this for two reasons:
 
@@ -20,7 +20,7 @@ I plan to add information over time, especially with the release of the rMPP.
 
 This site is becoming "known" in the reMarkable community ... which is cool I guess, but I'm not really trying to become "the one site" for everything relating to reMarkable tablets. There are other sites out there with more/better information, and/or which cover things I haven't covered (and may *never* cover) on this site.
 
-* [`remarkable.guide`](https://remarkable.guide/) is run by some of the same people who maintain [Toltec](https://toltec-dev.org/), which is "a community-maintained repository of free software for the reMarkable tablet". These guys do a LOT more low-level hacking on the tablets than I do, including modifying or replacing the software entirely. (I would probably do the same thing if I had more time, but `$DAYJOB` keeps me pretty busy - I'm actually kinda surprised that I have the time and energy to update this page right now.)
+* [`remarkable.guide`](https://remarkable.guide/) is run by some of the same people who maintain [Toltec](https://toltec-dev.org/), which is "a community-maintained repository of free software for the reMarkable tablet". These guys do a LOT more low-level hacking on the tablets than I do, including modifying or replacing the software entirely. I would probably be doing the same thing if I had more time, but `$DAYJOB` keeps me pretty busy.
 
     The `remarkable.guide` site has been around longer than my site (the one you're reading right now). Most of the pages there seem to be quick little "what to do" articles, which is cool if you just want to "do the thing" and aren't interested in *why* you need to do it, or in what's actually happening under the covers.
 
@@ -28,12 +28,11 @@ This site is becoming "known" in the reMarkable community ... which is cool I gu
 
 * [`remarkablewiki.com`](https://remarkablewiki.com/) &#x274C; **not working** - When I first got my first tablet, this site had a similar collection of articles. The site has since been taken down, the current page is a generic "this web site is not available" page from a web hosting company in Germany. The domain's registration information was last updated on 2023-11-10.
 
-    My guess is that whoever started the site, stopped paying for the hosting, and the hosting company took over the domain. I'm not aware of any mirrors out there, but from what I remember, the site was fairly useful.
-
+    My guess is that whoever started the site, stopped paying for the hosting, and the hosting company took over the domain. I'm not aware of any mirrors out there, but from what I remember, the site was fairly useful. I wish they had announced ahead of time that they were shutting down the site, I could have hosted it myself (and I'm sure half a dozen other people can say the same thing).
 
 ## reMarkable Cloud
 
-I am NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doing this for a few reasons:
+I am NOT connecting my primary tablet to the "reMarkable Cloud" at all. I'm doing this for a few reasons:
 
 * **Privacy**
 
@@ -47,9 +46,9 @@ I am NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doin
 
     * It allows the reMarkable apps on your computer or phone to access the cloud and work with documents on the tablet, without needing to connect *directly* to the tablet.
 
-    * Since the API that the apps use to "talk to" the cloud is *mostly* known, third-party apps are  also able to interact with your documents by talking to your cloud account.
+    * Since the API that the apps use to "talk to" the cloud is *mostly* known, third-party apps are  also able to interact with your documents by talking to your cloud account. (This was not reMarkable's doing, this is because other people have "sniffed" the traffic and figured out how the API works.)
 
-        Note that the API was changed in mid-2024, and it looks like one of the design goals for the new API was to prevent third-party programs from being able to use the API.
+        Note that the API was changed in mid-2024. At the time people were thinking it was to prevent third-party programs from being able to use it, however the rMPP was announced in 2024-09, so it looks like the main reason for the API change was to support the rMPP, and to support having multiple tablets attached to the same account (to make it easy for people to upgrade from an earlier tablet to the rMPP).
 
     However.
 
@@ -57,17 +56,21 @@ I am NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doin
 
     On some level, the files in the cloud are encrypted. However, the encryption keys are held by reMarkable and/or Google, which means that your files can be read by reMarkable or Google employees, along with any shady three-letter government agencies (from *any* country) who ask, along with any random anklebiter who manages to hack into reMarkable's or Google's systems. (Because as we all know, large companies who pay obscene amounts of money for dedicated security staffers [never get hacked](https://techcrunch.com/2023/07/17/microsoft-lost-keys-government-hacked/).)
 
-    These people can also *change* what's in the cloud, and your tablet will happily download those changes, changing or deleting content however *somebody else* wants.
+    These people can also *change* what's in the cloud, and your tablet will happily download those changes, changing or deleting the content on your tablet, however *somebody else* wants.
 
     It IS possible to structure a cloud service in such a way that the files in the cloud are "end-to-end" encrypted, with the encryption keys only available to the devices and apps attached to the account. ([Keybase](https://keybase.io/) is a good example of this, each *device* has its own encryption keys.) reMarkable didn't structure their cloud service this way, and as a result, any files created or side-loaded on a reMarkable tablet which connects to the cloud service are available to hundreds of other people, thousands of government employees (for various values of "government"), and unknown hordes of "hackers".
 
 * **Security of Third Party Services**
 
-    reMarkable offers integrations with third-party file storage services, currently including Dropbox, Google, and Microsoft. **These integrations are done by the reMarkable cloud servers.** Your tablet never talks to these other services directly, the only things it ever talks to are reMarkable's servers (other than basic networking services).
+    reMarkable offers integrations with third-party file storage services, currently including Dropbox, Google, and Microsoft. **These integrations are done by the reMarkable cloud servers.** Your tablet never talks to these other services directly.
 
-    Part of setting up each integration involves generating a security token that gives the reMarkable servers access to your accounts on these other providers. These tokens are held on reMarkable's servers.
+    > &#x2139;&#xFE0F; Other than basic networking services (DHCP and NTP), the only things the tablet talks to directly are reMarkable's servers, and (in later software versions) a [third-party analytics company](https://memfault.com/iot-product-analytics/) who tracks the software (and other things?) on the tablets and is somehow involved in the software upgrade process.
 
-    Just like how reMarkable employees, government-ish agencies, and random hackers who get into reMarkable's systems are able to access the files on your tablet, they are also able to access those tokens, and therefore **able to access your accounts on these other services**.
+    Part of setting up each file-sharing integration involves generating a security token that gives the reMarkable servers access to your accounts on these other providers. These tokens are held on reMarkable's servers.
+
+    Just like how reMarkable employees, government-ish agencies, and random hackers who get into reMarkable's systems are able to access the files on your tablet, they are also able to access those tokens, and therefore **able to access everything in your accounts on these other services**, whether it has been copied to your tablet or not.
+
+    Also note, these integrations are for uploading and downloading files only. They do not automatically sync changes either way.
 
 * **Compliance/Legal**
 
@@ -81,11 +84,11 @@ I am NOT connecting any of my tablets to the "reMarkable Cloud" at all. I'm doin
 
     > &#x2139;&#xFE0F; **rmfakecloud**
     >
-    > [rmfakecloud](https://ddvk.github.io/rmfakecloud/) is a project which duplicates most of the "cloud sync" functionality, but hosted on a server that YOU control. This includes handwriting recognition, by talking to [MyScript](https://www.myscript.com/) (the third-party service that reMarkable uses to perform handwriting recognition).
+    > [rmfakecloud](https://ddvk.github.io/rmfakecloud/) is a project which duplicates most of the "cloud sync" functionality, but hosted on a server that YOU control. This includes handwriting recognition, by talking to [MyScript](https://www.myscript.com/) (the same third-party service that reMarkable uses to perform handwriting recognition).
     >
     > If you do this, you do have to get your own service with MyScript if you plan to use the handwriting recognition functionality. MyScript's service charges based on the number of "recognition events" you perform each month.
     >
-    > My guess is that reMarkable has some kind of volume discount with MyScript. reMarkable pays MyScript for all handwriting recognition requests made by reMarkable tablets connected to the reMarkable cloud service. If your tablet is connected to rmfakecloud and you use the handwriting recognition function, you would need to make your own arrangements with MyCloud to pay for that service.
+    > My guess is that reMarkable has some kind of volume discount with MyScript. reMarkable pays MyScript for all handwriting recognition requests made by all tablets connected to the reMarkable cloud service. If your tablet is connected to rmfakecloud and you use the handwriting recognition function, you would need to make your own arrangements with MyCloud to pay for that service.
     >
     > [This page](https://developer.myscript.com/pricing) contains what little they're willing to say about pricing - basically the first 2000 requests each month are free, and after that, "contact us". An [old message](https://developer-support.myscript.com/support/discussions/topics/16000030978) on their developer support forum mentions the pricing beyond that as $10 per 1000 requests, I have no idea if that's still accurate or not.
     >
