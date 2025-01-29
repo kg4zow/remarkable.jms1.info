@@ -8,6 +8,7 @@
 
 - [FAQ](faq/index.md)
     - [Cases](faq/cases.md)
+    - [Cloud Service](faq/cloud.md)
     - [Eraser](faq/eraser.md)
     - [File Types (PDF vs EPUB)](faq/file-types.md)
     - [Nibs](faq/nibs.md)
