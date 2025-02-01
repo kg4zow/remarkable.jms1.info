@@ -1,5 +1,58 @@
 # Introduction
 
+## 2025-02-01: Reddit has suspended my account
+
+As you may know, I *used to* spend a lot of time on the [/r/reMarkableTablet](https://reddit.com/r/reMarkableTablet/) subreddit, answering questions for people. I did this because I genuinely enjoy sharing my knowledge with others, and because it wasn't something I *had* to do as part of my day job.
+
+On 2025-01-30, while I was looking at a picture somebody had submitted to illustrate a problem, I noticed a red banner behind the picture saying something like "this account has been suspended". At first I thought it was talking about the account which had posted the picture, but then I started noticing the same red banner at the top of every new page I opened. And when I checked my email, I found a message from reddit saying ...
+
+> Hi u/kg4zow,
+>
+> At Reddit, we’re always watching out for your privacy, safety, and security. Recently, after detecting some technical irregularities on your u/kg4zow account, we took the extra precaution of locking your account.
+>
+> To unlock your account, [reset your password now](/).
+>
+> We recommend choosing a new password that you haven’t used on Reddit or another website or app before.
+>
+> To prevent your account from potential misuse, you won’t be able to take part  communities or update the majority of your settings while your account is locked. Also, when you log in you’ll see a red warning and a security message like this one asking you to reset your password.
+>
+> If you have have questions about locked accounts or your Reddit security, check out our FAQs:
+>
+> [My account has been locked as a security precaution](https://www.reddithelp.com/en/categories/account-status/my-account-has-been-locked-security-precaution)
+>
+> [I need help with a hacked or compromised account](https://www.reddithelp.com/en/categories/using-reddit/your-reddit-account/i-need-help-hacked-or-compromised-account)
+
+I reset my password (changed from one long [1Password](https://1password.com/)-generated string of random characters to another one), but after that I started seeing warnings like this whenever I tried to answer a question:
+
+![reddit-doing-that-a-lot.png](images/reddit-doing-that-a-lot.png)
+
+At the time I opened a "support ticket" with reddit about this, but I never heard back.
+
+Today I received an email from another reddit user, asking why I had *cancelled my reddit account*. I reloaded my browser window and was still logged in, so I found [a new question](https://www.reddit.com/r/RemarkableTablet/comments/1if8s22/backup_without_connect/) that I was able to help with. I typed up [an answer](https://www.reddit.com/r/RemarkableTablet/comments/1if8s22/backup_without_connect/maeqmbk/) and submitted it, and when I look at the question in my browser it shows my answer at the bottom ... but if I look at the same question from a browser that isn't logged into my account, *my answer isn't there*.
+
+So apparently my account is still suspended, and reddit is "hiding" the fact from me while telling the rest of the world about it. (This sounds a lot like a "shadow ban" to me, even if it has nothing to do with politics.)
+
+I just opened a second ticket with them about this, asking for a second time, what SPECIFICALLY I did that triggered all this.
+
+**Until reddit decides to fix this, I'm not able to use it.** Which means that if anybody has questions that I *could* help with, I'm not able to do so.
+
+### In the meantime
+
+If you have questions that I might be able to help with, I recommend the following:
+
+* I'm not going to stop maintaining this site - *when I have time*. Of course, this means you need to come back and *check* the site every so often, but if you use ![rss.svg](images/rss.svg) [RSS](https://en.wikipedia.org/wiki/RSS), I have an [RSS feed](https://remarkable.jms1.info/commits.xml) which is updated every time I publish a new version of this web site.
+
+* I'm also not going to stop maintaining my programs on Github - again, *when I have time*. If you have questions about scripts in the [rm2-scripts repo](https://github.com/kg4zow/rm2-scripts), or about the [rmweb](https://github.com/kg4zow/rmweb) program, feel free to ask there. (I *just* turned on the "Discussons" feature for both repos, I've never used them before so it might take a bit for *me* to figure out how they work.)
+
+* The [remarkable.guide](https://remarkable.guide/) site has answers to many of the questions that show up regularly on reddit. They tend to be a lot shorter than the "books" that I typically write - they focus only on "how" to do something, rather than "why" you do it that way. My brain doesn't work that way, but a lot of people seem to prefer that.
+
+* The [Community Discord](https://discord.gg/JSSGnFY) has people who are able to answer a lot of the questions that show up on reddit. They're also able to answer questions that are a LOT more technical than anything that shows up on reddit. I am `kg4zow` there as well, although I'm not as active there as I was on reddit.
+
+* The [Feedback](#feedback) section below tells how to best reach me directly.
+
+
+# Introduction
+
 I am the owner of four [reMarkable tablets](https://remarkable.com/) - one rM1, two rM2's, and now an rMPP. The first one arrived on 2023-06-27. I'm using the original rM2 as my "primary" tablet, while the others are being used for experimentation (so I can try things which might be dangerous, without any risk to my real notes).
 
 I'm using this site as a way to record the information I learn about them, and the things I do to customize them. I'm doing this for two reasons:
