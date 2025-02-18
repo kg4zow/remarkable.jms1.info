@@ -1,8 +1,8 @@
-#!/usr/bin/env perl -w
+#!/usr/bin/env perl
 #
 # version-commit
 # John Simpson <jms1@jms1.net> 2022-04-01
-# Last updated 2024-12-23
+# Last updated 205-02-18
 #
 # This script does two things:
 #
@@ -40,6 +40,7 @@
 
 require 5.005 ;
 use strict ;
+use warnings ;
 
 use JSON ;
 
