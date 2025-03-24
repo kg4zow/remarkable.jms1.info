@@ -422,6 +422,7 @@ When I've seen "telemetry" files in the past, it was because the device was uplo
 
 I asked about these files on the `rcu-develop` list (for [RCU](http://www.davisr.me/projects/rcu/) users who are more "technically minded"). A few people were *aware* of them, but nobody had any real information about what they were used for or what information they contain.
 
-I did notice that, after connecting to wifi for the first time, the tablet *did* try to open a connection to `34.36.20.125`, which is used by "a Google Cloud customer" - probably reMarkable but without knowing the hostname which *resolved to* this IP, I can't really be sure. Also, I don't *know* that this connection was related to these telemetry files or not, it's possible this was something totally unrelated.
+I did notice that, after connecting to wifi for the first time, the tablet *did* try to open a connection to `ping.remarkable.com:443` (`34.36.20.125`).
+I don't *know* that this connection was related to these telemetry files or not, it's possible this was something totally unrelated.
 
 I've tried setting up a packet sniffer on the router to capture all traffic to/from the tablet, but this particular connection hasn't happened again. I'm hoping that if it does, there will be a DNS request just before it tries to connect and the hostname it's querying for will tell me something.
