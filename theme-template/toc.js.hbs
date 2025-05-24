@@ -9,23 +9,23 @@ class MDBookSidebarScrollbox extends HTMLElement {
     }
     connectedCallback() {
         this.innerHTML = `{{#toc}}{{/toc}}
-
-<!-- Start version-commit content below ToC (js) -->
-                <hr/>
-                <div class="part-title">Version</div>
-                <div id="commit" class="version-commit-div">
-                    <span class="version-commit-hash"><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
-                    <span class="version-commit-time"><tt>@VERSION_COMMIT_TIME@</tt></span>
-                </div>
-                <div class="part-title">Generated</div>
-                <div id="generated" class="version-commit-div">
-                    <span class="version-commit-now"><tt>@VERSION_COMMIT_NOW@</tt></span>
-                </div>
+<!-- Start version-commit content below ToC -->
+    <hr/>
+    <div class="part-title">Version</div>
+    <div id="commit" class='version-commit-div'>
+        <span class='version-commit-hash'><tt>@VERSION_COMMIT_HASH@</tt></span><br/>
+        <span class='version-commit-time'><tt>@VERSION_COMMIT_TIME@</tt></span>
+    </div>
+    <div class="part-title">Generated</div>
+    <div id="generated" class='version-commit-div'>
+        <span class='version-commit-now'><tt>@VERSION_COMMIT_NOW@</tt></span>
+    </div>
 <!-- End version-commit content below ToC -->
+
 
 `;
         // Set the current, active page, and reveal it if it's hidden
-        let current_page = document.location.href.toString();
+        let current_page = document.location.href.toString().split("#")[0].split("?")[0];
         if (current_page.endsWith("/")) {
             current_page += "index.html";
         }
