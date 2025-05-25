@@ -8,7 +8,11 @@ class MDBookSidebarScrollbox extends HTMLElement {
         super();
     }
     connectedCallback() {
-        this.innerHTML = `{{#toc}}{{/toc}}
+        this.innerHTML = `
+<!-- Start content above ToC -->
+<!-- End conetnt above ToC -->
+
+{{#toc}}{{/toc}}
 <!-- Start version-commit content below ToC -->
     <hr/>
     <div class="part-title">Version</div>
