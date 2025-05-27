@@ -10,7 +10,7 @@ class MDBookSidebarScrollbox extends HTMLElement {
     connectedCallback() {
         this.innerHTML = `
 <!-- Start content above ToC -->
-<!-- End conetnt above ToC -->
+<!-- End content above ToC -->
 
 {{#toc}}{{/toc}}
 <!-- Start version-commit content below ToC -->
@@ -87,3 +87,5 @@ class MDBookSidebarScrollbox extends HTMLElement {
     }
 }
 window.customElements.define("mdbook-sidebar-scrollbox", MDBookSidebarScrollbox);
+
+// mdbook-fix-templates v0.2.0 2025-05-25 - mdbook v0.4.51
